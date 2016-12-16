@@ -1,0 +1,3 @@
+tau: 2					# pack parameter tau
+addrBits: 12			# bit length of record address
+dBytes: 4 				# record bytes in the last level
