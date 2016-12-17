@@ -97,7 +97,7 @@ public class Util {
 		for (int i = 0; i < a.length; i++)
 			setXor(a[i], b[i]);
 	}
-	
+
 	public static void setXor(byte[] a, byte[] b) {
 		if (a.length != b.length)
 			throw new LengthNotMatchException(a.length + " != " + b.length);
@@ -205,7 +205,7 @@ public class Util {
 			return Arrays.copyOfRange(in, in.length - len, in.length);
 		}
 	}
-	
+
 	public static String byteArrayToString(byte[] array, int radix) {
 		return new BigInteger(1, array).toString(radix);
 	}
