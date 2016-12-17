@@ -254,6 +254,13 @@ public class Metadata {
 	public int getParrBytes(int i) {
 		return PBytes[i];
 	}
+	
+	public int getDBytes(int i) {
+		assert (0 <= i && i < numLevels);
+		if (i == numLevels - 1)
+			return dBytes;
+		return 0;
+	}
 
 	public int getBlockBytes(int i) {
 		return blockBytes[i];
