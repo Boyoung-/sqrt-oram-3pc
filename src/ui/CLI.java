@@ -12,8 +12,8 @@ import org.apache.commons.cli.ParseException;
 
 import communication.Communication;
 import exceptions.NoSuchPartyException;
+import oram.Metadata;
 import oramOLD.Global;
-import oramOLD.Metadata;
 import protocols.*;
 import protocols.struct.Party;
 
@@ -108,7 +108,7 @@ public class CLI {
 		System.out.println("Starting " + party + "...");
 
 		Metadata md = new Metadata(configFile);
-		int numComs = Global.pipeline ? md.getNumTrees() + 1 : 1;
+		int numComs = Global.pipeline ? md.getNumLevels() + 1 : 1;
 		Communication[] con1 = new Communication[numComs];
 		Communication[] con2 = new Communication[numComs];
 
@@ -139,10 +139,10 @@ public class CLI {
 			}
 
 			try {
-				Protocol p = operationCtor.newInstance(con1[0], con2[0]);
+				Protocol p = operationCtor.newInstance(con1[0], con2[0], md);
 				if (protocol.equals("rtv"))
 					((Retrieve) p).setCons(con1, con2);
-				p.run(Party.Eddie, md, forestFile);
+				p.run(Party.Eddie, forestFile);
 			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
 					| InvocationTargetException e) {
 				e.printStackTrace();
@@ -176,10 +176,10 @@ public class CLI {
 			}
 
 			try {
-				Protocol p = operationCtor.newInstance(con1[0], con2[0]);
+				Protocol p = operationCtor.newInstance(con1[0], con2[0], md);
 				if (protocol.equals("rtv"))
 					((Retrieve) p).setCons(con1, con2);
-				p.run(Party.Debbie, md, forestFile);
+				p.run(Party.Debbie, forestFile);
 			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
 					| InvocationTargetException e) {
 				e.printStackTrace();
@@ -214,10 +214,10 @@ public class CLI {
 			}
 
 			try {
-				Protocol p = operationCtor.newInstance(con1[0], con2[0]);
+				Protocol p = operationCtor.newInstance(con1[0], con2[0], md);
 				if (protocol.equals("rtv"))
 					((Retrieve) p).setCons(con1, con2);
-				p.run(Party.Charlie, md, forestFile);
+				p.run(Party.Charlie, forestFile);
 			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
 					| InvocationTargetException e) {
 				e.printStackTrace();

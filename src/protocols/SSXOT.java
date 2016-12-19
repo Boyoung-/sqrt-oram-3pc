@@ -5,11 +5,13 @@ import java.math.BigInteger;
 import communication.Communication;
 import crypto.Crypto;
 import exceptions.NoSuchPartyException;
-import oramOLD.Metadata;
-import oramOLD.Tuple;
+import oram.Block;
+import oram.Metadata;
+import oram.SqrtOram;
 import protocols.precomputation.PreSSXOT;
 import protocols.struct.Party;
 import protocols.struct.PreData;
+import util.Array64;
 import util.M;
 import util.P;
 import util.Timer;
@@ -20,19 +22,13 @@ public class SSXOT extends Protocol {
 	private int id;
 	private int pid;
 
-	public SSXOT(Communication con1, Communication con2) {
-		super(con1, con2);
-		this.id = 0;
-		pid = id == 0 ? P.URXOT : P.XOT;
-	}
-
-	public SSXOT(Communication con1, Communication con2, int id) {
-		super(con1, con2);
+	public SSXOT(Communication con1, Communication con2, Metadata md, int id, int pid) {
+		super(con1, con2, md);
 		this.id = id;
-		pid = id == 0 ? P.URXOT : P.XOT;
+		this.pid = pid;
 	}
 
-	public Tuple[] runE(PreData predata, Tuple[] m, Timer timer) {
+	public Array64<Block> runE(PreData predata, Array64<Block> m, Timer timer) {
 		timer.start(pid, M.online_comp);
 
 		// step 1
@@ -118,40 +114,40 @@ public class SSXOT extends Protocol {
 
 	// for testing correctness
 	@Override
-	public void run(protocols.struct.Party party, Metadata md, oramOLD.Forest forest) {
+	public void run(Party party, SqrtOram oram) {
 		Timer timer = new Timer();
 
 		for (int j = 0; j < 100; j++) {
 			int n = 100;
 			int k = Crypto.sr.nextInt(50) + 50;
-			int[] index = Util.randomPermutation(k, Crypto.sr);
+			/*int[] index = Util.randomPermutation(k, Crypto.sr);
 			int[] tupleParam = new int[] { 1, 2, 3, 4 };
 			Tuple[] E_m = new Tuple[n];
 			Tuple[] C_m = new Tuple[n];
 			for (int i = 0; i < n; i++) {
 				E_m[i] = new Tuple(tupleParam[0], tupleParam[1], tupleParam[2], tupleParam[3], Crypto.sr);
 				C_m[i] = new Tuple(tupleParam[0], tupleParam[1], tupleParam[2], tupleParam[3], null);
-			}
+			}*/
 
 			PreData predata = new PreData();
-			PreSSXOT pressxot = new PreSSXOT(con1, con2, 0);
+			PreSSXOT pressxot = new PreSSXOT(con1, con2, md, 0, 0);
 
 			if (party == Party.Eddie) {
 				pressxot.runE(predata, timer);
-				Tuple[] E_out_m = runE(predata, E_m, timer);
+				//Tuple[] E_out_m = runE(predata, E_m, timer);
 
-				con2.write(E_m);
-				con2.write(E_out_m);
+				//con2.write(E_m);
+				//con2.write(E_out_m);
 
 			} else if (party == Party.Debbie) {
-				pressxot.runD(predata, n, k, tupleParam, timer);
-				runD(predata, index, timer);
+				pressxot.runD(predata, n, k, timer);
+				//runD(predata, index, timer);
 
-				con2.write(index);
+				//con2.write(index);
 
 			} else if (party == Party.Charlie) {
 				pressxot.runC(predata, timer);
-				Tuple[] C_out_m = runC(predata, C_m, timer);
+				/*Tuple[] C_out_m = runC(predata, C_m, timer);
 
 				index = con2.readIntArray();
 				E_m = con1.readTupleArray();
@@ -168,7 +164,7 @@ public class SSXOT extends Protocol {
 					}
 				}
 				if (pass)
-					System.out.println("SSXOT test passed");
+					System.out.println("SSXOT test passed");*/
 
 			} else {
 				throw new NoSuchPartyException(party + "");

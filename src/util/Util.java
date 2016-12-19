@@ -5,6 +5,7 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
@@ -141,11 +142,30 @@ public class Util {
 			array[i] = list.get(i);
 		return array;
 	}
+	
+	public static Array64<Long> randomPermutationLong(long len, Random rand) {
+		LinkedList<Long> list = new LinkedList<Long>();
+		for (long i = 0; i < len; i++)
+			list.add(i);
+		Collections.shuffle(list, rand);
+		Array64<Long> array = new Array64<Long>(len);
+		for (long i = 0; i < len; i++)
+			array.set(i, list.removeFirst());
+		return array;
+	}
 
 	public static int[] inversePermutation(int[] p) {
 		int[] ip = new int[p.length];
 		for (int i = 0; i < p.length; i++)
 			ip[p[i]] = i;
+		return ip;
+	}
+	
+	public static Array64<Long> inversePermutationLong(Array64<Long> p) {
+		Array64<Long> ip = new Array64<Long>(p.size());
+		for (long i=0; i<p.size(); i++) {
+			ip.set(p.get(i), i);
+		}
 		return ip;
 	}
 

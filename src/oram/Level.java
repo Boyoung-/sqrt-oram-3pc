@@ -32,8 +32,7 @@ public class Level implements Serializable {
 		used = new ArrayList<Integer>(md.getPeriod());
 
 		for (long i = 0; i < md.getNumBlocks(index); i++) {
-			fresh.set(i, new Block(md.getLBytes(index), md.getFBytes(index), md.getPBytes(index), md.getDBytes(index),
-					md.getTwoTauPow(), rnd));
+			fresh.set(i, new Block(index, md, rnd));
 		}
 	}
 

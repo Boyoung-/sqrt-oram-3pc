@@ -13,6 +13,7 @@ public class TestSqrtOram {
 		// oram.initWithRecords();
 		// oram.writeToFile();
 		SqrtOram oram = SqrtOram.readFromFile(md.getDefaultOramFileName());
+		// oram.print();
 
 		int tau = md.getTau();
 		int addrBits = md.getAddrBits();

@@ -10,7 +10,7 @@ public class TestBlock {
 		Random rand = new Random();
 		Metadata md = new Metadata();
 		for (int i = 0; i < md.getNumLevels(); i++) {
-			Block block = new Block(md.getLBytes(i), md.getFBytes(i), md.getPBytes(i), md.getDBytes(i),
+			Block block = new Block(md.getLBytes(i), md.getFBytes(i), md.getPBytes(i), md.getRecBytes(i),
 					md.getTwoTauPow(), rand);
 			System.out.println(block);
 		}

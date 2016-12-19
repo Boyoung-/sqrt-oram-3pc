@@ -266,7 +266,7 @@ public class Metadata implements Serializable {
 		return PBytes[i];
 	}
 
-	public int getDBytes(int i) {
+	public int getRecBytes(int i) {
 		assert (0 <= i && i < numLevels);
 		if (i == numLevels - 1)
 			return dBytes;

@@ -1,16 +1,16 @@
 package protocols;
 
 import communication.Communication;
-import crypto.Crypto;
 import exceptions.NoSuchPartyException;
-import oramOLD.Forest;
-import oramOLD.Global;
-import oramOLD.Metadata;
+import oram.Metadata;
+import oram.SqrtOram;
 import protocols.struct.Party;
 
 public abstract class Protocol {
 	protected Communication con1;
 	protected Communication con2;
+	
+	protected Metadata md;
 
 	/*
 	 * Connections are alphabetized so:
@@ -21,9 +21,15 @@ public abstract class Protocol {
 	 * 
 	 * For Charlie con1 = eddie con2 = debbie
 	 */
-	public Protocol(Communication con1, Communication con2) {
+	/*public Protocol(Communication con1, Communication con2) {
 		this.con1 = con1;
 		this.con2 = con2;
+	}*/
+	
+	public Protocol(Communication con1, Communication con2, Metadata md) {
+		this.con1 = con1;
+		this.con2 = con2;
+		this.md = md;
 	}
 
 	private static final boolean ENSURE_SANITY = true;
@@ -49,35 +55,32 @@ public abstract class Protocol {
 		}
 	}
 
-	public void run(Party party, Metadata md, String forestFile) {
-		Forest forest = null;
+	public void run(Party party, String forestFile) {
+		SqrtOram oram = null;
+		
 		if (party == Party.Eddie) {
-			if (Global.cheat)
-				forest = new Forest(md, Crypto.sr);
-			else if (forestFile == null)
-				forest = Forest.readFromFile(md.getDefaultSharesName1());
+			if (forestFile == null)
+				oram = SqrtOram.readFromFile(md.getDefaultSharesName1());
 			else
-				forest = Forest.readFromFile(forestFile);
+				oram = SqrtOram.readFromFile(forestFile);
 
 		} else if (party == Party.Debbie) {
-			if (Global.cheat)
-				forest = new Forest(md, null);
-			else if (forestFile == null)
-				forest = Forest.readFromFile(md.getDefaultSharesName2());
+			if (forestFile == null)
+				oram = SqrtOram.readFromFile(md.getDefaultSharesName2());
 			else
-				forest = Forest.readFromFile(forestFile);
+				oram = SqrtOram.readFromFile(forestFile);
 		} else if (party == Party.Charlie) {
 
 		} else {
 			throw new NoSuchPartyException(party.toString());
 		}
 
-		run(party, md, forest);
+		run(party, oram);
 	}
 
 	/*
 	 * This is mostly just testing code and may need to change for the purpose
 	 * of an actual execution
 	 */
-	public abstract void run(Party party, Metadata md, Forest forest);
+	public abstract void run(Party party, SqrtOram oram);
 }

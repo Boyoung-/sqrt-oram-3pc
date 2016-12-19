@@ -5,7 +5,8 @@ import com.oblivm.backend.gc.GCSignal;
 import crypto.PRF;
 import gc.GCRoute;
 import gc.GCUpdateRoot;
-import oramOLD.Tuple;
+import oram.Block;
+import util.Array64;
 
 public class PreData {
 	public byte[] sscot_k;
@@ -21,15 +22,22 @@ public class PreData {
 	public PRF ssiot_F_kprime;
 
 	public int[] access_sigma;
-	public Tuple[] access_p;
+	//public Tuple[] access_p;
 
-	public Tuple[][] ssxot_delta = new Tuple[2][];
-	public int[][] ssxot_E_pi = new int[2][];
-	public int[][] ssxot_C_pi = new int[2][];
-	public int[][] ssxot_E_pi_ivs = new int[2][];
-	public int[][] ssxot_C_pi_ivs = new int[2][];
-	public Tuple[][] ssxot_E_r = new Tuple[2][];
-	public Tuple[][] ssxot_C_r = new Tuple[2][];
+	@SuppressWarnings("unchecked")
+	public Array64<Block>[] ssxot_delta = (Array64<Block>[]) new Object[2];
+	@SuppressWarnings("unchecked")
+	public Array64<Long>[] ssxot_E_pi = (Array64<Long>[]) new Object[2];
+	@SuppressWarnings("unchecked")
+	public Array64<Long>[] ssxot_C_pi = (Array64<Long>[]) new Object[2];
+	@SuppressWarnings("unchecked")
+	public Array64<Long>[] ssxot_E_pi_ivs = (Array64<Long>[]) new Object[2];
+	@SuppressWarnings("unchecked")
+	public Array64<Long>[] ssxot_C_pi_ivs = (Array64<Long>[]) new Object[2];
+	@SuppressWarnings("unchecked")
+	public Array64<Block>[] ssxot_E_r = (Array64<Block>[]) new Object[2];
+	@SuppressWarnings("unchecked")
+	public Array64<Block>[] ssxot_C_r = (Array64<Block>[]) new Object[2];
 
 	public byte[] ppt_Li;
 	public byte[] ppt_Lip1;
@@ -38,9 +46,9 @@ public class PreData {
 	public byte[][] ppt_s;
 
 	public int[] reshuffle_pi;
-	public Tuple[] reshuffle_p;
-	public Tuple[] reshuffle_r;
-	public Tuple[] reshuffle_a_prime;
+	//public Tuple[] reshuffle_p;
+	//public Tuple[] reshuffle_r;
+	//public Tuple[] reshuffle_a_prime;
 
 	public GCSignal[][] ur_j1KeyPairs;
 	public GCSignal[][] ur_LiKeyPairs;
