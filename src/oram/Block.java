@@ -45,9 +45,10 @@ public class Block implements Serializable {
 		if (F.length > 0)
 			this.numBytes += F.length + P.length * P[0].length;
 	}
-	
+
 	public Block(int index, Metadata md, Random rand) {
-		this(md.getLBytes(index), md.getFBytes(index), md.getPBytes(index), md.getRecBytes(index), md.getTwoTauPow(), rand);
+		this(md.getLBytes(index), md.getFBytes(index), md.getPBytes(index), md.getRecBytes(index), md.getTwoTauPow(),
+				rand);
 	}
 
 	// deep copy

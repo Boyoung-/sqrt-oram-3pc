@@ -77,7 +77,7 @@ public class Communication {
 
 	private static SimpleAES aes = new SimpleAES();
 	public StopWatch comEnc = new StopWatch("CE_online_comp");
-	
+
 	// TODO adjust?
 	private int packSize = 1024;
 
@@ -424,56 +424,56 @@ public class Communication {
 	public void write(int pid, int[][] arr) {
 		write(pid, ComUtil.serialize(arr));
 	}
-	
+
 	public void write(Block b) {
 		write(ComUtil.serialize(b));
 	}
-	
+
 	public void write(int pid, Block b) {
 		write(pid, ComUtil.serialize(b));
 	}
-	
-	public void writeBlock64(Array64<Block> arr) {
+
+	public void writeBlockArray64(Array64<Block> arr) {
 		write(arr.size());
 		int blockSize = arr.get(0).getNumBytes();
 		int pack = Math.max(packSize / blockSize, 1);
-		for (long i=0; i<arr.size(); i+=pack) {
+		for (long i = 0; i < arr.size(); i += pack) {
 			long end = i + pack;
 			if (end > arr.size())
 				end = arr.size();
 			write(ComUtil.serializeBlock64(arr, i, end));
 		}
 	}
-	
-	public void writeBlock64(int pid, Array64<Block> arr) {
+
+	public void writeBlockArray64(int pid, Array64<Block> arr) {
 		write(pid, arr.size());
 		int blockSize = arr.get(0).getNumBytes();
 		int pack = Math.max(packSize / blockSize, 1);
-		for (long i=0; i<arr.size(); i+=pack) {
+		for (long i = 0; i < arr.size(); i += pack) {
 			long end = i + pack;
 			if (end > arr.size())
 				end = arr.size();
 			write(pid, ComUtil.serializeBlock64(arr, i, end));
 		}
 	}
-	
-	public void writeLong64(Array64<Long> arr) {
+
+	public void writeLongArray64(Array64<Long> arr) {
 		write(arr.size());
 		int longSize = 8;
 		int pack = Math.max(packSize / longSize, 1);
-		for (long i=0; i<arr.size(); i+=pack) {
+		for (long i = 0; i < arr.size(); i += pack) {
 			long end = i + pack;
 			if (end > arr.size())
 				end = arr.size();
 			write(ComUtil.serializeLong64(arr, i, end));
 		}
 	}
-	
-	public void writeLong64(int pid, Array64<Long> arr) {
+
+	public void writeLongArray64(int pid, Array64<Long> arr) {
 		write(pid, arr.size());
 		int longSize = 8;
 		int pack = Math.max(packSize / longSize, 1);
-		for (long i=0; i<arr.size(); i+=pack) {
+		for (long i = 0; i < arr.size(); i += pack) {
 			long end = i + pack;
 			if (end > arr.size())
 				end = arr.size();
@@ -481,37 +481,25 @@ public class Communication {
 		}
 	}
 
-	/*public void write(Tuple t) {
-		write(ComUtil.serialize(t));
-	}
-
-	public void write(int pid, Tuple t) {
-		write(pid, ComUtil.serialize(t));
-	}
-
-	public void write(Tuple[] arr) {
-		write(ComUtil.serialize(arr));
-	}
-
-	public void write(int pid, Tuple[] arr) {
-		write(pid, ComUtil.serialize(arr));
-	}
-
-	public void write(Bucket b) {
-		write(b.getTuples());
-	}
-
-	public void write(int pid, Bucket b) {
-		write(pid, b.getTuples());
-	}
-
-	public void write(Bucket[] arr) {
-		write(ComUtil.serialize(arr));
-	}
-
-	public void write(int pid, Bucket[] arr) {
-		write(pid, ComUtil.serialize(arr));
-	}*/
+	/*
+	 * public void write(Tuple t) { write(ComUtil.serialize(t)); }
+	 * 
+	 * public void write(int pid, Tuple t) { write(pid, ComUtil.serialize(t)); }
+	 * 
+	 * public void write(Tuple[] arr) { write(ComUtil.serialize(arr)); }
+	 * 
+	 * public void write(int pid, Tuple[] arr) { write(pid,
+	 * ComUtil.serialize(arr)); }
+	 * 
+	 * public void write(Bucket b) { write(b.getTuples()); }
+	 * 
+	 * public void write(int pid, Bucket b) { write(pid, b.getTuples()); }
+	 * 
+	 * public void write(Bucket[] arr) { write(ComUtil.serialize(arr)); }
+	 * 
+	 * public void write(int pid, Bucket[] arr) { write(pid,
+	 * ComUtil.serialize(arr)); }
+	 */
 
 	public void write(GCSignal key) {
 		write(key.bytes);
@@ -709,64 +697,64 @@ public class Communication {
 	public int[][] readDoubleIntArray(int pid) {
 		return ComUtil.toDoubleIntArray(read(pid));
 	}
-	
+
 	public Block readBlock() {
 		return ComUtil.toBlock(read());
 	}
-	
+
 	public Block readBlock(int pid) {
 		return ComUtil.toBlock(read(pid));
 	}
-	
+
 	public Array64<Block> readBlockArray64() {
 		long size = readLong();
 		Array64<Block> out = new Array64<Block>(size);
 		long cnt = 0;
 		while (cnt < size) {
 			Block[] array = ComUtil.toBlockArray(read());
-			for (int i=0; i<array.length; i++) {
+			for (int i = 0; i < array.length; i++) {
 				out.set(cnt, array[i]);
 				cnt++;
 			}
 		}
 		return out;
 	}
-	
+
 	public Array64<Block> readBlockArray64(int pid) {
 		long size = readLong(pid);
 		Array64<Block> out = new Array64<Block>(size);
 		long cnt = 0;
 		while (cnt < size) {
 			Block[] array = ComUtil.toBlockArray(read(pid));
-			for (int i=0; i<array.length; i++) {
+			for (int i = 0; i < array.length; i++) {
 				out.set(cnt, array[i]);
 				cnt++;
 			}
 		}
 		return out;
 	}
-	
+
 	public Array64<Long> readLongArray64() {
 		long size = readLong();
 		Array64<Long> out = new Array64<Long>(size);
 		long cnt = 0;
 		while (cnt < size) {
 			long[] array = ComUtil.toLongArray(read());
-			for (int i=0; i<array.length; i++) {
+			for (int i = 0; i < array.length; i++) {
 				out.set(cnt, array[i]);
 				cnt++;
 			}
 		}
 		return out;
 	}
-	
+
 	public Array64<Long> readLongArray64(int pid) {
 		long size = readLong(pid);
 		Array64<Long> out = new Array64<Long>(size);
 		long cnt = 0;
 		while (cnt < size) {
 			long[] array = ComUtil.toLongArray(read(pid));
-			for (int i=0; i<array.length; i++) {
+			for (int i = 0; i < array.length; i++) {
 				out.set(cnt, array[i]);
 				cnt++;
 			}
@@ -774,37 +762,27 @@ public class Communication {
 		return out;
 	}
 
-	/*public Tuple readTuple() {
-		return ComUtil.toTuple(read());
-	}
-
-	public Tuple readTuple(int pid) {
-		return ComUtil.toTuple(read(pid));
-	}
-
-	public Tuple[] readTupleArray() {
-		return ComUtil.toTupleArray(read());
-	}
-
-	public Tuple[] readTupleArray(int pid) {
-		return ComUtil.toTupleArray(read(pid));
-	}
-
-	public Bucket readBucket() {
-		return new Bucket(readTupleArray());
-	}
-
-	public Bucket readBucket(int pid) {
-		return new Bucket(readTupleArray(pid));
-	}
-
-	public Bucket[] readBucketArray() {
-		return ComUtil.toBucketArray(read());
-	}
-
-	public Bucket[] readBucketArray(int pid) {
-		return ComUtil.toBucketArray(read(pid));
-	}*/
+	/*
+	 * public Tuple readTuple() { return ComUtil.toTuple(read()); }
+	 * 
+	 * public Tuple readTuple(int pid) { return ComUtil.toTuple(read(pid)); }
+	 * 
+	 * public Tuple[] readTupleArray() { return ComUtil.toTupleArray(read()); }
+	 * 
+	 * public Tuple[] readTupleArray(int pid) { return
+	 * ComUtil.toTupleArray(read(pid)); }
+	 * 
+	 * public Bucket readBucket() { return new Bucket(readTupleArray()); }
+	 * 
+	 * public Bucket readBucket(int pid) { return new
+	 * Bucket(readTupleArray(pid)); }
+	 * 
+	 * public Bucket[] readBucketArray() { return ComUtil.toBucketArray(read());
+	 * }
+	 * 
+	 * public Bucket[] readBucketArray(int pid) { return
+	 * ComUtil.toBucketArray(read(pid)); }
+	 */
 
 	public GCSignal readGCSignal() {
 		return new GCSignal(read());

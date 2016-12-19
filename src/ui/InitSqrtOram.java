@@ -11,7 +11,7 @@ public class InitSqrtOram {
 
 		SqrtOram oram = new SqrtOram(md, null);
 		oram.writeToFile(md.getDefaultSharesName2());
-		
+
 		oram.initWithRecords();
 		oram.writeToFile(md.getDefaultSharesName1());
 	}

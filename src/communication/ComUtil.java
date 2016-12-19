@@ -200,7 +200,7 @@ public class ComUtil {
 		}
 		return out;
 	}
-	
+
 	public static byte[] serializeLong64(Array64<Long> in, long start, long end) {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		DataOutputStream dos = new DataOutputStream(baos);
@@ -208,11 +208,11 @@ public class ComUtil {
 		try {
 			long n = end - start;
 			dos.writeInt((int) n);
-			
-			for (long j=0; j<n; j++) {
-				dos.writeLong(in.get(start+j));
+
+			for (long j = 0; j < n; j++) {
+				dos.writeLong(in.get(start + j));
 			}
-			
+
 			out = baos.toByteArray();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -226,7 +226,7 @@ public class ComUtil {
 		}
 		return out;
 	}
-	
+
 	public static long[] toLongArray(byte[] in) {
 		ByteArrayInputStream bais = new ByteArrayInputStream(in);
 		DataInputStream dis = new DataInputStream(bais);
@@ -235,8 +235,8 @@ public class ComUtil {
 			int n = dis.readInt();
 			out = new long[n];
 
-			for (int j=0; j<n; j++) {
-				out[j] = dis.readLong();		
+			for (int j = 0; j < n; j++) {
+				out[j] = dis.readLong();
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -250,7 +250,7 @@ public class ComUtil {
 		}
 		return out;
 	}
-	
+
 	public static byte[] serialize(Block in) {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		DataOutputStream dos = new DataOutputStream(baos);
@@ -261,10 +261,10 @@ public class ComUtil {
 			dos.writeInt(in.getP().length);
 			dos.writeInt(in.getP(0).length);
 			dos.writeInt(in.getRec().length);
-			
+
 			dos.write(in.getL());
 			dos.write(in.getF());
-			for (int i=0; i<in.getP().length; i++)
+			for (int i = 0; i < in.getP().length; i++)
 				dos.write(in.getP(i));
 			dos.write(in.getRec());
 			out = baos.toByteArray();
@@ -280,7 +280,7 @@ public class ComUtil {
 		}
 		return out;
 	}
-	
+
 	public static Block toBlock(byte[] in) {
 		ByteArrayInputStream bais = new ByteArrayInputStream(in);
 		DataInputStream dis = new DataInputStream(bais);
@@ -291,14 +291,14 @@ public class ComUtil {
 			int ttp = dis.readInt();
 			int p = dis.readInt();
 			int r = dis.readInt();
-			
+
 			byte[] L = new byte[l];
 			byte[] F = new byte[f];
 			byte[][] P = new byte[ttp][p];
 			byte[] R = new byte[r];
 			dis.read(L);
 			dis.read(F);
-			for (int i=0; i<ttp; i++)
+			for (int i = 0; i < ttp; i++)
 				dis.read(P[i]);
 			dis.read(R);
 			out = new Block(L, F, P, R);
@@ -314,7 +314,7 @@ public class ComUtil {
 		}
 		return out;
 	}
-	
+
 	public static byte[] serializeBlock64(Array64<Block> in, long start, long end) {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		DataOutputStream dos = new DataOutputStream(baos);
@@ -328,16 +328,16 @@ public class ComUtil {
 			dos.writeInt(first.getP().length);
 			dos.writeInt(first.getP(0).length);
 			dos.writeInt(first.getRec().length);
-			
-			for (long j=0; j<n; j++) {
+
+			for (long j = 0; j < n; j++) {
 				Block b = in.get(start + j);
 				dos.write(b.getL());
 				dos.write(b.getF());
-				for (int i=0; i<b.getP().length; i++)
+				for (int i = 0; i < b.getP().length; i++)
 					dos.write(b.getP(i));
 				dos.write(b.getRec());
 			}
-			
+
 			out = baos.toByteArray();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -351,7 +351,7 @@ public class ComUtil {
 		}
 		return out;
 	}
-	
+
 	public static Block[] toBlockArray(byte[] in) {
 		ByteArrayInputStream bais = new ByteArrayInputStream(in);
 		DataInputStream dis = new DataInputStream(bais);
@@ -363,19 +363,19 @@ public class ComUtil {
 			int ttp = dis.readInt();
 			int p = dis.readInt();
 			int r = dis.readInt();
-			
+
 			out = new Block[n];
-			for (int j=0; j<n; j++) {
+			for (int j = 0; j < n; j++) {
 				byte[] L = new byte[l];
 				byte[] F = new byte[f];
 				byte[][] P = new byte[ttp][p];
 				byte[] R = new byte[r];
 				dis.read(L);
 				dis.read(F);
-				for (int i=0; i<ttp; i++)
+				for (int i = 0; i < ttp; i++)
 					dis.read(P[i]);
 				dis.read(R);
-				out[j] = new Block(L, F, P, R);				
+				out[j] = new Block(L, F, P, R);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -390,128 +390,49 @@ public class ComUtil {
 		return out;
 	}
 
-	/*public static byte[] serialize(Tuple in) {
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		DataOutputStream dos = new DataOutputStream(baos);
-		byte[] out = null;
-		try {
-			dos.writeInt(in.getF().length);
-			dos.writeInt(in.getN().length);
-			dos.writeInt(in.getL().length);
-			dos.writeInt(in.getA().length);
-			dos.write(in.getF());
-			dos.write(in.getN());
-			dos.write(in.getL());
-			dos.write(in.getA());
-			out = baos.toByteArray();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				dos.close();
-				baos.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-		return out;
-	}
-
-	public static Tuple toTuple(byte[] in) {
-		ByteArrayInputStream bais = new ByteArrayInputStream(in);
-		DataInputStream dis = new DataInputStream(bais);
-		Tuple out = null;
-		try {
-			int f = dis.readInt();
-			int n = dis.readInt();
-			int l = dis.readInt();
-			int a = dis.readInt();
-			byte[] F = new byte[f];
-			byte[] N = new byte[n];
-			byte[] L = new byte[l];
-			byte[] A = new byte[a];
-			dis.read(F);
-			dis.read(N);
-			dis.read(L);
-			dis.read(A);
-			out = new Tuple(F, N, L, A);
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				dis.close();
-				bais.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-		return out;
-	}
-
-	public static byte[] serialize(Tuple[] in) {
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		DataOutputStream dos = new DataOutputStream(baos);
-		byte[] out = null;
-		try {
-			dos.writeInt(in.length);
-			dos.writeInt(in[0].getF().length);
-			dos.writeInt(in[0].getN().length);
-			dos.writeInt(in[0].getL().length);
-			dos.writeInt(in[0].getA().length);
-			for (int i = 0; i < in.length; i++) {
-				dos.write(in[i].getF());
-				dos.write(in[i].getN());
-				dos.write(in[i].getL());
-				dos.write(in[i].getA());
-			}
-			out = baos.toByteArray();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				dos.close();
-				baos.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-		return out;
-	}
-
-	public static Tuple[] toTupleArray(byte[] in) {
-		ByteArrayInputStream bais = new ByteArrayInputStream(in);
-		DataInputStream dis = new DataInputStream(bais);
-		Tuple[] out = null;
-		try {
-			int len = dis.readInt();
-			int f = dis.readInt();
-			int n = dis.readInt();
-			int l = dis.readInt();
-			int a = dis.readInt();
-			out = new Tuple[len];
-			for (int i = 0; i < len; i++) {
-				byte[] F = new byte[f];
-				byte[] N = new byte[n];
-				byte[] L = new byte[l];
-				byte[] A = new byte[a];
-				dis.read(F);
-				dis.read(N);
-				dis.read(L);
-				dis.read(A);
-				out[i] = new Tuple(F, N, L, A);
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				dis.close();
-				bais.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-		return out;
-	}*/
+	/*
+	 * public static byte[] serialize(Tuple in) { ByteArrayOutputStream baos =
+	 * new ByteArrayOutputStream(); DataOutputStream dos = new
+	 * DataOutputStream(baos); byte[] out = null; try {
+	 * dos.writeInt(in.getF().length); dos.writeInt(in.getN().length);
+	 * dos.writeInt(in.getL().length); dos.writeInt(in.getA().length);
+	 * dos.write(in.getF()); dos.write(in.getN()); dos.write(in.getL());
+	 * dos.write(in.getA()); out = baos.toByteArray(); } catch (IOException e) {
+	 * e.printStackTrace(); } finally { try { dos.close(); baos.close(); } catch
+	 * (IOException e) { e.printStackTrace(); } } return out; }
+	 * 
+	 * public static Tuple toTuple(byte[] in) { ByteArrayInputStream bais = new
+	 * ByteArrayInputStream(in); DataInputStream dis = new
+	 * DataInputStream(bais); Tuple out = null; try { int f = dis.readInt(); int
+	 * n = dis.readInt(); int l = dis.readInt(); int a = dis.readInt(); byte[] F
+	 * = new byte[f]; byte[] N = new byte[n]; byte[] L = new byte[l]; byte[] A =
+	 * new byte[a]; dis.read(F); dis.read(N); dis.read(L); dis.read(A); out =
+	 * new Tuple(F, N, L, A); } catch (IOException e) { e.printStackTrace(); }
+	 * finally { try { dis.close(); bais.close(); } catch (IOException e) {
+	 * e.printStackTrace(); } } return out; }
+	 * 
+	 * public static byte[] serialize(Tuple[] in) { ByteArrayOutputStream baos =
+	 * new ByteArrayOutputStream(); DataOutputStream dos = new
+	 * DataOutputStream(baos); byte[] out = null; try { dos.writeInt(in.length);
+	 * dos.writeInt(in[0].getF().length); dos.writeInt(in[0].getN().length);
+	 * dos.writeInt(in[0].getL().length); dos.writeInt(in[0].getA().length); for
+	 * (int i = 0; i < in.length; i++) { dos.write(in[i].getF());
+	 * dos.write(in[i].getN()); dos.write(in[i].getL());
+	 * dos.write(in[i].getA()); } out = baos.toByteArray(); } catch (IOException
+	 * e) { e.printStackTrace(); } finally { try { dos.close(); baos.close(); }
+	 * catch (IOException e) { e.printStackTrace(); } } return out; }
+	 * 
+	 * public static Tuple[] toTupleArray(byte[] in) { ByteArrayInputStream bais
+	 * = new ByteArrayInputStream(in); DataInputStream dis = new
+	 * DataInputStream(bais); Tuple[] out = null; try { int len = dis.readInt();
+	 * int f = dis.readInt(); int n = dis.readInt(); int l = dis.readInt(); int
+	 * a = dis.readInt(); out = new Tuple[len]; for (int i = 0; i < len; i++) {
+	 * byte[] F = new byte[f]; byte[] N = new byte[n]; byte[] L = new byte[l];
+	 * byte[] A = new byte[a]; dis.read(F); dis.read(N); dis.read(L);
+	 * dis.read(A); out[i] = new Tuple(F, N, L, A); } } catch (IOException e) {
+	 * e.printStackTrace(); } finally { try { dis.close(); bais.close(); } catch
+	 * (IOException e) { e.printStackTrace(); } } return out; }
+	 */
 
 	public static byte[] serialize(GCSignal[] in) {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -721,56 +642,27 @@ public class ComUtil {
 		return out;
 	}
 
-	/*public static byte[] serialize(Bucket[] in) {
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		DataOutputStream dos = new DataOutputStream(baos);
-		byte[] out = null;
-		try {
-			byte[] b = serialize(Bucket.bucketsToTuples(in));
-			dos.writeInt(in.length);
-			dos.writeInt(in[0].getNumTuples());
-			dos.writeInt(in[1].getNumTuples());
-			dos.writeInt(b.length);
-			dos.write(b);
-			out = baos.toByteArray();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				dos.close();
-				baos.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-		return out;
-	}
-
-	public static Bucket[] toBucketArray(byte[] in) {
-		ByteArrayInputStream bais = new ByteArrayInputStream(in);
-		DataInputStream dis = new DataInputStream(bais);
-		Bucket[] out = null;
-		try {
-			int d = dis.readInt();
-			int sw = dis.readInt();
-			int w = dis.readInt();
-			int bytes = dis.readInt();
-			byte[] b = new byte[bytes];
-			dis.read(b);
-			Tuple[] tuples = toTupleArray(b);
-			out = Bucket.tuplesToBuckets(tuples, d, sw, w);
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				dis.close();
-				bais.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-		return out;
-	}*/
+	/*
+	 * public static byte[] serialize(Bucket[] in) { ByteArrayOutputStream baos
+	 * = new ByteArrayOutputStream(); DataOutputStream dos = new
+	 * DataOutputStream(baos); byte[] out = null; try { byte[] b =
+	 * serialize(Bucket.bucketsToTuples(in)); dos.writeInt(in.length);
+	 * dos.writeInt(in[0].getNumTuples()); dos.writeInt(in[1].getNumTuples());
+	 * dos.writeInt(b.length); dos.write(b); out = baos.toByteArray(); } catch
+	 * (IOException e) { e.printStackTrace(); } finally { try { dos.close();
+	 * baos.close(); } catch (IOException e) { e.printStackTrace(); } } return
+	 * out; }
+	 * 
+	 * public static Bucket[] toBucketArray(byte[] in) { ByteArrayInputStream
+	 * bais = new ByteArrayInputStream(in); DataInputStream dis = new
+	 * DataInputStream(bais); Bucket[] out = null; try { int d = dis.readInt();
+	 * int sw = dis.readInt(); int w = dis.readInt(); int bytes = dis.readInt();
+	 * byte[] b = new byte[bytes]; dis.read(b); Tuple[] tuples =
+	 * toTupleArray(b); out = Bucket.tuplesToBuckets(tuples, d, sw, w); } catch
+	 * (IOException e) { e.printStackTrace(); } finally { try { dis.close();
+	 * bais.close(); } catch (IOException e) { e.printStackTrace(); } } return
+	 * out; }
+	 */
 
 	public static byte[] serialize(ArrayList<byte[]> in) {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();

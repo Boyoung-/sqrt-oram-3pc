@@ -9,7 +9,7 @@ import protocols.struct.Party;
 public abstract class Protocol {
 	protected Communication con1;
 	protected Communication con2;
-	
+
 	protected Metadata md;
 
 	/*
@@ -21,11 +21,11 @@ public abstract class Protocol {
 	 * 
 	 * For Charlie con1 = eddie con2 = debbie
 	 */
-	/*public Protocol(Communication con1, Communication con2) {
-		this.con1 = con1;
-		this.con2 = con2;
-	}*/
-	
+	/*
+	 * public Protocol(Communication con1, Communication con2) { this.con1 =
+	 * con1; this.con2 = con2; }
+	 */
+
 	public Protocol(Communication con1, Communication con2, Metadata md) {
 		this.con1 = con1;
 		this.con2 = con2;
@@ -57,7 +57,7 @@ public abstract class Protocol {
 
 	public void run(Party party, String forestFile) {
 		SqrtOram oram = null;
-		
+
 		if (party == Party.Eddie) {
 			if (forestFile == null)
 				oram = SqrtOram.readFromFile(md.getDefaultSharesName1());

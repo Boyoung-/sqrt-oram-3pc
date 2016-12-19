@@ -22,7 +22,7 @@ public class PreData {
 	public PRF ssiot_F_kprime;
 
 	public int[] access_sigma;
-	//public Tuple[] access_p;
+	// public Tuple[] access_p;
 
 	@SuppressWarnings("unchecked")
 	public Array64<Block>[] ssxot_delta = (Array64<Block>[]) new Object[2];
@@ -46,9 +46,9 @@ public class PreData {
 	public byte[][] ppt_s;
 
 	public int[] reshuffle_pi;
-	//public Tuple[] reshuffle_p;
-	//public Tuple[] reshuffle_r;
-	//public Tuple[] reshuffle_a_prime;
+	// public Tuple[] reshuffle_p;
+	// public Tuple[] reshuffle_r;
+	// public Tuple[] reshuffle_a_prime;
 
 	public GCSignal[][] ur_j1KeyPairs;
 	public GCSignal[][] ur_LiKeyPairs;

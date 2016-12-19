@@ -51,10 +51,10 @@ public class PreSSXOT extends Protocol {
 		}
 
 		timer.start(pid, M.offline_write);
-		con1.writeLong64(predata.ssxot_E_pi[id]);
-		con1.writeBlock64(predata.ssxot_E_r[id]);
-		con2.writeLong64(predata.ssxot_C_pi[id]);
-		con2.writeBlock64(predata.ssxot_C_r[id]);
+		con1.writeLongArray64(predata.ssxot_E_pi[id]);
+		con1.writeBlockArray64(predata.ssxot_E_r[id]);
+		con2.writeLongArray64(predata.ssxot_C_pi[id]);
+		con2.writeBlockArray64(predata.ssxot_C_r[id]);
 		timer.stop(pid, M.offline_write);
 
 		timer.stop(pid, M.offline_comp);
