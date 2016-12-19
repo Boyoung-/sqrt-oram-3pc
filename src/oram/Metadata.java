@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.HashMap;
@@ -11,9 +12,15 @@ import java.util.Map;
 
 import org.yaml.snakeyaml.Yaml;
 
-public class Metadata {
+public class Metadata implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private String configFolder = "config/";
 	private String configFileName = "config.yaml";
+	private String dataFolder = "data/";
 	private String defaultOramFileName;
 
 	private String TAU = "tau";
@@ -68,7 +75,7 @@ public class Metadata {
 		dBytes = Integer.parseInt(configMap.get(DBYTES).toString());
 
 		init();
-		setDefaultForestFileName();
+		setDefaultOramFileName();
 	}
 
 	private void init() {
@@ -169,7 +176,7 @@ public class Metadata {
 		writeToFile(configFileName);
 	}
 
-	private void setDefaultForestFileName() {
+	private void setDefaultOramFileName() {
 		defaultOramFileName = "sqrt_";
 		defaultOramFileName += "t" + tau;
 		defaultOramFileName += "m" + addrBits;
@@ -178,16 +185,20 @@ public class Metadata {
 		defaultOramFileName += ".bin";
 	}
 
-	public String getDefaultForestFileName() {
-		return defaultOramFileName;
+	public String getDataFolder() {
+		return dataFolder;
+	}
+
+	public String getDefaultOramFileName() {
+		return dataFolder + defaultOramFileName;
 	}
 
 	public String getDefaultSharesName1() {
-		return defaultOramFileName + ".share1";
+		return getDefaultOramFileName() + ".share1";
 	}
 
 	public String getDefaultSharesName2() {
-		return defaultOramFileName + ".share2";
+		return getDefaultOramFileName() + ".share2";
 	}
 
 	public int getTau() {
@@ -274,7 +285,7 @@ public class Metadata {
 		return levelBytes[i];
 	}
 
-	public long getForestBytes() {
+	public long getOramBytes() {
 		return oramBytes;
 	}
 }
