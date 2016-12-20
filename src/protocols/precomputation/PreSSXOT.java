@@ -15,46 +15,45 @@ import util.Util;
 
 public class PreSSXOT extends Protocol {
 
-	private int id;
+	// TODO: add level index?
 	private int pid;
 
-	public PreSSXOT(Communication con1, Communication con2, Metadata md, int id, int pid) {
+	public PreSSXOT(Communication con1, Communication con2, Metadata md, int pid) {
 		super(con1, con2, md);
-		this.id = id;
 		this.pid = pid;
 	}
 
 	public void runE(PreData predata, Timer timer) {
 		timer.start(pid, M.offline_read);
-		predata.ssxot_E_pi[id] = con1.readLongArray64();
-		predata.ssxot_E_r[id] = con1.readBlockArray64();
+		predata.ssxot_E_pi[pid] = con1.readLongArray64();
+		predata.ssxot_E_r[pid] = con1.readBlockArray64();
 		timer.stop(pid, M.offline_read);
 	}
 
 	public void runD(PreData predata, long n, long k, Timer timer) {
 		timer.start(pid, M.offline_comp);
 
-		predata.ssxot_delta[id] = new Array64<Block>(k);
+		predata.ssxot_delta[pid] = new Array64<Block>(k);
 		for (long i = 0; i < k; i++)
-			predata.ssxot_delta[id].set(i, new Block(id, md, Crypto.sr));
+			predata.ssxot_delta[pid].set(i, new Block(predata.getIndex(), md, Crypto.sr));
 
-		predata.ssxot_E_pi[id] = Util.randomPermutationLong(n, Crypto.sr);
-		predata.ssxot_C_pi[id] = Util.randomPermutationLong(n, Crypto.sr);
-		predata.ssxot_E_pi_ivs[id] = Util.inversePermutationLong(predata.ssxot_E_pi[id]);
-		predata.ssxot_C_pi_ivs[id] = Util.inversePermutationLong(predata.ssxot_C_pi[id]);
+		predata.ssxot_E_pi[pid] = Util.randomPermutationLong(n, Crypto.sr);
+		predata.ssxot_C_pi[pid] = Util.randomPermutationLong(n, Crypto.sr);
+		predata.ssxot_E_pi_ivs[pid] = Util.inversePermutationLong(predata.ssxot_E_pi[pid]);
+		predata.ssxot_C_pi_ivs[pid] = Util.inversePermutationLong(predata.ssxot_C_pi[pid]);
 
-		predata.ssxot_E_r[id] = new Array64<Block>(n);
-		predata.ssxot_C_r[id] = new Array64<Block>(n);
+		predata.ssxot_E_r[pid] = new Array64<Block>(n);
+		predata.ssxot_C_r[pid] = new Array64<Block>(n);
 		for (long i = 0; i < n; i++) {
-			predata.ssxot_E_r[id].set(i, new Block(id, md, Crypto.sr));
-			predata.ssxot_C_r[id].set(i, new Block(id, md, Crypto.sr));
+			predata.ssxot_E_r[pid].set(i, new Block(predata.getIndex(), md, Crypto.sr));
+			predata.ssxot_C_r[pid].set(i, new Block(predata.getIndex(), md, Crypto.sr));
 		}
 
 		timer.start(pid, M.offline_write);
-		con1.writeLongArray64(predata.ssxot_E_pi[id]);
-		con1.writeBlockArray64(predata.ssxot_E_r[id]);
-		con2.writeLongArray64(predata.ssxot_C_pi[id]);
-		con2.writeBlockArray64(predata.ssxot_C_r[id]);
+		con1.writeLongArray64(predata.ssxot_E_pi[pid]);
+		con1.writeBlockArray64(predata.ssxot_E_r[pid]);
+		con2.writeLongArray64(predata.ssxot_C_pi[pid]);
+		con2.writeBlockArray64(predata.ssxot_C_r[pid]);
 		timer.stop(pid, M.offline_write);
 
 		timer.stop(pid, M.offline_comp);
@@ -62,8 +61,8 @@ public class PreSSXOT extends Protocol {
 
 	public void runC(PreData predata, Timer timer) {
 		timer.start(pid, M.offline_read);
-		predata.ssxot_C_pi[id] = con2.readLongArray64();
-		predata.ssxot_C_r[id] = con2.readBlockArray64();
+		predata.ssxot_C_pi[pid] = con2.readLongArray64();
+		predata.ssxot_C_r[pid] = con2.readBlockArray64();
 		timer.stop(pid, M.offline_read);
 	}
 

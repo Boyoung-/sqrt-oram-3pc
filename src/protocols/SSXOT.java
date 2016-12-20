@@ -13,17 +13,22 @@ import protocols.struct.Party;
 import protocols.struct.PreData;
 import util.Array64;
 import util.M;
+import util.P;
 import util.Timer;
 import util.Util;
 
 public class SSXOT extends Protocol {
 
-	private int id;
 	private int pid;
 
-	public SSXOT(Communication con1, Communication con2, Metadata md, int id, int pid) {
+	// for testing
+	public SSXOT(Communication con1, Communication con2, Metadata md) {
 		super(con1, con2, md);
-		this.id = id;
+		this.pid = 0;
+	}
+
+	public SSXOT(Communication con1, Communication con2, Metadata md, int pid) {
+		super(con1, con2, md);
 		this.pid = pid;
 	}
 
@@ -31,9 +36,9 @@ public class SSXOT extends Protocol {
 		timer.start(pid, M.online_comp);
 
 		// step 1
-		Array64<Block> a = predata.ssxot_E_r[id];
+		Array64<Block> a = predata.ssxot_E_r[pid];
 		for (long i = 0; i < m.size(); i++)
-			a.get(i).setXor(m.get(predata.ssxot_E_pi[id].get(i)));
+			a.get(i).setXor(m.get(predata.ssxot_E_pi[pid].get(i)));
 
 		timer.start(pid, M.online_write);
 		con2.writeBlockArray64(pid, a);
@@ -63,13 +68,13 @@ public class SSXOT extends Protocol {
 		long k = index.size();
 		Array64<Long> E_j = new Array64<Long>(k);
 		Array64<Long> C_j = new Array64<Long>(k);
-		Array64<Block> E_p = predata.ssxot_delta[id];
-		Array64<Block> C_p = predata.ssxot_delta[id];
+		Array64<Block> E_p = new Array64<Block>(k);
+		Array64<Block> C_p = new Array64<Block>(k);
 		for (long i = 0; i < k; i++) {
-			E_j.set(i, predata.ssxot_E_pi_ivs[id].get(index.get(i)));
-			C_j.set(i, predata.ssxot_C_pi_ivs[id].get(index.get(i)));
-			E_p.get(i).setXor(predata.ssxot_E_r[id].get(E_j.get(i)));
-			C_p.get(i).setXor(predata.ssxot_C_r[id].get(C_j.get(i)));
+			E_j.set(i, predata.ssxot_E_pi_ivs[pid].get(index.get(i)));
+			C_j.set(i, predata.ssxot_C_pi_ivs[pid].get(index.get(i)));
+			E_p.set(i, predata.ssxot_E_r[pid].get(E_j.get(i)).xor(predata.ssxot_delta[pid].get(i)));
+			C_p.set(i, predata.ssxot_C_r[pid].get(C_j.get(i)).xor(predata.ssxot_delta[pid].get(i)));
 		}
 
 		timer.start(pid, M.online_write);
@@ -86,9 +91,9 @@ public class SSXOT extends Protocol {
 		timer.start(pid, M.online_comp);
 
 		// step 1
-		Array64<Block> a = predata.ssxot_C_r[id];
+		Array64<Block> a = predata.ssxot_C_r[pid];
 		for (long i = 0; i < m.size(); i++)
-			a.get(i).setXor(m.get(predata.ssxot_C_pi[id].get(i)));
+			a.get(i).setXor(m.get(predata.ssxot_C_pi[pid].get(i)));
 
 		timer.start(pid, M.online_write);
 		con1.writeBlockArray64(pid, a);
@@ -122,22 +127,34 @@ public class SSXOT extends Protocol {
 			Array64<Block> E_m = new Array64<Block>(n);
 			Array64<Block> C_m = new Array64<Block>(n);
 			int levelNum = Crypto.sr.nextInt(md.getNumLevels());
+			pid = Crypto.sr.nextInt(P.size);
 			for (long i = 0; i < n; i++) {
-				E_m.set(i, new Block(levelNum, md, Crypto.sr));
-				C_m.set(i, new Block(levelNum, md, null));
+				C_m.set(i, new Block(levelNum, md, Crypto.sr));
+				E_m.set(i, new Block(levelNum, md, null));
 			}
 
-			PreData predata = new PreData();
-			PreSSXOT pressxot = new PreSSXOT(con1, con2, md, 0, 0);
-
 			if (party == Party.Eddie) {
+				con1.write(levelNum);
+				con2.write(levelNum);
+				con1.write(pid);
+				con2.write(pid);
+
+				PreData predata = new PreData(levelNum);
+				PreSSXOT pressxot = new PreSSXOT(con1, con2, md, pid);
 				pressxot.runE(predata, timer);
+
+				con2.writeBlockArray64(C_m);
+
 				Array64<Block> E_out_m = runE(predata, E_m, timer);
 
-				con2.writeBlockArray64(E_m);
 				con2.writeBlockArray64(E_out_m);
 
 			} else if (party == Party.Debbie) {
+				levelNum = con1.readInt();
+				pid = con1.readInt();
+
+				PreData predata = new PreData(levelNum);
+				PreSSXOT pressxot = new PreSSXOT(con1, con2, md, pid);
 				pressxot.runD(predata, n, k, timer);
 
 				Array64<Long> index = Util.randomPermutationLong(k, Crypto.sr);
@@ -146,25 +163,32 @@ public class SSXOT extends Protocol {
 				con2.writeLongArray64(index);
 
 			} else if (party == Party.Charlie) {
+				levelNum = con1.readInt();
+				pid = con1.readInt();
+
+				PreData predata = new PreData(levelNum);
+				PreSSXOT pressxot = new PreSSXOT(con1, con2, md, pid);
 				pressxot.runC(predata, timer);
+
+				C_m = con1.readBlockArray64();
+
 				Array64<Block> C_out_m = runC(predata, C_m, timer);
 
 				Array64<Long> index = con2.readLongArray64();
-				E_m = con1.readBlockArray64();
 				Array64<Block> E_out_m = con1.readBlockArray64();
 
 				boolean pass = true;
 				for (long i = 0; i < index.size(); i++) {
-					BigInteger input = new BigInteger(1, E_m.get(index.get(i)).toByteArray());
-					BigInteger output = new BigInteger(1, E_out_m.get(i).xor(C_out_m.get(i)).toByteArray());
+					BigInteger input = new BigInteger(C_m.get(index.get(i)).toByteArray());
+					BigInteger output = new BigInteger(E_out_m.get(i).xor(C_out_m.get(i)).toByteArray());
 					if (input.compareTo(output) != 0) {
-						System.err.println("SSXOT test failed");
+						System.err.println(j + " " + i + ": SSXOT test failed");
 						pass = false;
 						break;
 					}
 				}
 				if (pass)
-					System.out.println("SSXOT test passed");
+					System.out.println(j + ": SSXOT test passed");
 
 			} else {
 				throw new NoSuchPartyException(party + "");

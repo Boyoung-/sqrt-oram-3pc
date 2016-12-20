@@ -1,5 +1,6 @@
 package util;
 
+import java.lang.reflect.Array;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -143,6 +144,13 @@ public class Util {
 		return array;
 	}
 
+	public static Array64<Long> identityPermutationLong(long len) {
+		Array64<Long> array = new Array64<Long>(len);
+		for (long i = 0; i < len; i++)
+			array.set(i, i);
+		return array;
+	}
+
 	public static Array64<Long> randomPermutationLong(long len, Random rand) {
 		LinkedList<Long> list = new LinkedList<Long>();
 		for (long i = 0; i < len; i++)
@@ -228,6 +236,16 @@ public class Util {
 
 	public static String byteArrayToString(byte[] array, int radix) {
 		return new BigInteger(1, array).toString(radix);
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <T> T[] genericArray(Class<T> type, int length) {
+		return (T[]) Array.newInstance(type, length);
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <T> T[][] genericArray(Class<T> type, int len1, int len2) {
+		return (T[][]) Array.newInstance(type, len1, len2);
 	}
 
 	public static void debug(String s) {

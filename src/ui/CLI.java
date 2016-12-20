@@ -98,7 +98,7 @@ public class CLI {
 
 		Constructor<? extends Protocol> operationCtor = null;
 		try {
-			operationCtor = operation.getDeclaredConstructor(Communication.class, Communication.class);
+			operationCtor = operation.getDeclaredConstructor(Communication.class, Communication.class, Metadata.class);
 		} catch (NoSuchMethodException | SecurityException e1) {
 			e1.printStackTrace();
 		}

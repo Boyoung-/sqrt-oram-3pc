@@ -7,8 +7,20 @@ import gc.GCRoute;
 import gc.GCUpdateRoot;
 import oram.Block;
 import util.Array64;
+import util.P;
+import util.Util;
 
 public class PreData {
+	private int index;
+
+	public PreData(int index) {
+		this.index = index;
+	}
+
+	public int getIndex() {
+		return index;
+	}
+
 	public byte[] sscot_k;
 	public byte[] sscot_kprime;
 	public byte[][] sscot_r;
@@ -25,19 +37,19 @@ public class PreData {
 	// public Tuple[] access_p;
 
 	@SuppressWarnings("unchecked")
-	public Array64<Block>[] ssxot_delta = (Array64<Block>[]) new Object[2];
+	public Array64<Block>[] ssxot_delta = Util.genericArray(Array64.class, P.size);
 	@SuppressWarnings("unchecked")
-	public Array64<Long>[] ssxot_E_pi = (Array64<Long>[]) new Object[2];
+	public Array64<Long>[] ssxot_E_pi = Util.genericArray(Array64.class, P.size);
 	@SuppressWarnings("unchecked")
-	public Array64<Long>[] ssxot_C_pi = (Array64<Long>[]) new Object[2];
+	public Array64<Long>[] ssxot_C_pi = Util.genericArray(Array64.class, P.size);
 	@SuppressWarnings("unchecked")
-	public Array64<Long>[] ssxot_E_pi_ivs = (Array64<Long>[]) new Object[2];
+	public Array64<Long>[] ssxot_E_pi_ivs = Util.genericArray(Array64.class, P.size);
 	@SuppressWarnings("unchecked")
-	public Array64<Long>[] ssxot_C_pi_ivs = (Array64<Long>[]) new Object[2];
+	public Array64<Long>[] ssxot_C_pi_ivs = Util.genericArray(Array64.class, P.size);
 	@SuppressWarnings("unchecked")
-	public Array64<Block>[] ssxot_E_r = (Array64<Block>[]) new Object[2];
+	public Array64<Block>[] ssxot_E_r = Util.genericArray(Array64.class, P.size);
 	@SuppressWarnings("unchecked")
-	public Array64<Block>[] ssxot_C_r = (Array64<Block>[]) new Object[2];
+	public Array64<Block>[] ssxot_C_r = Util.genericArray(Array64.class, P.size);
 
 	public byte[] ppt_Li;
 	public byte[] ppt_Lip1;
