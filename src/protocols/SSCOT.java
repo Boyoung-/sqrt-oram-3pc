@@ -5,8 +5,9 @@ import crypto.Crypto;
 import crypto.PRG;
 import exceptions.NoSuchPartyException;
 import exceptions.SSCOTException;
-import oramOLD.Forest;
-import oramOLD.Metadata;
+import oram.Block;
+import oram.Metadata;
+import oram.SqrtOram;
 import protocols.precomputation.PreSSCOT;
 import protocols.struct.OutSSCOT;
 import protocols.struct.Party;
@@ -20,8 +21,8 @@ public class SSCOT extends Protocol {
 
 	private int pid = P.COT;
 
-	public SSCOT(Communication con1, Communication con2) {
-		super(con1, con2);
+	public SSCOT(Communication con1, Communication con2, Metadata md) {
+		super(con1, con2, md);
 	}
 
 	public void runE(PreData predata, byte[][] m, byte[][] a, Timer timer) {
@@ -113,49 +114,70 @@ public class SSCOT extends Protocol {
 
 	// for testing correctness
 	@Override
-	public void run(Party party, Metadata md, Forest forest) {
+	public void run(Party party, SqrtOram oram) {
 		Timer timer = new Timer();
+		int n = 100;
+		byte[][] m = new byte[n][];
+		byte[][] a = new byte[n][];
+		byte[][] b = new byte[n][];
+		int levelIndex;
+		PreData predata = null;
+		PreSSCOT presscot = null;
+		int index;
+		Block[] e = new Block[n];
 
 		for (int j = 0; j < 100; j++) {
-			int n = 100;
-			int A = 32;
-			int FN = 5;
-			byte[][] m = new byte[n][A];
-			byte[][] a = new byte[n][FN];
-			byte[][] b = new byte[n][FN];
-			for (int i = 0; i < n; i++) {
-				Crypto.sr.nextBytes(m[i]);
-				Crypto.sr.nextBytes(a[i]);
-				Crypto.sr.nextBytes(b[i]);
-				while (Util.equal(a[i], b[i]))
-					Crypto.sr.nextBytes(b[i]);
-			}
-			int index = Crypto.sr.nextInt(n);
-			b[index] = a[index].clone();
+			presscot = new PreSSCOT(con1, con2, md);
 
-			PreData predata = new PreData();
-			PreSSCOT presscot = new PreSSCOT(con1, con2);
 			if (party == Party.Eddie) {
-				con1.write(b);
-				con2.write(m);
-				con2.write(index);
+				levelIndex = Crypto.sr.nextInt(md.getNumLevels());
+				con1.write(levelIndex);
+				con2.write(levelIndex);
+				predata = new PreData(levelIndex);
 				presscot.runE(predata, n, timer);
+
+				for (int i = 0; i < n; i++) {
+					e[i] = new Block(levelIndex, md, Crypto.sr);
+					m[i] = e[i].toByteArray();
+					a[i] = e[i].getL();
+				}
+				con1.write(a);
 				runE(predata, m, a, timer);
 
+				index = con1.readInt();
+				con2.write(m[index]);
+
 			} else if (party == Party.Debbie) {
-				b = con1.readDoubleByteArray();
+				levelIndex = con1.readInt();
+				predata = new PreData(levelIndex);
 				presscot.runD(predata, timer);
+
+				a = con1.readDoubleByteArray();
+				for (int i = 0; i < n; i++) {
+					b[i] = Util.nextBytes(a[i].length, Crypto.sr);
+					while (Util.equal(b[i], a[i]))
+						b[i] = Util.nextBytes(a[i].length, Crypto.sr);
+				}
+				index = Crypto.sr.nextInt(n);
+				b[index] = a[index].clone();
 				runD(predata, b, timer);
 
+				con1.write(index);
+				con2.write(index);
+
 			} else if (party == Party.Charlie) {
-				m = con1.readDoubleByteArray();
-				index = con1.readInt();
+				levelIndex = con1.readInt();
+				predata = new PreData(levelIndex);
 				presscot.runC();
+
 				OutSSCOT output = runC(timer);
-				if (output.t == index && Util.equal(output.m_t, m[index]))
-					System.out.println("SSCOT test passed");
+
+				index = con2.readInt();
+				byte[] m_t = con1.read();
+				if (output.t == index && Util.equal(output.m_t, m_t))
+					System.out.println(j + ": SSCOT test passed");
 				else
-					System.err.println("SSCOT test failed");
+					System.err.println(j + ":SSCOT test failed");
 
 			} else {
 				throw new NoSuchPartyException(party + "");

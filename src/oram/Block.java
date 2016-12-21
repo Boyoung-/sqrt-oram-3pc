@@ -51,6 +51,22 @@ public class Block implements Serializable {
 				rand);
 	}
 
+	public Block(int index, Metadata md, byte[] arr) {
+		this(index, md, (Random) null);
+		if (getNumBytes() != arr.length)
+			throw new LengthNotMatchException(getNumBytes() + " != " + arr.length);
+		int offset = 0;
+		System.arraycopy(arr, offset, l, 0, l.length);
+		offset += l.length;
+		System.arraycopy(arr, offset, F, 0, F.length);
+		offset += F.length;
+		for (int i = 0; i < P.length; i++) {
+			System.arraycopy(arr, offset, P[i], 0, P[i].length);
+			offset += P[i].length;
+		}
+		System.arraycopy(arr, offset, rec, 0, rec.length);
+	}
+
 	// deep copy
 	public Block(Block b) {
 		l = b.getL().clone();

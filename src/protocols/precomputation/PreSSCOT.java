@@ -3,8 +3,8 @@ package protocols.precomputation;
 import communication.Communication;
 import crypto.Crypto;
 import crypto.PRF;
-import oramOLD.Forest;
-import oramOLD.Metadata;
+import oram.Metadata;
+import oram.SqrtOram;
 import protocols.Protocol;
 import protocols.struct.Party;
 import protocols.struct.PreData;
@@ -16,8 +16,8 @@ public class PreSSCOT extends Protocol {
 
 	private int pid = P.COT;
 
-	public PreSSCOT(Communication con1, Communication con2) {
-		super(con1, con2);
+	public PreSSCOT(Communication con1, Communication con2, Metadata md) {
+		super(con1, con2, md);
 	}
 
 	public void runE(PreData predata, int n, Timer timer) {
@@ -66,6 +66,6 @@ public class PreSSCOT extends Protocol {
 	}
 
 	@Override
-	public void run(Party party, Metadata md, Forest forest) {
+	public void run(Party party, SqrtOram oram) {
 	}
 }
