@@ -116,6 +116,15 @@ public class Util {
 		return c;
 	}
 
+	public static Array64<Long> xor(Array64<Long> a, Array64<Long> b) {
+		if (a.size() != b.size())
+			throw new LengthNotMatchException(a.size() + " != " + b.size());
+		Array64<Long> c = new Array64<Long>(a.size());
+		for (long i = 0; i < a.size(); i++)
+			c.set(i, a.get(i) ^ b.get(i));
+		return c;
+	}
+
 	public static byte[] intToBytes(int i) {
 		ByteBuffer bb = ByteBuffer.allocate(4);
 		bb.putInt(i);
@@ -189,6 +198,13 @@ public class Util {
 		int[] permuted = new int[original.length];
 		for (int i = 0; i < original.length; i++)
 			permuted[p[i]] = original[i];
+		return permuted;
+	}
+
+	public static <T> Array64<T> permute(Array64<T> original, Array64<Long> p) {
+		Array64<T> permuted = new Array64<T>(original.size());
+		for (long i = 0; i < original.size(); i++)
+			permuted.set(p.get(i), original.get(i));
 		return permuted;
 	}
 

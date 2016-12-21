@@ -15,6 +15,11 @@ public class TestUtil {
 		byte[] bb = new byte[] { 1 };
 		Util.setXor(aa, bb);
 		System.out.println(aa[0]);
+
+		Long x = 0x0000000080000001L;
+		Long y = 0x4065DE839A6F89EEL;
+		Long z = x ^ y;
+		System.out.println("result " + Long.toHexString(z));
 	}
 
 }

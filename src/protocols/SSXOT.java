@@ -1,6 +1,7 @@
 package protocols;
 
 import java.math.BigInteger;
+import java.util.Random;
 
 import communication.Communication;
 import crypto.Crypto;
@@ -130,7 +131,7 @@ public class SSXOT extends Protocol {
 			pid = Crypto.sr.nextInt(P.size);
 			for (long i = 0; i < n; i++) {
 				C_m.set(i, new Block(levelNum, md, Crypto.sr));
-				E_m.set(i, new Block(levelNum, md, null));
+				E_m.set(i, new Block(levelNum, md, (Random) null));
 			}
 
 			if (party == Party.Eddie) {

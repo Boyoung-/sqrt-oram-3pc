@@ -73,20 +73,10 @@ public class CLI {
 			operation = Access.class;
 		} else if (protocol.equals("cot")) {
 			operation = SSCOT.class;
-		} else if (protocol.equals("iot")) {
-			operation = SSIOT.class;
-		} else if (protocol.equals("rsf")) {
-			operation = Reshuffle.class;
-		} else if (protocol.equals("ppt")) {
-			operation = PostProcessT.class;
-		} else if (protocol.equals("ur")) {
-			operation = UpdateRoot.class;
 		} else if (protocol.equals("evi")) {
 			operation = Eviction.class;
-		} else if (protocol.equals("pt")) {
-			operation = PermuteTarget.class;
-		} else if (protocol.equals("pi")) {
-			operation = PermuteIndex.class;
+		} else if (protocol.equals("gps")) {
+			operation = GenPermShare.class;
 		} else if (protocol.equals("xot")) {
 			operation = SSXOT.class;
 		} else if (protocol.equals("rtv")) {

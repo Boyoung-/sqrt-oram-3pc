@@ -5,7 +5,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Arrays;
 
-public class TestPermuteTarget_E {
+public class TestGPS_C {
 
 	public static void main(String[] args) {
 		Runtime runTime = Runtime.getRuntime();
@@ -14,7 +14,7 @@ public class TestPermuteTarget_E {
 		String binDir = dir + "\\bin";
 		String libs = dir + "\\lib\\*";
 		try {
-			process = runTime.exec("java -classpath " + binDir + ";" + libs + " ui.CLI -protocol pt eddie");
+			process = runTime.exec("java -classpath " + binDir + ";" + libs + " ui.CLI -protocol gps charlie");
 
 		} catch (IOException e) {
 			e.printStackTrace();
