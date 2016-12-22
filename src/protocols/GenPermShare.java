@@ -23,52 +23,52 @@ public class GenPermShare extends Protocol {
 	}
 
 	public Array64<Long> runE(PreData predata, Array64<Long> pi_E, Timer timer) {
-		timer.start(pid, M.online_comp);
+		timer.start(pid, M.offline_comp);
 
 		// step 2
-		timer.start(pid, M.online_read);
-		Array64<Long> z = con1.readLongArray64(pid);
-		timer.stop(pid, M.online_read);
+		timer.start(pid, M.offline_read);
+		Array64<Long> z = con1.readLongArray64();
+		timer.stop(pid, M.offline_read);
 
 		// step 3
 		Array64<Long> pi_ivs = Util.inversePermutationLong(pi_E);
 		Array64<Long> pi_b = Util.permute(Util.xor(z, predata.gps_r), pi_ivs);
 
-		timer.stop(pid, M.online_comp);
+		timer.stop(pid, M.offline_comp);
 		return pi_b;
 	}
 
 	public Array64<Long> runD(PreData predata, Array64<Long> pi_D, Timer timer) {
-		timer.start(pid, M.online_comp);
+		timer.start(pid, M.offline_comp);
 
 		// step1
-		timer.start(pid, M.online_read);
-		Array64<Long> pi_a = con2.readLongArray64(pid);
-		timer.stop(pid, M.online_read);
+		timer.start(pid, M.offline_read);
+		Array64<Long> pi_a = con2.readLongArray64();
+		timer.stop(pid, M.offline_read);
 
 		// step 2
 		Array64<Long> z = Util.xor(pi_D, predata.gps_p);
 
-		timer.start(pid, M.online_write);
-		con1.writeLongArray64(pid, z);
-		timer.stop(pid, M.online_write);
+		timer.start(pid, M.offline_write);
+		con1.writeLongArray64(z);
+		timer.stop(pid, M.offline_write);
 
-		timer.stop(pid, M.online_comp);
+		timer.stop(pid, M.offline_comp);
 		return pi_a;
 	}
 
 	public void runC(PreData predata, Array64<Long> pi_E, Timer timer) {
-		timer.start(pid, M.online_comp);
+		timer.start(pid, M.offline_comp);
 
 		// step 1
 		Array64<Long> pi_ivs = Util.inversePermutationLong(pi_E);
 		Array64<Long> pi_a = Util.permute(Util.xor(predata.gps_p, predata.gps_r), pi_ivs);
 
-		timer.start(pid, M.online_write);
-		con2.writeLongArray64(pid, pi_a);
-		timer.stop(pid, M.online_write);
+		timer.start(pid, M.offline_write);
+		con2.writeLongArray64(pi_a);
+		timer.stop(pid, M.offline_write);
 
-		timer.stop(pid, M.online_comp);
+		timer.stop(pid, M.offline_comp);
 	}
 
 	// for testing correctness

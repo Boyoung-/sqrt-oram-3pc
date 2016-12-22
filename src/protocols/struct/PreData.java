@@ -49,6 +49,20 @@ public class PreData {
 	public Array64<Long> gps_p;
 	public Array64<Long> gps_r;
 
+	// GPC
+	public Array64<Long> gpc_pi_D;
+	public Array64<Long> gpc_sig1;
+	public Array64<Long> gpc_sig2;
+	// public Array64<Long> gpc_s;
+	public Array64<Long> gpc_r1;
+	public Array64<Long> gpc_r2;
+	public Array64<Long> gpc_gam1;
+	public Array64<Long> gpc_gam2;
+	public Array64<Long> gpc_t1;
+	public Array64<Long> gpc_t2;
+	// public Array64<Long> gpc_a2;
+	// public Array64<Long> gpc_z2;
+
 	public GCSignal[][] evict_LiKeyPairs;
 	public GCSignal[][][] evict_E_feKeyPairs;
 	public GCSignal[][][] evict_C_feKeyPairs;

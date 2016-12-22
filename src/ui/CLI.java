@@ -75,6 +75,8 @@ public class CLI {
 			operation = SSCOT.class;
 		} else if (protocol.equals("evi")) {
 			operation = Eviction.class;
+		} else if (protocol.equals("gpc")) {
+			operation = GenPermConcat.class;
 		} else if (protocol.equals("gps")) {
 			operation = GenPermShare.class;
 		} else if (protocol.equals("xot")) {
