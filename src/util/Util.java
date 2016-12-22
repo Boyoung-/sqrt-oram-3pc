@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Random;
 
 import exceptions.LengthNotMatchException;
+import oram.Block;
 
 public class Util {
 	public static boolean equal(byte[] a, byte[] b) {
@@ -122,6 +123,15 @@ public class Util {
 		Array64<Long> c = new Array64<Long>(a.size());
 		for (long i = 0; i < a.size(); i++)
 			c.set(i, a.get(i) ^ b.get(i));
+		return c;
+	}
+
+	public static Array64<Block> xorBlockArray64(Array64<Block> a, Array64<Block> b) {
+		if (a.size() != b.size())
+			throw new LengthNotMatchException(a.size() + " != " + b.size());
+		Array64<Block> c = new Array64<Block>(a.size());
+		for (long i = 0; i < a.size(); i++)
+			c.set(i, a.get(i).xor(b.get(i)));
 		return c;
 	}
 

@@ -116,7 +116,7 @@ public class SSCOT extends Protocol {
 	@Override
 	public void run(Party party, SqrtOram oram) {
 		Timer timer = new Timer();
-		int n = 100;
+		int n = 200;
 		byte[][] m = new byte[n][];
 		byte[][] a = new byte[n][];
 		byte[][] b = new byte[n][];

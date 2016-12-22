@@ -79,6 +79,8 @@ public class CLI {
 			operation = GenPermConcat.class;
 		} else if (protocol.equals("gps")) {
 			operation = GenPermShare.class;
+		} else if (protocol.equals("op")) {
+			operation = OblivPermute.class;
 		} else if (protocol.equals("xot")) {
 			operation = SSXOT.class;
 		} else if (protocol.equals("rtv")) {

@@ -123,7 +123,7 @@ public class SSXOT extends Protocol {
 		Timer timer = new Timer();
 
 		for (int j = 0; j < 100; j++) {
-			long n = 100;
+			long n = 200;
 			long k = Crypto.sr.nextInt(50) + 50;
 			Array64<Block> E_m = new Array64<Block>(n);
 			Array64<Block> C_m = new Array64<Block>(n);

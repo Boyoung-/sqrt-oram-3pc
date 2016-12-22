@@ -60,8 +60,9 @@ public class PreData {
 	public Array64<Long> gpc_gam2;
 	public Array64<Long> gpc_t1;
 	public Array64<Long> gpc_t2;
-	// public Array64<Long> gpc_a2;
-	// public Array64<Long> gpc_z2;
+
+	// OP
+	public Array64<Block> op_e;
 
 	public GCSignal[][] evict_LiKeyPairs;
 	public GCSignal[][][] evict_E_feKeyPairs;
