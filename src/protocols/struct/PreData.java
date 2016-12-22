@@ -64,6 +64,10 @@ public class PreData {
 	// OP
 	public Array64<Block> op_e;
 
+	// IPM
+	public Array64<Long> ipm_pi_prime_D;
+	public Array64<Long> ipm_pi_prime_E;
+
 	public GCSignal[][] evict_LiKeyPairs;
 	public GCSignal[][][] evict_E_feKeyPairs;
 	public GCSignal[][][] evict_C_feKeyPairs;

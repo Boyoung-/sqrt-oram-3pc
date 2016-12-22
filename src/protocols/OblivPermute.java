@@ -7,7 +7,6 @@ import oram.Block;
 import oram.Metadata;
 import oram.SqrtOram;
 import protocols.precomputation.PreOblivPermute;
-import protocols.precomputation.PreSSXOT;
 import protocols.struct.Party;
 import protocols.struct.PreData;
 import util.Array64;
@@ -105,12 +104,10 @@ public class OblivPermute extends Protocol {
 		Array64<Block> x_prime_a = null;
 		Array64<Block> x_prime_b = null;
 		PreData predata = null;
-		PreSSXOT pressxot = null;
 		PreOblivPermute preop = null;
 		int levelIndex;
 
 		for (int j = 0; j < 100; j++) {
-			pressxot = new PreSSXOT(con1, con2, md, (pid == P.OP_ON) ? P.OP_XOT_ON : P.OP_XOT_OFF);
 			preop = new PreOblivPermute(con1, con2, md, pid);
 
 			if (party == Party.Eddie) {
@@ -118,7 +115,6 @@ public class OblivPermute extends Protocol {
 				con1.write(levelIndex);
 				con2.write(levelIndex);
 				predata = new PreData(levelIndex);
-				pressxot.runE(predata, timer);
 				preop.runE(predata, s, timer);
 
 				pi_E = Util.randomPermutationLong(s, Crypto.sr);
@@ -152,8 +148,7 @@ public class OblivPermute extends Protocol {
 			} else if (party == Party.Debbie) {
 				levelIndex = con1.readInt();
 				predata = new PreData(levelIndex);
-				pressxot.runD(predata, s, s, timer);
-				preop.runD();
+				preop.runD(predata, s, timer);
 
 				pi_D = Util.randomPermutationLong(s, Crypto.sr);
 				x_a = con1.readBlockArray64();
@@ -165,7 +160,6 @@ public class OblivPermute extends Protocol {
 			} else if (party == Party.Charlie) {
 				levelIndex = con1.readInt();
 				predata = new PreData(levelIndex);
-				pressxot.runC(predata, timer);
 				preop.runC(predata, timer);
 
 				pi_E = con1.readLongArray64();
