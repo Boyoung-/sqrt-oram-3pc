@@ -74,9 +74,10 @@ public class GetPointer extends Protocol {
 				E_bfInputKeys, C_bfInputKeys, E_apInputKeys, C_apInputKeys, E_bpInputKeys, C_bpInputKeys);
 
 		long p = GCUtil.evaOutKeys(outKeys[0], predata.gp_outKeyHashes[0]).longValue();
-		byte[] AF = Util.rmSignBit(GCUtil.evaOutKeys(outKeys[1], predata.gp_outKeyHashes[1]).toByteArray());
-		byte[] BF = Util.rmSignBit(GCUtil.evaOutKeys(outKeys[2], predata.gp_outKeyHashes[2]).toByteArray());
-		OutGetPointer outgp = new OutGetPointer(p, AF, BF);
+		BigInteger AF = GCUtil.evaOutKeys(outKeys[1], predata.gp_outKeyHashes[1]);
+		BigInteger BF = GCUtil.evaOutKeys(outKeys[2], predata.gp_outKeyHashes[2]);
+		OutGetPointer outgp = new OutGetPointer(p, Block.toLongF(AF, md.getTwoTauPow()),
+				Block.toLongF(BF, md.getTwoTauPow()));
 
 		timer.stop(pid, M.online_comp);
 		return outgp;
@@ -146,11 +147,11 @@ public class GetPointer extends Protocol {
 				int index = con1.readInt();
 				A = con1.readBlock();
 				B = con1.readBlock();
+				byte[] F = (A.getF(index) & 1) == 0 ? outgp.AF : outgp.BF;
 				Block block = (A.getF(index) & 1) == 0 ? A : B;
 				long p = Util.getSubBits(new BigInteger(1, block.getP(index)), md.getPBits(levelIndex), 0).longValue();
-				byte[] F = (A.getF(index) & 1) == 0 ? outgp.AF : outgp.BF;
 
-				if (p == outgp.p && new BigInteger(F).testBit(md.getTwoTauPow() - 1 - index))
+				if (p == outgp.p && F[index] == 1)
 					System.out.println(j + ": GP test passed");
 				else {
 					System.err.println(j + ": GP test failed");

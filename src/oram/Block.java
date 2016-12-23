@@ -101,6 +101,14 @@ public class Block implements Serializable {
 		return Util.rmSignBit(shortF.toByteArray());
 	}
 
+	public static byte[] toLongF(BigInteger f, int len) {
+		byte[] longF = new byte[len];
+		for (int i = 0; i < len; i++) {
+			longF[len - 1 - i] = (byte) (f.testBit(i) ? 1 : 0);
+		}
+		return longF;
+	}
+
 	public byte[] getP(int i) {
 		return P[i];
 	}
