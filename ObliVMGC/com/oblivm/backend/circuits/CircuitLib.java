@@ -195,7 +195,7 @@ public class CircuitLib<T> {
 		}
 		return result;
 	}
-	
+
 	public T[][] xor(T[][] x, T[][] y) {
 		assert (x != null && y != null && x.length == y.length) : "CircuitLib.xor[]: bad inputs";
 
@@ -278,65 +278,67 @@ public class CircuitLib<T> {
 
 		return ret;
 	}
-	
+
 	public T mux(T[] in, T[] c) {
 		assert (in != null && c != null && in.length == (int) Math.pow(2, c.length)) : "CircuitLib.mux: bad inputs";
-		
+
 		T[] ret = in;
-		for (int i=0; i<c.length; i++)
-			ret = mux(Arrays.copyOfRange(ret, 0, ret.length/2), Arrays.copyOfRange(ret, ret.length/2, ret.length), c[i]);
-		
+		for (int i = 0; i < c.length; i++)
+			ret = mux(Arrays.copyOfRange(ret, 0, ret.length / 2), Arrays.copyOfRange(ret, ret.length / 2, ret.length),
+					c[i]);
+
 		return ret[0];
 	}
-	
+
 	public T[] mux(T[][] in, T[] c) {
 		assert (in != null && c != null && in.length == (int) Math.pow(2, c.length)) : "CircuitLib.mux: bad inputs";
-		
+
 		T[][] ret = in;
-		for (int i=0; i<c.length; i++)
-			ret = mux(Arrays.copyOfRange(ret, 0, ret.length/2), Arrays.copyOfRange(ret, ret.length/2, ret.length), c[i]);
-		
+		for (int i = 0; i < c.length; i++)
+			ret = mux(Arrays.copyOfRange(ret, 0, ret.length / 2), Arrays.copyOfRange(ret, ret.length / 2, ret.length),
+					c[i]);
+
 		return ret[0];
 	}
-	
+
 	public T[] demux(T in, T c) {
 		assert (in != null && c != null) : "CircuitLib.demux: bad inputs";
-		
+
 		T[] ret = env.newTArray(2);
 		ret[0] = and(in, not(c));
 		ret[1] = and(in, c);
-		
+
 		return ret;
 	}
-	
+
 	public T[] demux(T in, T[] c) {
 		assert (in != null && c != null && c.length > 0) : "CircuitLib.demux: bad inputs";
-		
+
 		if (c.length == 1)
 			return demux(in, c[0]);
-		
+
 		T[] parent = demux(in, c[0]);
 		T[] restC = Arrays.copyOfRange(c, 1, c.length);
 		T[] left = demux(parent[0], restC);
 		T[] right = demux(parent[1], restC);
-		
+
 		T[] ret = env.newTArray((int) Math.pow(2, c.length));
 		System.arraycopy(left, 0, ret, 0, left.length);
 		System.arraycopy(right, 0, ret, left.length, right.length);
-		
+
 		return ret;
 	}
-	
+
 	public T[] decoder(T c) {
 		return demux(SIGNAL_ONE, c);
 	}
-	
+
 	public T[] decoder(T[] c) {
 		assert (c != null && c.length > 0) : "CircuitLib.decoder: bad inputs";
-		
+
 		if (c.length == 1)
 			return demux(SIGNAL_ONE, c[0]);
-		
+
 		return demux(SIGNAL_ONE, c);
 	}
 

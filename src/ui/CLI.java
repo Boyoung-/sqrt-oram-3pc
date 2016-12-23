@@ -73,8 +73,6 @@ public class CLI {
 			operation = Access.class;
 		} else if (protocol.equals("cot")) {
 			operation = SSCOT.class;
-		} else if (protocol.equals("evi")) {
-			operation = Eviction.class;
 		} else if (protocol.equals("gpc")) {
 			operation = GenPermConcat.class;
 		} else if (protocol.equals("gps")) {

@@ -48,24 +48,6 @@ public class GCUtil {
 		return out;
 	}
 
-//	public static GCSignal[][] selectLabelKeys(GCSignal[][][] labelPairs, Tuple[] tuples) {
-//		if (tuples.length != labelPairs.length)
-//			throw new LengthNotMatchException(tuples.length + " != " + labelPairs.length);
-//		GCSignal[][] out = new GCSignal[tuples.length][];
-//		for (int i = 0; i < tuples.length; i++)
-//			out[i] = revSelectKeys(labelPairs[i], tuples[i].getL());
-//		return out;
-//	}
-//
-//	public static GCSignal[] selectFeKeys(GCSignal[][] pairs, Tuple[] tuples) {
-//		if (tuples.length != pairs.length)
-//			throw new LengthNotMatchException(tuples.length + " != " + pairs.length);
-//		GCSignal[] out = new GCSignal[pairs.length];
-//		for (int i = 0; i < pairs.length; i++)
-//			out[i] = pairs[i][new BigInteger(tuples[i].getF()).testBit(0) ? 1 : 0];
-//		return out;
-//	}
-
 	public static synchronized byte[][] genOutKeyHashes(GCSignal[] outZeroKeys) {
 		byte[][] hashes = new byte[outZeroKeys.length][];
 		for (int i = 0; i < outZeroKeys.length; i++) {
@@ -89,7 +71,7 @@ public class GCUtil {
 		}
 		return output;
 	}
-	
+
 	public static BigInteger evaOutKeys(GCSignal[] outKeys, byte[][] genHashes) {
 		if (outKeys.length != genHashes.length)
 			throw new LengthNotMatchException(outKeys.length + " != " + genHashes.length);

@@ -4,7 +4,6 @@ import com.oblivm.backend.gc.GCSignal;
 
 import crypto.PRF;
 import gc.GCGetPointer;
-import gc.GCRoute;
 import oram.Block;
 import util.Array64;
 import util.P;
@@ -68,7 +67,7 @@ public class PreData {
 	// IPM
 	public Array64<Long> ipm_pi_prime_D;
 	public Array64<Long> ipm_pi_prime_E;
-	
+
 	// GP
 	public GCGetPointer<GCSignal> gp_circuit;
 	public GCSignal[][] gp_E_nKeyPairs;
@@ -80,22 +79,6 @@ public class PreData {
 	public GCSignal[][][] gp_E_apKeyPairs;
 	public GCSignal[][][] gp_C_apKeyPairs;
 	public GCSignal[][][] gp_E_bpKeyPairs;
-	public GCSignal[][][] gp_C_bpKeyPairs;	
+	public GCSignal[][][] gp_C_bpKeyPairs;
 	public byte[][][] gp_outKeyHashes;
-	
-
-	public GCSignal[][] evict_LiKeyPairs;
-	public GCSignal[][][] evict_E_feKeyPairs;
-	public GCSignal[][][] evict_C_feKeyPairs;
-	public GCSignal[][][][] evict_E_labelKeyPairs;
-	public GCSignal[][][][] evict_C_labelKeyPairs;
-	public GCSignal[][][] evict_deltaKeyPairs;
-	public byte[][][] evict_tiOutKeyHashes;
-	public GCSignal[][][] evict_targetOutKeyPairs;
-	public GCRoute<GCSignal> evict_gcroute;
-	public int[] evict_pi;
-	public byte[][] evict_delta;
-	public byte[][] evict_rho;
-	public int[][] evict_delta_p;
-	public int[][] evict_rho_p;
 }

@@ -90,11 +90,11 @@ public class Block implements Serializable {
 	public byte[] getF() {
 		return F;
 	}
-	
+
 	public byte[] getShortF() {
 		BigInteger shortF = BigInteger.ZERO;
-		for (int i=0; i<F.length; i++) {
-			if ((F[F.length-1-i] & 1) == 1) {
+		for (int i = 0; i < F.length; i++) {
+			if ((F[F.length - 1 - i] & 1) == 1) {
 				shortF = shortF.setBit(i);
 			}
 		}
