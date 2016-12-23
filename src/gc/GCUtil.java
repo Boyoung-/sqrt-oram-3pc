@@ -7,7 +7,6 @@ import com.oblivm.backend.gc.GCSignal;
 
 import crypto.Crypto;
 import exceptions.LengthNotMatchException;
-import oramOLD.Tuple;
 import util.Util;
 
 public class GCUtil {
@@ -49,23 +48,23 @@ public class GCUtil {
 		return out;
 	}
 
-	public static GCSignal[][] selectLabelKeys(GCSignal[][][] labelPairs, Tuple[] tuples) {
-		if (tuples.length != labelPairs.length)
-			throw new LengthNotMatchException(tuples.length + " != " + labelPairs.length);
-		GCSignal[][] out = new GCSignal[tuples.length][];
-		for (int i = 0; i < tuples.length; i++)
-			out[i] = revSelectKeys(labelPairs[i], tuples[i].getL());
-		return out;
-	}
-
-	public static GCSignal[] selectFeKeys(GCSignal[][] pairs, Tuple[] tuples) {
-		if (tuples.length != pairs.length)
-			throw new LengthNotMatchException(tuples.length + " != " + pairs.length);
-		GCSignal[] out = new GCSignal[pairs.length];
-		for (int i = 0; i < pairs.length; i++)
-			out[i] = pairs[i][new BigInteger(tuples[i].getF()).testBit(0) ? 1 : 0];
-		return out;
-	}
+//	public static GCSignal[][] selectLabelKeys(GCSignal[][][] labelPairs, Tuple[] tuples) {
+//		if (tuples.length != labelPairs.length)
+//			throw new LengthNotMatchException(tuples.length + " != " + labelPairs.length);
+//		GCSignal[][] out = new GCSignal[tuples.length][];
+//		for (int i = 0; i < tuples.length; i++)
+//			out[i] = revSelectKeys(labelPairs[i], tuples[i].getL());
+//		return out;
+//	}
+//
+//	public static GCSignal[] selectFeKeys(GCSignal[][] pairs, Tuple[] tuples) {
+//		if (tuples.length != pairs.length)
+//			throw new LengthNotMatchException(tuples.length + " != " + pairs.length);
+//		GCSignal[] out = new GCSignal[pairs.length];
+//		for (int i = 0; i < pairs.length; i++)
+//			out[i] = pairs[i][new BigInteger(tuples[i].getF()).testBit(0) ? 1 : 0];
+//		return out;
+//	}
 
 	public static synchronized byte[][] genOutKeyHashes(GCSignal[] outZeroKeys) {
 		byte[][] hashes = new byte[outZeroKeys.length][];
@@ -75,7 +74,7 @@ public class GCUtil {
 		return hashes;
 	}
 
-	public static BigInteger evaOutKeys(GCSignal[] outKeys, byte[][] genHashes) {
+	public static BigInteger revEvaOutKeys(GCSignal[] outKeys, byte[][] genHashes) {
 		if (outKeys.length != genHashes.length)
 			throw new LengthNotMatchException(outKeys.length + " != " + genHashes.length);
 		byte[][] evaHashes = genOutKeyHashes(outKeys);
@@ -86,6 +85,22 @@ public class GCUtil {
 					output = output.setBit(i);
 			} else if (!Util.equal(genHashes[i], evaHashes[i])) {
 				output = output.setBit(i);
+			}
+		}
+		return output;
+	}
+	
+	public static BigInteger evaOutKeys(GCSignal[] outKeys, byte[][] genHashes) {
+		if (outKeys.length != genHashes.length)
+			throw new LengthNotMatchException(outKeys.length + " != " + genHashes.length);
+		byte[][] evaHashes = genOutKeyHashes(outKeys);
+		BigInteger output = BigInteger.ZERO;
+		for (int i = 0; i < outKeys.length; i++) {
+			if (outKeys[i].isPublic()) {
+				if (outKeys[i].v)
+					output = output.setBit(outKeys.length - 1 - i);
+			} else if (!Util.equal(genHashes[i], evaHashes[i])) {
+				output = output.setBit(outKeys.length - 1 - i);
 			}
 		}
 		return output;

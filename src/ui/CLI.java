@@ -83,6 +83,8 @@ public class CLI {
 			operation = OblivPermute.class;
 		} else if (protocol.equals("ipm")) {
 			operation = InitPosMap.class;
+		} else if (protocol.equals("gp")) {
+			operation = GetPointer.class;
 		} else if (protocol.equals("xot")) {
 			operation = SSXOT.class;
 		} else if (protocol.equals("rtv")) {

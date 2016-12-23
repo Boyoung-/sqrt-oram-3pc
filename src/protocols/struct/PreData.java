@@ -3,6 +3,7 @@ package protocols.struct;
 import com.oblivm.backend.gc.GCSignal;
 
 import crypto.PRF;
+import gc.GCGetPointer;
 import gc.GCRoute;
 import oram.Block;
 import util.Array64;
@@ -67,6 +68,21 @@ public class PreData {
 	// IPM
 	public Array64<Long> ipm_pi_prime_D;
 	public Array64<Long> ipm_pi_prime_E;
+	
+	// GP
+	public GCGetPointer<GCSignal> gp_circuit;
+	public GCSignal[][] gp_E_nKeyPairs;
+	public GCSignal[][] gp_C_nKeyPairs;
+	public GCSignal[][] gp_E_afKeyPairs;
+	public GCSignal[][] gp_C_afKeyPairs;
+	public GCSignal[][] gp_E_bfKeyPairs;
+	public GCSignal[][] gp_C_bfKeyPairs;
+	public GCSignal[][][] gp_E_apKeyPairs;
+	public GCSignal[][][] gp_C_apKeyPairs;
+	public GCSignal[][][] gp_E_bpKeyPairs;
+	public GCSignal[][][] gp_C_bpKeyPairs;	
+	public byte[][][] gp_outKeyHashes;
+	
 
 	public GCSignal[][] evict_LiKeyPairs;
 	public GCSignal[][][] evict_E_feKeyPairs;

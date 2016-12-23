@@ -177,7 +177,7 @@ public class SSCOT extends Protocol {
 				if (output.t == index && Util.equal(output.m_t, m_t))
 					System.out.println(j + ": SSCOT test passed");
 				else
-					System.err.println(j + ":SSCOT test failed");
+					System.err.println(j + ": SSCOT test failed");
 
 			} else {
 				throw new NoSuchPartyException(party + "");
