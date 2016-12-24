@@ -69,6 +69,8 @@ public class PreData {
 	public Array64<Long> ipm_pi_prime_E;
 
 	// GP
+	public byte[] gp_AF_prime;
+	public byte[] gp_BF_prime;
 	public GCGetPointer<GCSignal> gp_circuit;
 	public GCSignal[][] gp_E_nKeyPairs;
 	public GCSignal[][] gp_C_nKeyPairs;

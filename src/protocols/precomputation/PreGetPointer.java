@@ -7,6 +7,7 @@ import com.oblivm.backend.gc.regular.GCGen;
 import com.oblivm.backend.network.Network;
 
 import communication.Communication;
+import crypto.Crypto;
 import gc.GCGetPointer;
 import gc.GCUtil;
 import oram.Metadata;
@@ -17,6 +18,7 @@ import protocols.struct.PreData;
 import util.M;
 import util.P;
 import util.Timer;
+import util.Util;
 
 public class PreGetPointer extends Protocol {
 
@@ -29,10 +31,13 @@ public class PreGetPointer extends Protocol {
 	public void runE(PreData predata, Timer timer) {
 		timer.start(pid, M.offline_comp);
 
-		// GC
 		int tau = md.getTau();
 		int ttp = md.getTwoTauPow();
 		int pBits = md.getPBits(predata.getIndex());
+
+		// GC
+		predata.gp_AF_prime = Util.nextBytes(ttp, Crypto.sr);
+		predata.gp_BF_prime = Util.nextBytes(ttp, Crypto.sr);
 
 		predata.gp_E_nKeyPairs = GCUtil.genKeyPairs(tau);
 		predata.gp_C_nKeyPairs = GCUtil.genKeyPairs(tau);
@@ -70,8 +75,9 @@ public class PreGetPointer extends Protocol {
 
 		Network channel = new Network(null, con1);
 		CompEnv<GCSignal> gen = new GCGen(channel, timer, pid, M.offline_write);
-		GCSignal[][] outZeroKeys = new GCGetPointer<GCSignal>(gen).execute(E_nZeroKeys, C_nZeroKeys, E_afZeroKeys,
-				C_afZeroKeys, E_bfZeroKeys, C_bfZeroKeys, E_apZeroKeys, C_apZeroKeys, E_bpZeroKeys, C_bpZeroKeys);
+		GCSignal[][] outZeroKeys = new GCGetPointer<GCSignal>(gen, predata.gp_AF_prime, predata.gp_BF_prime).execute(
+				E_nZeroKeys, C_nZeroKeys, E_afZeroKeys, C_afZeroKeys, E_bfZeroKeys, C_bfZeroKeys, E_apZeroKeys,
+				C_apZeroKeys, E_bpZeroKeys, C_bpZeroKeys);
 		((GCGen) gen).sendLastSetGTT();
 
 		predata.gp_outKeyHashes = new byte[outZeroKeys.length][][];
@@ -96,23 +102,28 @@ public class PreGetPointer extends Protocol {
 	public long runD(PreData predata, Timer timer) {
 		timer.start(pid, M.offline_comp);
 
+		int ttp = md.getTwoTauPow();
+
 		// GC
+		byte[] AF_prime = new byte[ttp];
+
 		GCSignal[] E_nZeroKeys = GCUtil.genEmptyKeys(md.getTau());
-		GCSignal[] E_afZeroKeys = GCUtil.genEmptyKeys(md.getTwoTauPow());
-		GCSignal[][] E_apZeroKeys = new GCSignal[md.getTwoTauPow()][];
+		GCSignal[] E_afZeroKeys = GCUtil.genEmptyKeys(ttp);
+		GCSignal[][] E_apZeroKeys = new GCSignal[ttp][];
 		for (int i = 0; i < md.getTwoTauPow(); i++) {
 			E_apZeroKeys[i] = GCUtil.genEmptyKeys(md.getPBits(predata.getIndex()));
 		}
 
 		Network channel = new Network(con1, null);
 		CompEnv<GCSignal> eva = new GCEva(channel, timer, pid, M.offline_read);
-		predata.gp_circuit = new GCGetPointer<GCSignal>(eva);
+		predata.gp_circuit = new GCGetPointer<GCSignal>(eva, AF_prime, AF_prime);
 		GCSignal[][] out = predata.gp_circuit.execute(E_nZeroKeys, E_nZeroKeys, E_afZeroKeys, E_afZeroKeys,
 				E_afZeroKeys, E_afZeroKeys, E_apZeroKeys, E_apZeroKeys, E_apZeroKeys, E_apZeroKeys);
 		((GCEva) eva).receiveLastSetGTT();
 		eva.setEvaluate();
 
 		predata.gp_outKeyHashes = new byte[out.length][][];
+
 		timer.start(pid, M.offline_read);
 		for (int i = 0; i < out.length; i++)
 			predata.gp_outKeyHashes[i] = con1.readDoubleByteArray();

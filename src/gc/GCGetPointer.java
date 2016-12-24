@@ -5,8 +5,17 @@ import com.oblivm.backend.flexsc.CompEnv;
 
 public class GCGetPointer<T> extends IntegerLib<T> {
 
-	public GCGetPointer(CompEnv<T> e) {
+	private T[] AF_p;
+	private T[] BF_p;
+
+	public GCGetPointer(CompEnv<T> e, byte[] AF_prime, byte[] BF_prime) {
 		super(e);
+		AF_p = env.newTArray(AF_prime.length);
+		BF_p = env.newTArray(BF_prime.length);
+		for (int i = 0; i < AF_prime.length; i++) {
+			AF_p[i] = (AF_prime[i] & 1) == 0 ? SIGNAL_ZERO : SIGNAL_ONE;
+			BF_p[i] = (BF_prime[i] & 1) == 0 ? SIGNAL_ZERO : SIGNAL_ONE;
+		}
 	}
 
 	public T[][] execute(T[] N_E, T[] N_C, T[] AF_E, T[] AF_C, T[] BF_E, T[] BF_C, T[][] AP_E, T[][] AP_C, T[][] BP_E,
@@ -24,8 +33,8 @@ public class GCGetPointer<T> extends IntegerLib<T> {
 
 		T[][] ret = env.newTArray(3, 0);
 		ret[0] = p;
-		ret[1] = newAF;
-		ret[2] = newBF;
+		ret[1] = xor(newAF, AF_p);
+		ret[2] = xor(newBF, BF_p);
 		return ret;
 	}
 }

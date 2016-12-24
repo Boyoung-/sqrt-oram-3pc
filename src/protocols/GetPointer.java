@@ -136,6 +136,8 @@ public class GetPointer extends Protocol {
 				con1.write(Util.getSubBits(new BigInteger(1, N), md.getTau(), 0).intValue());
 				con1.write(A);
 				con1.write(B);
+				con1.write(predata.gp_AF_prime);
+				con1.write(predata.gp_BF_prime);
 
 			} else if (party == Party.Debbie) {
 				levelIndex = con1.readInt();
@@ -147,11 +149,16 @@ public class GetPointer extends Protocol {
 				int index = con1.readInt();
 				A = con1.readBlock();
 				B = con1.readBlock();
+				predata.gp_AF_prime = con1.read();
+				predata.gp_BF_prime = con1.read();
+
+				Util.setXor(outgp.AF, predata.gp_AF_prime);
+				Util.setXor(outgp.BF, predata.gp_BF_prime);
 				byte[] F = (A.getF(index) & 1) == 0 ? outgp.AF : outgp.BF;
 				Block block = (A.getF(index) & 1) == 0 ? A : B;
 				long p = Util.getSubBits(new BigInteger(1, block.getP(index)), md.getPBits(levelIndex), 0).longValue();
 
-				if (p == outgp.p && F[index] == 1)
+				if (p == outgp.p && (F[index] & 1) == 1)
 					System.out.println(j + ": GP test passed");
 				else {
 					System.err.println(j + ": GP test failed");
