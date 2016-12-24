@@ -10,6 +10,7 @@ import protocols.struct.Party;
 import protocols.struct.PreData;
 import util.Array64;
 import util.M;
+import util.P;
 import util.Timer;
 import util.Util;
 
@@ -25,8 +26,14 @@ public class PreSSXOT extends Protocol {
 
 	public void runE(PreData predata, Timer timer) {
 		timer.start(pid, M.offline_read);
-		predata.ssxot_E_pi[pid] = con1.readLongArray64();
-		predata.ssxot_E_r[pid] = con1.readBlockArray64();
+		if (pid == P.ACC_XOT) {
+			predata.accxot_E_pi = con1.readIntArray();
+			predata.accxot_E_r = con1.readBlockArray();
+		}
+		else {
+			predata.ssxot_E_pi[pid] = con1.readLongArray64();
+			predata.ssxot_E_r[pid] = con1.readBlockArray64();
+		}
 		timer.stop(pid, M.offline_read);
 	}
 
@@ -58,11 +65,46 @@ public class PreSSXOT extends Protocol {
 
 		timer.stop(pid, M.offline_comp);
 	}
+	
+	public void runD(PreData predata, int n, int k, Timer timer) {
+		timer.start(pid, M.offline_comp);
+
+		predata.accxot_delta = new Block[k];
+		for (int i = 0; i < k; i++)
+			predata.accxot_delta[i] = new Block(predata.getIndex(), md, Crypto.sr);
+
+		predata.accxot_E_pi = Util.randomPermutation(n, Crypto.sr);
+		predata.accxot_C_pi = Util.randomPermutation(n, Crypto.sr);
+		predata.accxot_E_pi_ivs = Util.inversePermutation(predata.accxot_E_pi);
+		predata.accxot_C_pi_ivs = Util.inversePermutation(predata.accxot_C_pi);
+
+		predata.accxot_E_r = new Block[n];
+		predata.accxot_C_r = new Block[n];
+		for (int i = 0; i < n; i++) {
+			predata.accxot_E_r[i] = new Block(predata.getIndex(), md, Crypto.sr);
+			predata.accxot_C_r[i] = new Block(predata.getIndex(), md, Crypto.sr);
+		}
+
+		timer.start(pid, M.offline_write);
+		con1.write(predata.accxot_E_pi);
+		con1.write(predata.accxot_E_r);
+		con2.write(predata.accxot_C_pi);
+		con2.write(predata.accxot_C_r);
+		timer.stop(pid, M.offline_write);
+
+		timer.stop(pid, M.offline_comp);
+	}
 
 	public void runC(PreData predata, Timer timer) {
 		timer.start(pid, M.offline_read);
-		predata.ssxot_C_pi[pid] = con2.readLongArray64();
-		predata.ssxot_C_r[pid] = con2.readBlockArray64();
+		if (pid == P.ACC_XOT) {
+			predata.accxot_C_pi = con2.readIntArray();
+			predata.accxot_C_r = con2.readBlockArray();
+		}
+		else {
+			predata.ssxot_C_pi[pid] = con2.readLongArray64();
+			predata.ssxot_C_r[pid] = con2.readBlockArray64();
+		}
 		timer.stop(pid, M.offline_read);
 	}
 

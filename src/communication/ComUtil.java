@@ -351,6 +351,42 @@ public class ComUtil {
 		}
 		return out;
 	}
+	
+	public static byte[] serialize(Block[] in) {
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		DataOutputStream dos = new DataOutputStream(baos);
+		byte[] out = null;
+		try {
+			dos.writeInt(in.length);
+			Block first = in[0];
+			dos.writeInt(first.getL().length);
+			dos.writeInt(first.getF().length);
+			dos.writeInt(first.getP().length);
+			dos.writeInt(first.getP(0).length);
+			dos.writeInt(first.getRec().length);
+
+			for (int j = 0; j < in.length; j++) {
+				Block b = in[j];
+				dos.write(b.getL());
+				dos.write(b.getF());
+				for (int i = 0; i < b.getP().length; i++)
+					dos.write(b.getP(i));
+				dos.write(b.getRec());
+			}
+
+			out = baos.toByteArray();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				dos.close();
+				baos.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		return out;
+	}
 
 	public static Block[] toBlockArray(byte[] in) {
 		ByteArrayInputStream bais = new ByteArrayInputStream(in);

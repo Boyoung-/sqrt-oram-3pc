@@ -44,6 +44,15 @@ public class PreData {
 	public Array64<Block>[] ssxot_E_r = Util.genericArray(Array64.class, P.size);
 	@SuppressWarnings("unchecked")
 	public Array64<Block>[] ssxot_C_r = Util.genericArray(Array64.class, P.size);
+	
+	// ACC_SSXOT
+	public Block[] accxot_delta;
+	public int[] accxot_E_pi;
+	public int[] accxot_C_pi;
+	public int[] accxot_E_pi_ivs;
+	public int[] accxot_C_pi_ivs;
+	public Block[] accxot_E_r;
+	public Block[] accxot_C_r;
 
 	// GPS
 	public Array64<Long> gps_p;
