@@ -351,7 +351,7 @@ public class ComUtil {
 		}
 		return out;
 	}
-	
+
 	public static byte[] serialize(Block[] in) {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		DataOutputStream dos = new DataOutputStream(baos);

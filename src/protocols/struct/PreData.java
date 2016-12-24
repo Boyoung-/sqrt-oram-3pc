@@ -44,7 +44,7 @@ public class PreData {
 	public Array64<Block>[] ssxot_E_r = Util.genericArray(Array64.class, P.size);
 	@SuppressWarnings("unchecked")
 	public Array64<Block>[] ssxot_C_r = Util.genericArray(Array64.class, P.size);
-	
+
 	// ACC_SSXOT
 	public Block[] accxot_delta;
 	public int[] accxot_E_pi;
@@ -95,6 +95,7 @@ public class PreData {
 
 	// ACC
 	public int[] acc_rho;
+	public int[] acc_rho_ivs;
 	public Block acc_r;
 	public Block acc_A_b;
 	public int[] acc_delta;

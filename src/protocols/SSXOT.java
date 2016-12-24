@@ -61,7 +61,7 @@ public class SSXOT extends Protocol {
 		timer.stop(pid, M.online_comp);
 		return z;
 	}
-	
+
 	public Block[] runE(PreData predata, Block[] m, Timer timer) {
 		timer.start(pid, M.online_comp);
 
@@ -116,7 +116,7 @@ public class SSXOT extends Protocol {
 
 		timer.stop(pid, M.online_comp);
 	}
-	
+
 	public void runD(PreData predata, int[] index, Timer timer) {
 		timer.start(pid, M.online_comp);
 
@@ -171,7 +171,7 @@ public class SSXOT extends Protocol {
 		timer.stop(pid, M.online_comp);
 		return z;
 	}
-	
+
 	public Block[] runC(PreData predata, Block[] m, Timer timer) {
 		timer.start(pid, M.online_comp);
 
@@ -274,7 +274,7 @@ public class SSXOT extends Protocol {
 				throw new NoSuchPartyException(party + "");
 			}
 		}
-		
+
 		pid = P.ACC_XOT;
 		for (int j = 100; j < 200; j++) {
 			int n = 200;

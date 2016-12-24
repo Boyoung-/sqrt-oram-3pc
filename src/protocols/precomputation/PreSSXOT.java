@@ -29,8 +29,7 @@ public class PreSSXOT extends Protocol {
 		if (pid == P.ACC_XOT) {
 			predata.accxot_E_pi = con1.readIntArray();
 			predata.accxot_E_r = con1.readBlockArray();
-		}
-		else {
+		} else {
 			predata.ssxot_E_pi[pid] = con1.readLongArray64();
 			predata.ssxot_E_r[pid] = con1.readBlockArray64();
 		}
@@ -65,7 +64,7 @@ public class PreSSXOT extends Protocol {
 
 		timer.stop(pid, M.offline_comp);
 	}
-	
+
 	public void runD(PreData predata, int n, int k, Timer timer) {
 		timer.start(pid, M.offline_comp);
 
@@ -100,8 +99,7 @@ public class PreSSXOT extends Protocol {
 		if (pid == P.ACC_XOT) {
 			predata.accxot_C_pi = con2.readIntArray();
 			predata.accxot_C_r = con2.readBlockArray();
-		}
-		else {
+		} else {
 			predata.ssxot_C_pi[pid] = con2.readLongArray64();
 			predata.ssxot_C_r[pid] = con2.readBlockArray64();
 		}

@@ -436,11 +436,11 @@ public class Communication {
 	public void write(Block[] arr) {
 		write(ComUtil.serialize(arr));
 	}
-	
+
 	public void write(int pid, Block[] arr) {
 		write(pid, ComUtil.serialize(arr));
 	}
-	
+
 	public void writeBlockArray64(Array64<Block> arr) {
 		write(arr.size());
 		int blockSize = arr.get(0).getNumBytes();
@@ -713,11 +713,11 @@ public class Communication {
 	public Block readBlock(int pid) {
 		return ComUtil.toBlock(read(pid));
 	}
-	
+
 	public Block[] readBlockArray() {
 		return ComUtil.toBlockArray(read());
 	}
-	
+
 	public Block[] readBlockArray(int pid) {
 		return ComUtil.toBlockArray(read(pid));
 	}

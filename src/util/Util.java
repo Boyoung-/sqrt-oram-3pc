@@ -69,6 +69,8 @@ public class Util {
 	}
 
 	public static byte[] rmSignBit(byte[] arr) {
+		if (arr.length < 2)
+			return arr;
 		if (arr[0] == 0)
 			return Arrays.copyOfRange(arr, 1, arr.length);
 		return arr;
