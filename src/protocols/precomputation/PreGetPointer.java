@@ -29,6 +29,9 @@ public class PreGetPointer extends Protocol {
 	}
 
 	public void runE(PreData predata, Timer timer) {
+		if (predata.getIndex() >= md.getNumLevels() - 1)
+			return;
+
 		timer.start(pid, M.offline_comp);
 
 		int tau = md.getTau();
@@ -100,6 +103,9 @@ public class PreGetPointer extends Protocol {
 	}
 
 	public long runD(PreData predata, Timer timer) {
+		if (predata.getIndex() >= md.getNumLevels() - 1)
+			return -1;
+
 		timer.start(pid, M.offline_comp);
 
 		int ttp = md.getTwoTauPow();
@@ -134,6 +140,9 @@ public class PreGetPointer extends Protocol {
 	}
 
 	public void runC(PreData predata, Timer timer) {
+		if (predata.getIndex() >= md.getNumLevels() - 1)
+			return;
+
 		timer.start(pid, M.offline_comp);
 
 		// GC

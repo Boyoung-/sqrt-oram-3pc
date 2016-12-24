@@ -83,4 +83,10 @@ public class PreData {
 	public GCSignal[][][] gp_E_bpKeyPairs;
 	public GCSignal[][][] gp_C_bpKeyPairs;
 	public byte[][][] gp_outKeyHashes;
+
+	// ACC
+	public int[] acc_rho;
+	public Block acc_r;
+	public Block acc_A_b;
+	public int[] acc_delta;
 }

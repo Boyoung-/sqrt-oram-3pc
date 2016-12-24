@@ -211,11 +211,30 @@ public class Util {
 		return permuted;
 	}
 
+	@SuppressWarnings("unchecked")
+	public static <T> T[] concat(T[] a, T[] b) {
+		T[] all = (T[]) new Object[a.length + b.length];
+		for (int i = 0; i < a.length; i++)
+			all[i] = a[i];
+		for (int i = 0; i < b.length; i++)
+			all[a.length + i] = b[i];
+		return (T[]) Arrays.copyOf(all, all.length, a.getClass());
+	}
+
 	public static <T> Array64<T> permute(Array64<T> original, Array64<Long> p) {
 		Array64<T> permuted = new Array64<T>(original.size());
 		for (long i = 0; i < original.size(); i++)
 			permuted.set(p.get(i), original.get(i));
 		return permuted;
+	}
+
+	public static <T> Array64<T> concat(Array64<T> a, Array64<T> b) {
+		Array64<T> all = new Array64<T>(a.size() + b.size());
+		for (long i = 0; i < a.size(); i++)
+			all.set(i, a.get(i));
+		for (long i = 0; i < b.size(); i++)
+			all.set(a.size() + i, b.get(i));
+		return all;
 	}
 
 	public static byte[] longToBytes(long l, int numBytes) {

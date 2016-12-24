@@ -156,4 +156,49 @@ public class Level implements Serializable {
 		for (int i = 0; i < stash.size(); i++)
 			stash.get(i).setXor(l.stash.get(i));
 	}
+
+	public static Block[] toArray(List<Block> list) {
+		Block[] arr = new Block[list.size()];
+		for (int i = 0; i < list.size(); i++)
+			arr[i] = list.get(i);
+		return arr;
+	}
+
+	// WARNING: watch for overflow
+	public static Block[] toArray(Array64<Block> arr64) {
+		Block[] arr = new Block[(int) arr64.size()];
+		for (int i = 0; i < arr.length; i++)
+			arr[i] = arr64.get(i);
+		return arr;
+	}
+
+	public static Array64<Block> toArray64(List<Block> list) {
+		Array64<Block> arr64 = new Array64<Block>(list.size());
+		for (int i = 0; i < list.size(); i++)
+			arr64.set(i, list.get(i));
+		return arr64;
+	}
+
+	public static Array64<Block> toArray64(Block[] arr) {
+		Array64<Block> arr64 = new Array64<Block>(arr.length);
+		for (int i = 0; i < arr.length; i++)
+			arr64.set(i, arr[i]);
+		return arr64;
+	}
+
+	public static List<Block> toList(Block[] arr) {
+		List<Block> list = new ArrayList<Block>(arr.length);
+		for (int i = 0; i < arr.length; i++)
+			list.add(arr[i]);
+		return list;
+	}
+
+	// WARNING: watch for overflow
+	public static List<Block> toList(Array64<Block> arr) {
+		int len = (int) arr.size();
+		List<Block> list = new ArrayList<Block>(len);
+		for (int i = 0; i < len; i++)
+			list.add(arr.get(i));
+		return list;
+	}
 }

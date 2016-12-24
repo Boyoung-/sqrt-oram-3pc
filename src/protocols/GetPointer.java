@@ -30,6 +30,9 @@ public class GetPointer extends Protocol {
 	}
 
 	public void runE(PreData predata, byte[] N, Block A, Block B, Timer timer) {
+		if (predata.getIndex() >= md.getNumLevels() - 1)
+			return;
+
 		timer.start(pid, M.online_comp);
 
 		GCSignal[] nInputKeys = GCUtil.selectKeys(predata.gp_E_nKeyPairs, N);
@@ -54,6 +57,9 @@ public class GetPointer extends Protocol {
 	}
 
 	public OutGetPointer runD(PreData predata, Timer timer) {
+		if (predata.getIndex() >= md.getNumLevels() - 1)
+			return null;
+
 		timer.start(pid, M.online_comp);
 
 		timer.start(pid, M.online_read);
@@ -84,6 +90,9 @@ public class GetPointer extends Protocol {
 	}
 
 	public void runC(PreData predata, byte[] N, Block A, Block B, Timer timer) {
+		if (predata.getIndex() >= md.getNumLevels() - 1)
+			return;
+
 		timer.start(pid, M.online_comp);
 
 		GCSignal[] nInputKeys = GCUtil.selectKeys(predata.gp_C_nKeyPairs, N);
