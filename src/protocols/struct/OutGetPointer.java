@@ -1,13 +1,15 @@
 package protocols.struct;
 
+import oram.Block;
+
 public class OutGetPointer {
 	public long p;
-	public byte[] AF;
+	public Block A;
 	public byte[] BF;
 
-	public OutGetPointer(long p, byte[] AF, byte[] BF) {
+	public OutGetPointer(long p, Block A, byte[] BF) {
 		this.p = p;
-		this.AF = AF;
+		this.A = A;
 		this.BF = BF;
 	}
 }

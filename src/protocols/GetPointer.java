@@ -36,6 +36,7 @@ public class GetPointer extends Protocol {
 		timer.start(pid, M.online_comp);
 
 		GCSignal[] nInputKeys = GCUtil.selectKeys(predata.gp_E_nKeyPairs, N);
+		GCSignal[] alInputKeys = GCUtil.selectKeys(predata.gp_E_alKeyPairs, A.getL());
 		GCSignal[] afInputKeys = GCUtil.selectKeys(predata.gp_E_afKeyPairs, A.getShortF());
 		GCSignal[] bfInputKeys = GCUtil.selectKeys(predata.gp_E_bfKeyPairs, B.getShortF());
 		GCSignal[][] apInputKeys = new GCSignal[md.getTwoTauPow()][];
@@ -47,6 +48,7 @@ public class GetPointer extends Protocol {
 
 		timer.start(pid, M.online_write);
 		con1.write(pid, nInputKeys);
+		con1.write(pid, alInputKeys);
 		con1.write(pid, afInputKeys);
 		con1.write(pid, bfInputKeys);
 		con1.write(pid, apInputKeys);
@@ -64,26 +66,36 @@ public class GetPointer extends Protocol {
 
 		timer.start(pid, M.online_read);
 		GCSignal[] E_nInputKeys = con1.readGCSignalArray(pid);
+		GCSignal[] E_alInputKeys = con1.readGCSignalArray(pid);
 		GCSignal[] E_afInputKeys = con1.readGCSignalArray(pid);
 		GCSignal[] E_bfInputKeys = con1.readGCSignalArray(pid);
 		GCSignal[][] E_apInputKeys = con1.readDoubleGCSignalArray(pid);
 		GCSignal[][] E_bpInputKeys = con1.readDoubleGCSignalArray(pid);
 
 		GCSignal[] C_nInputKeys = con2.readGCSignalArray(pid);
+		GCSignal[] C_alInputKeys = con2.readGCSignalArray(pid);
 		GCSignal[] C_afInputKeys = con2.readGCSignalArray(pid);
 		GCSignal[] C_bfInputKeys = con2.readGCSignalArray(pid);
 		GCSignal[][] C_apInputKeys = con2.readDoubleGCSignalArray(pid);
 		GCSignal[][] C_bpInputKeys = con2.readDoubleGCSignalArray(pid);
 		timer.stop(pid, M.online_read);
 
-		GCSignal[][] outKeys = predata.gp_circuit.execute(E_nInputKeys, C_nInputKeys, E_afInputKeys, C_afInputKeys,
-				E_bfInputKeys, C_bfInputKeys, E_apInputKeys, C_apInputKeys, E_bpInputKeys, C_bpInputKeys);
+		GCSignal[][] outKeys = predata.gp_circuit.execute(E_nInputKeys, C_nInputKeys, E_alInputKeys, C_alInputKeys,
+				E_afInputKeys, C_afInputKeys, E_bfInputKeys, C_bfInputKeys, E_apInputKeys, C_apInputKeys, E_bpInputKeys,
+				C_bpInputKeys);
 
 		long p = GCUtil.evaOutKeys(outKeys[0], predata.gp_outKeyHashes[0]).longValue();
-		BigInteger AF = GCUtil.evaOutKeys(outKeys[1], predata.gp_outKeyHashes[1]);
-		BigInteger BF = GCUtil.evaOutKeys(outKeys[2], predata.gp_outKeyHashes[2]);
-		OutGetPointer outgp = new OutGetPointer(p, Block.toLongF(AF, md.getTwoTauPow()),
-				Block.toLongF(BF, md.getTwoTauPow()));
+		Block A_prime = new Block(predata.getIndex(), md, (Random) null);
+		byte[] AL = Util.rmSignBit(GCUtil.evaOutKeys(outKeys[1], predata.gp_outKeyHashes[1]).toByteArray());
+		A_prime.setL(AL);
+		BigInteger AF = GCUtil.evaOutKeys(outKeys[2], predata.gp_outKeyHashes[2]);
+		A_prime.setF(Block.toLongF(AF, md.getTwoTauPow()));
+		BigInteger BF = GCUtil.evaOutKeys(outKeys[3], predata.gp_outKeyHashes[3]);
+		for (int i = 0; i < md.getTwoTauPow(); i++)
+			A_prime.setP(i,
+					Util.rmSignBit(GCUtil.evaOutKeys(outKeys[4 + i], predata.gp_outKeyHashes[4 + i]).toByteArray()));
+
+		OutGetPointer outgp = new OutGetPointer(p, A_prime, Block.toLongF(BF, md.getTwoTauPow()));
 
 		timer.stop(pid, M.online_comp);
 		return outgp;
@@ -96,6 +108,7 @@ public class GetPointer extends Protocol {
 		timer.start(pid, M.online_comp);
 
 		GCSignal[] nInputKeys = GCUtil.selectKeys(predata.gp_C_nKeyPairs, N);
+		GCSignal[] alInputKeys = GCUtil.selectKeys(predata.gp_C_alKeyPairs, A.getL());
 		GCSignal[] afInputKeys = GCUtil.selectKeys(predata.gp_C_afKeyPairs, A.getShortF());
 		GCSignal[] bfInputKeys = GCUtil.selectKeys(predata.gp_C_bfKeyPairs, B.getShortF());
 		GCSignal[][] apInputKeys = new GCSignal[md.getTwoTauPow()][];
@@ -107,6 +120,7 @@ public class GetPointer extends Protocol {
 
 		timer.start(pid, M.online_write);
 		con2.write(pid, nInputKeys);
+		con2.write(pid, alInputKeys);
 		con2.write(pid, afInputKeys);
 		con2.write(pid, bfInputKeys);
 		con2.write(pid, apInputKeys);
@@ -145,7 +159,7 @@ public class GetPointer extends Protocol {
 				con1.write(Util.getSubBits(new BigInteger(1, N), md.getTau(), 0).intValue());
 				con1.write(A);
 				con1.write(B);
-				con1.write(predata.gp_AF_prime);
+				con1.write(predata.gp_A_prime);
 				con1.write(predata.gp_BF_prime);
 
 			} else if (party == Party.Debbie) {
@@ -158,19 +172,30 @@ public class GetPointer extends Protocol {
 				int index = con1.readInt();
 				A = con1.readBlock();
 				B = con1.readBlock();
-				predata.gp_AF_prime = con1.read();
+				predata.gp_A_prime = con1.readBlock();
 				predata.gp_BF_prime = con1.read();
 
-				Util.setXor(outgp.AF, predata.gp_AF_prime);
+				outgp.A.setXor(predata.gp_A_prime);
 				Util.setXor(outgp.BF, predata.gp_BF_prime);
-				byte[] F = (A.getF(index) & 1) == 0 ? outgp.AF : outgp.BF;
+				byte[] F = (A.getF(index) & 1) == 0 ? outgp.A.getF() : outgp.BF;
 				Block block = (A.getF(index) & 1) == 0 ? A : B;
 				long p = Util.getSubBits(new BigInteger(1, block.getP(index)), md.getPBits(levelIndex), 0).longValue();
+				Block zero = A.xor(outgp.A);
 
-				if (p == outgp.p && (F[index] & 1) == 1)
-					System.out.println(j + ": GP test passed");
-				else {
-					System.err.println(j + ": GP test failed");
+				if (p == outgp.p && (F[index] & 1) == 1
+						&& Util.getSubBits(new BigInteger(zero.getL()), md.getLBits(levelIndex), 0).intValue() == 0) {
+					boolean pass = true;
+					for (int i = 0; i < md.getTwoTauPow(); i++) {
+						if (Util.getSubBits(new BigInteger(zero.getP(i)), md.getPBits(levelIndex), 0).intValue() != 0) {
+							System.err.println(j + " " + i + ": GP test failed (1)");
+							pass = false;
+							break;
+						}
+					}
+					if (pass)
+						System.out.println(j + ": GP test passed");
+				} else {
+					System.err.println(j + ": GP test failed (0)");
 				}
 
 			} else if (party == Party.Charlie) {
