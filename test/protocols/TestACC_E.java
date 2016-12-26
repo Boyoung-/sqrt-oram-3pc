@@ -5,7 +5,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Arrays;
 
-public class TestAccess_D {
+public class TestACC_E {
 
 	public static void main(String[] args) {
 		Runtime runTime = Runtime.getRuntime();
@@ -14,7 +14,7 @@ public class TestAccess_D {
 		String binDir = dir + "\\bin";
 		String libs = dir + "\\lib\\*";
 		try {
-			process = runTime.exec("java -classpath " + binDir + ";" + libs + " ui.CLI -protocol acc debbie");
+			process = runTime.exec("java -classpath " + binDir + ";" + libs + " ui.CLI -protocol acc eddie");
 
 		} catch (IOException e) {
 			e.printStackTrace();

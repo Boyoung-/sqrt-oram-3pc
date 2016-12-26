@@ -62,7 +62,7 @@ public class Access extends Protocol {
 		GetPointer gp = new GetPointer(con1, con2, md);
 		gp.runE(predata, sufN, predata.acc_A_b, B_b, timer);
 
-		predata.acc_A_b.setF(predata.gp_AF_prime);
+		predata.acc_A_b = predata.gp_A_prime;
 		B_b.setF(predata.gp_BF_prime);
 
 		timer.start(pid, M.online_read);
@@ -115,13 +115,12 @@ public class Access extends Protocol {
 		// step 3
 		SSCOT sscot = new SSCOT(con1, con2, md);
 		sscot.runD(predata, e, timer);
-		Block A_a = con2.readBlock(); // TODO: remove this!!!
 
 		// step 4, 5
 		GetPointer gp = new GetPointer(con1, con2, md);
 		OutGetPointer outgp = gp.runD(predata, timer);
 
-		A_a.setF(outgp.AF);
+		Block A_a = outgp.A;
 		B_a.setF(outgp.BF);
 
 		timer.start(pid, M.online_write);
@@ -160,7 +159,6 @@ public class Access extends Protocol {
 		OutSSCOT outsscot = sscot.runC(timer);
 
 		Block A_a = new Block(predata.getIndex(), md, outsscot.m_t).xor(all[outsscot.t]);
-		con2.write(A_a); // TODO: remove this!!!
 
 		// step 4, 5
 		GetPointer gp = new GetPointer(con1, con2, md);
