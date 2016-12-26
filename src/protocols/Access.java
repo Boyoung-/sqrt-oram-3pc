@@ -76,11 +76,11 @@ public class Access extends Protocol {
 		// step 7
 		all = Util.permute(all, predata.acc_rho_ivs);
 		Block[] stash = Arrays.copyOfRange(all, 0, level.getStash().size());
-		Block[] fresh = Arrays.copyOfRange(all, stash.length, all.length);
+		Block[] fresh = Arrays.copyOfRange(all, stash.length + 1, all.length);
 
 		// step 8
 		level.setStash(Level.toList(Util.concat(stash, new Block[] { predata.acc_A_b })));
-		// level.setFresh(Level.toArray64(fresh));
+		level.setFresh(Level.toArray64(fresh));
 
 		timer.stop(pid, M.online_comp);
 		return p;
@@ -134,11 +134,11 @@ public class Access extends Protocol {
 		// step 7
 		all = Util.permute(all, predata.acc_rho_ivs);
 		Block[] stash = Arrays.copyOfRange(all, 0, level.getStash().size());
-		Block[] fresh = Arrays.copyOfRange(all, stash.length, all.length);
+		Block[] fresh = Arrays.copyOfRange(all, stash.length + 1, all.length);
 
 		// step 8
 		level.setStash(Level.toList(Util.concat(stash, new Block[] { A_a })));
-		// level.setFresh(Level.toArray64(fresh));
+		level.setFresh(Level.toArray64(fresh));
 
 		timer.stop(pid, M.online_comp);
 		return outgp.p;
@@ -184,7 +184,7 @@ public class Access extends Protocol {
 		PreAccess preacc = null;
 		int levelIndex;
 
-		for (int j = 0; j < 100; j++) {
+		for (int j = 0; j < md.getPeriod(); j++) {
 			preacc = new PreAccess(con1, con2, md);
 
 			if (party == Party.Eddie) {
@@ -194,10 +194,11 @@ public class Access extends Protocol {
 				Level level = oram.getLevel(levelIndex);
 				con2.write(level.getStash().size());
 				predata = new PreData(levelIndex);
-				preacc.runE(predata, level.getStash().size(), timer);
+				preacc.runE(predata, (int) level.getFresh().size(), level.getStash().size(), timer);
 
-				N = Util.nextBytes((md.getLBits(1) + 7) / 8, Crypto.sr);
 				N_a = Util.nextBytes((md.getLBits(1) + 7) / 8, Crypto.sr);
+				N = Util.padArray(BigInteger.valueOf(j).shiftLeft(md.getTau())
+						.xor(new BigInteger(md.getTau(), Crypto.sr)).toByteArray(), N_a.length);
 				N_b = Util.xor(N, N_a);
 				con1.write(N_a);
 				long p = this.runE(predata, N_b, level, timer);
@@ -207,16 +208,14 @@ public class Access extends Protocol {
 				BigInteger bigN = new BigInteger(N);
 				int preN = Util.getSubBits(bigN, tau + lBits, tau).intValue();
 				int sufN = Util.getSubBits(bigN, tau, 0).intValue();
-				long realP = Util
-						.getSubBits(new BigInteger(level.getFreshBlock(preN).getP(sufN)), md.getPBits(levelIndex), 0)
-						.longValue();
-				Block changed = con1.readBlock();
-				changed.setXor(level.getStashBlock(0));
-				long realP2 = Util.getSubBits(new BigInteger(changed.getP(sufN)), md.getPBits(levelIndex), 0)
-						.longValue();
-				level.emptyStash();
 
-				if (p == realP && p == realP2 && (changed.getF(sufN) & 1) == 1)
+				Block changed = con1.readBlock();
+				changed = changed.xor(level.getStashBlock(level.getStash().size() - 1));
+				long realP = Util.getSubBits(new BigInteger(changed.getP(sufN)), md.getPBits(levelIndex), 0)
+						.longValue();
+
+				if (p == realP && (changed.getF(sufN) & 1) == 1
+						&& Util.getSubBits(new BigInteger(changed.getL()), lBits, 0).intValue() == preN)
 					System.out.println(j + ": Acc test passed");
 				else {
 					System.err.println(j + ": Acc test failed");
@@ -226,19 +225,18 @@ public class Access extends Protocol {
 				levelIndex = con1.readInt();
 				Level level = oram.getLevel(levelIndex);
 				predata = new PreData(levelIndex);
-				preacc.runD(predata, level.getStash().size(), timer);
+				preacc.runD(predata, (int) level.getFresh().size(), level.getStash().size(), timer);
 
 				N_a = con1.read();
 				this.runD(predata, N_a, level, timer);
 
-				con1.write(level.getStashBlock(0));
-				level.emptyStash();
+				con1.write(level.getStashBlock(level.getStash().size() - 1));
 
 			} else if (party == Party.Charlie) {
 				levelIndex = con1.readInt();
 				int s = con1.readInt();
 				predata = new PreData(levelIndex);
-				preacc.runC(predata, s, timer);
+				preacc.runC(predata, (int) md.getNumBlocks(levelIndex) - s, s, timer);
 
 				this.runC(predata, timer);
 

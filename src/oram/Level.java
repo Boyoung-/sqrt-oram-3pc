@@ -37,8 +37,13 @@ public class Level implements Serializable {
 	}
 
 	public void init() {
+		// System.out.println("Init level " + index + " ...");
 		if (index == md.getNumLevels() - 1) {
 			for (long i = 0; i < md.getNumBlocks(index); i++) {
+				// if (i % 100 == 0)
+				// System.out.println(((float) i * 100 / md.getNumBlocks(index))
+				// + "%");
+
 				byte[] l = Util.rmSignBit(BigInteger.valueOf(i).toByteArray());
 				Block target = fresh.get(i);
 				target.setL(l);
@@ -47,6 +52,10 @@ public class Level implements Serializable {
 		} else {
 			long cnt = 0;
 			for (long i = 0; i < md.getNumBlocks(index); i++) {
+				// if (i % 100 == 0)
+				// System.out.println(((float) i * 100 / md.getNumBlocks(index))
+				// + "%");
+
 				byte[] l = Util.rmSignBit(BigInteger.valueOf(i).toByteArray());
 				Block target = fresh.get(i);
 				target.setL(l);

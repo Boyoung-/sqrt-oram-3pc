@@ -21,15 +21,14 @@ public class PreAccess extends Protocol {
 		super(con1, con2, md);
 	}
 
-	public void runE(PreData predata, int s, Timer timer) {
+	public void runE(PreData predata, int n, int s, Timer timer) {
 		timer.start(pid, M.offline_comp);
 
 		int levelIndex = predata.getIndex();
-		long n = md.getNumBlocks(levelIndex);
 
 		// SSCOT
 		PreSSCOT presscot = new PreSSCOT(con1, con2, md);
-		presscot.runE(predata, (int) n + s, timer);
+		presscot.runE(predata, n + s, timer);
 
 		// GP
 		PreGetPointer pregp = new PreGetPointer(con1, con2, md);
@@ -51,11 +50,10 @@ public class PreAccess extends Protocol {
 		timer.stop(pid, M.offline_comp);
 	}
 
-	public void runD(PreData predata, int s, Timer timer) {
+	public void runD(PreData predata, int n, int s, Timer timer) {
 		timer.start(pid, M.offline_comp);
 
 		int levelIndex = predata.getIndex();
-		long n = md.getNumBlocks(levelIndex);
 
 		// SSCOT
 		PreSSCOT presscot = new PreSSCOT(con1, con2, md);
@@ -70,7 +68,7 @@ public class PreAccess extends Protocol {
 		pressxot.runC(predata, timer);
 
 		// ACC
-		predata.acc_rho = Util.randomPermutation((int) n + s, Crypto.sr);
+		predata.acc_rho = Util.randomPermutation(n + s, Crypto.sr);
 		predata.acc_rho_ivs = Util.inversePermutation(predata.acc_rho);
 		predata.acc_r = new Block(levelIndex, md, Crypto.sr);
 
@@ -83,10 +81,8 @@ public class PreAccess extends Protocol {
 		timer.stop(pid, M.offline_comp);
 	}
 
-	public void runC(PreData predata, int s, Timer timer) {
+	public void runC(PreData predata, int n, int s, Timer timer) {
 		timer.start(pid, M.offline_comp);
-
-		long n = md.getNumBlocks(predata.getIndex());
 
 		// SSCOT
 		PreSSCOT presscot = new PreSSCOT(con1, con2, md);
@@ -98,10 +94,10 @@ public class PreAccess extends Protocol {
 
 		// SSXOT
 		PreSSXOT pressxot = new PreSSXOT(con1, con2, md, P.ACC_XOT);
-		pressxot.runD(predata, (int) n + s + 1, (int) n + s, timer);
+		pressxot.runD(predata, n + s + 1, n + s, timer);
 
 		// ACC
-		predata.acc_delta = Util.identityPermutation((int) n + s);
+		predata.acc_delta = Util.identityPermutation(n + s);
 
 		timer.stop(pid, M.offline_comp);
 	}
