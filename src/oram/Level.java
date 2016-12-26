@@ -22,14 +22,14 @@ public class Level implements Serializable {
 
 	private Array64<Block> fresh;
 	private List<Block> stash;
-	private List<Integer> used;
+	private List<Long> used;
 
 	public Level(int index, Metadata md, Random rnd) {
 		this.index = index;
 		this.md = md;
 		fresh = new Array64<Block>(md.getNumBlocks(index));
 		stash = new ArrayList<Block>(md.getPeriod());
-		used = new ArrayList<Integer>(md.getPeriod());
+		used = new ArrayList<Long>(md.getPeriod());
 
 		for (long i = 0; i < md.getNumBlocks(index); i++) {
 			fresh.set(i, new Block(index, md, rnd));
@@ -79,7 +79,7 @@ public class Level implements Serializable {
 		return stash;
 	}
 
-	public List<Integer> getUsed() {
+	public List<Long> getUsed() {
 		return used;
 	}
 
@@ -91,7 +91,7 @@ public class Level implements Serializable {
 		return stash.get(i);
 	}
 
-	public Integer getUsedAt(int i) {
+	public Long getUsedAt(int i) {
 		return used.get(i);
 	}
 
@@ -103,7 +103,7 @@ public class Level implements Serializable {
 		this.stash = stash;
 	}
 
-	public void setUsed(List<Integer> used) {
+	public void setUsed(List<Long> used) {
 		this.used = used;
 	}
 
@@ -115,7 +115,7 @@ public class Level implements Serializable {
 		stash.set(i, b);
 	}
 
-	public void setUsedAt(int i, Integer n) {
+	public void setUsedAt(int i, Long n) {
 		used.set(i, n);
 	}
 
@@ -123,7 +123,7 @@ public class Level implements Serializable {
 		stash.add(b);
 	}
 
-	public void addToUsed(Integer n) {
+	public void addToUsed(Long n) {
 		used.add(n);
 	}
 

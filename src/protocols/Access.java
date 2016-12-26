@@ -20,6 +20,7 @@ import util.P;
 import util.Timer;
 import util.Util;
 
+// TODO: think about Util.rmSignBit
 public class Access extends Protocol {
 
 	private int pid = P.ACC;
@@ -28,27 +29,37 @@ public class Access extends Protocol {
 		super(con1, con2, md);
 	}
 
-	public long runE(PreData predata, byte[] N, Level level, Timer timer) {
+	public long runE(PreData predata, byte[] N, Level level, long p, Timer timer) {
 		timer.start(pid, M.online_comp);
 
+		int levelIndex = predata.getIndex();
 		int tau = md.getTau();
 		int lBits = md.getLBits(predata.getIndex());
 		BigInteger bigN = new BigInteger(N);
-		byte[] preN = Util.rmSignBit(Util.getSubBits(bigN, tau + lBits, tau).toByteArray());
-		byte[] sufN = Util.rmSignBit(Util.getSubBits(bigN, tau, 0).toByteArray());
+		byte[] preN = Util.padArray(Util.getSubBits(bigN, tau + lBits, tau).toByteArray(), md.getLBytes(levelIndex));
+		byte[] sufN = Util.padArray(Util.getSubBits(bigN, tau, 0).toByteArray(), (md.getTau() + 7) / 8);
 
 		// step 1
-		Block[] all = Util.permute(Util.concat(Level.toArray(level.getStash()), Level.toArray(level.getFresh())),
-				predata.acc_rho);
+		Block B_b = level.getFreshBlock(p);
+
+		Block[] all = null;
+		if (levelIndex == 0)
+			all = Util.permute(Util.concat(Level.toArray(level.getStash()), Level.toArray(level.getFresh())),
+					predata.acc_rho);
+		else
+			all = Util.permute(Util.concat(Level.toArray(level.getStash()), new Block[] { B_b }), predata.acc_rho);
 		byte[][] e = new byte[all.length][];
 		Block[] y = new Block[all.length];
 		for (int i = 0; i < all.length; i++) {
-			e[i] = Util.xor(all[i].getL(), preN);
+			e[i] = Util.xor(
+					Util.padArray(Util.getSubBits(new BigInteger(all[i].getL()), lBits, 0).toByteArray(), preN.length),
+					preN); // TODO: this is ugly: make GP embedded input with
+							// leading zeros
 			y[i] = all[i].xor(predata.acc_A_b);
 		}
 
 		// step 2
-		Block B_b = level.getFreshBlock(0).xor(predata.acc_r);
+		B_b = B_b.xor(predata.acc_r);
 
 		// step 3
 		byte[][] y_bytes = new byte[y.length][];
@@ -66,7 +77,7 @@ public class Access extends Protocol {
 		B_b.setF(predata.gp_BF_prime);
 
 		timer.start(pid, M.online_read);
-		long p = con1.readLong(pid);
+		p = con1.readLong(pid);
 		timer.stop(pid, M.online_read);
 
 		// step 6
@@ -75,36 +86,51 @@ public class Access extends Protocol {
 
 		// step 7
 		all = Util.permute(all, predata.acc_rho_ivs);
-		Block[] stash = Arrays.copyOfRange(all, 0, level.getStash().size());
-		Block[] fresh = Arrays.copyOfRange(all, stash.length + 1, all.length);
 
-		// step 8
-		level.setStash(Level.toList(Util.concat(stash, new Block[] { predata.acc_A_b })));
-		level.setFresh(Level.toArray64(fresh));
+		if (levelIndex == 0) {
+			Block[] stash = Arrays.copyOfRange(all, 0, level.getStash().size());
+			Block[] fresh = Arrays.copyOfRange(all, stash.length + 1, all.length);
+
+			// step 8
+			level.setStash(Level.toList(Util.concat(stash, new Block[] { predata.acc_A_b })));
+			level.setFresh(Level.toArray64(fresh));
+		} else {
+			all[all.length - 1] = predata.acc_A_b;
+			level.setStash(Level.toList(all));
+		}
 
 		timer.stop(pid, M.online_comp);
 		return p;
 	}
 
-	public long runD(PreData predata, byte[] N, Level level, Timer timer) {
+	public long runD(PreData predata, byte[] N, Level level, long p, Timer timer) {
 		timer.start(pid, M.online_comp);
 
+		int levelIndex = predata.getIndex();
 		int tau = md.getTau();
 		int lBits = md.getLBits(predata.getIndex());
 		BigInteger bigN = new BigInteger(N);
-		byte[] preN = Util.rmSignBit(Util.getSubBits(bigN, tau + lBits, tau).toByteArray());
-		byte[] sufN = Util.rmSignBit(Util.getSubBits(bigN, tau, 0).toByteArray());
+		byte[] preN = Util.padArray(Util.getSubBits(bigN, tau + lBits, tau).toByteArray(), md.getLBytes(levelIndex));
+		byte[] sufN = Util.padArray(Util.getSubBits(bigN, tau, 0).toByteArray(), (md.getTau() + 7) / 8);
 
 		// step 1
-		Block[] all = Util.permute(Util.concat(Level.toArray(level.getStash()), Level.toArray(level.getFresh())),
-				predata.acc_rho);
+		Block B_a = level.getFreshBlock(p);
+
+		Block[] all = null;
+		if (levelIndex == 0)
+			all = Util.permute(Util.concat(Level.toArray(level.getStash()), Level.toArray(level.getFresh())),
+					predata.acc_rho);
+		else
+			all = Util.permute(Util.concat(Level.toArray(level.getStash()), new Block[] { B_a }), predata.acc_rho);
 		byte[][] e = new byte[all.length][];
 		for (int i = 0; i < all.length; i++) {
-			e[i] = Util.xor(all[i].getL(), preN);
+			e[i] = Util.xor(
+					Util.padArray(Util.getSubBits(new BigInteger(all[i].getL()), lBits, 0).toByteArray(), preN.length),
+					preN);
 		}
 
 		// step 2
-		Block B_a = level.getFreshBlock(0).xor(predata.acc_r);
+		B_a = B_a.xor(predata.acc_r);
 
 		timer.start(pid, M.online_write);
 		con2.write(pid, sufN);
@@ -133,12 +159,18 @@ public class Access extends Protocol {
 
 		// step 7
 		all = Util.permute(all, predata.acc_rho_ivs);
-		Block[] stash = Arrays.copyOfRange(all, 0, level.getStash().size());
-		Block[] fresh = Arrays.copyOfRange(all, stash.length + 1, all.length);
 
-		// step 8
-		level.setStash(Level.toList(Util.concat(stash, new Block[] { A_a })));
-		level.setFresh(Level.toArray64(fresh));
+		if (levelIndex == 0) {
+			Block[] stash = Arrays.copyOfRange(all, 0, level.getStash().size());
+			Block[] fresh = Arrays.copyOfRange(all, stash.length + 1, all.length);
+
+			// step 8
+			level.setStash(Level.toList(Util.concat(stash, new Block[] { A_a })));
+			level.setFresh(Level.toArray64(fresh));
+		} else {
+			all[all.length - 1] = A_a;
+			level.setStash(Level.toList(all));
+		}
 
 		timer.stop(pid, M.online_comp);
 		return outgp.p;
@@ -173,9 +205,12 @@ public class Access extends Protocol {
 		timer.stop(pid, M.online_comp);
 	}
 
-	// for testing correctness
 	@Override
 	public void run(Party party, SqrtOram oram) {
+		testAccMid(party, oram);
+	}
+
+	public void testAccFirst(Party party, SqrtOram oram) {
 		Timer timer = new Timer();
 		byte[] N = null;
 		byte[] N_a = null;
@@ -188,7 +223,7 @@ public class Access extends Protocol {
 			preacc = new PreAccess(con1, con2, md);
 
 			if (party == Party.Eddie) {
-				levelIndex = 0;// Crypto.sr.nextInt(md.getNumLevels());
+				levelIndex = 0;
 				con1.write(levelIndex);
 				con2.write(levelIndex);
 				Level level = oram.getLevel(levelIndex);
@@ -201,7 +236,7 @@ public class Access extends Protocol {
 						.xor(new BigInteger(md.getTau(), Crypto.sr)).toByteArray(), N_a.length);
 				N_b = Util.xor(N, N_a);
 				con1.write(N_a);
-				long p = this.runE(predata, N_b, level, timer);
+				long p = this.runE(predata, N_b, level, 0, timer);
 
 				int tau = md.getTau();
 				int lBits = md.getLBits(levelIndex);
@@ -216,9 +251,9 @@ public class Access extends Protocol {
 
 				if (p == realP && (changed.getF(sufN) & 1) == 1
 						&& Util.getSubBits(new BigInteger(changed.getL()), lBits, 0).intValue() == preN)
-					System.out.println(j + ": Acc test passed");
+					System.out.println(j + ": AccFirst test passed");
 				else {
-					System.err.println(j + ": Acc test failed");
+					System.err.println(j + ": AccFirst test failed");
 				}
 
 			} else if (party == Party.Debbie) {
@@ -228,7 +263,7 @@ public class Access extends Protocol {
 				preacc.runD(predata, (int) level.getFresh().size(), level.getStash().size(), timer);
 
 				N_a = con1.read();
-				this.runD(predata, N_a, level, timer);
+				this.runD(predata, N_a, level, 0, timer);
 
 				con1.write(level.getStashBlock(level.getStash().size() - 1));
 
@@ -239,6 +274,76 @@ public class Access extends Protocol {
 				preacc.runC(predata, (int) md.getNumBlocks(levelIndex) - s, s, timer);
 
 				this.runC(predata, timer);
+
+			} else {
+				throw new NoSuchPartyException(party + "");
+			}
+		}
+
+		// timer.print();
+	}
+
+	public void testAccMid(Party party, SqrtOram oram) {
+		Timer timer = new Timer();
+		byte[] N = null;
+		byte[] N_a = null;
+		byte[] N_b = null;
+		PreData predata = null;
+		PreAccess preacc = null;
+		Level level = null;
+
+		for (int j = 0; j < md.getPeriod(); j++) {
+			preacc = new PreAccess(con1, con2, md);
+			long p = 0;
+			int levelIndex = 0;
+
+			if (party == Party.Eddie) {
+				BigInteger addr = BigInteger.valueOf(j);
+
+				for (levelIndex = 0; levelIndex < md.getNumLevels() - 1; levelIndex++) {
+					level = oram.getLevel(levelIndex);
+					predata = new PreData(levelIndex);
+					preacc.runE(predata, levelIndex == 0 ? (int) level.getFresh().size() : 1, level.getStash().size(),
+							timer);
+
+					N_a = Util.nextBytes((md.getLBits(levelIndex + 1) + 7) / 8, Crypto.sr);
+					N = Util.padArray(
+							Util.getSubBits(addr, md.getAddrBits(), md.getAddrBits() - md.getLBits(levelIndex + 1))
+									.toByteArray(),
+							N_a.length);
+					N_b = Util.xor(N, N_a);
+					con1.write(N_a);
+					p = this.runE(predata, N_b, level, p, timer);
+				}
+
+				Block target = oram.getLevel(levelIndex).getFreshBlock(p).xor(con1.readBlock());
+
+				if (new BigInteger(1, target.getRec()).compareTo(addr) == 0)
+					System.out.println(j + ": Acc test passed");
+				else {
+					System.err.println(j + ": Acc test failed");
+				}
+
+			} else if (party == Party.Debbie) {
+				for (levelIndex = 0; levelIndex < md.getNumLevels() - 1; levelIndex++) {
+					level = oram.getLevel(levelIndex);
+					predata = new PreData(levelIndex);
+					preacc.runD(predata, levelIndex == 0 ? (int) level.getFresh().size() : 1, level.getStash().size(),
+							timer);
+
+					N_a = con1.read();
+					p = this.runD(predata, N_a, level, p, timer);
+				}
+
+				con1.write(oram.getLevel(levelIndex).getFreshBlock(p));
+
+			} else if (party == Party.Charlie) {
+				for (levelIndex = 0; levelIndex < md.getNumLevels() - 1; levelIndex++) {
+					predata = new PreData(levelIndex);
+					preacc.runC(predata, levelIndex == 0 ? (int) md.getNumBlocks(0) - j : 1, j, timer);
+
+					this.runC(predata, timer);
+				}
 
 			} else {
 				throw new NoSuchPartyException(party + "");
