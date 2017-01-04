@@ -52,10 +52,10 @@ public class PreInitialize extends Protocol {
 		preop.runE(predata[h - 1], n, timer);
 
 		OblivPermute op = new OblivPermute(con1, con2, md, P.INIT_OP_OFF);
-		L = op.runOffE(predata[h - 1], predata[h - 1].init_pi_E, L, timer);
+		predata[h - 1].init_L_prime_b = op.runOffE(predata[h - 1], predata[h - 1].init_pi_E, L, timer);
 		Array64<Long> L_prime = new Array64<Long>(L.size());
 		for (long i = 0; i < L.size(); i++)
-			L_prime.set(i, new BigInteger(1, L.get(i)).longValue());
+			L_prime.set(i, new BigInteger(1, predata[h - 1].init_L_prime_b.get(i)).longValue());
 
 		// step 7
 		PreGenPermConcat pregpc = new PreGenPermConcat(con1, con2, md);
@@ -74,6 +74,12 @@ public class PreInitialize extends Protocol {
 			oram.getLevel(i).setFresh(outipm.fresh_b);
 			pi_E_prime = outipm.pi_prime_E;
 		}
+
+		///////////////////////////////////////////////////////////////
+
+		// step 2
+		PreOblivPermute preop_on = new PreOblivPermute(con1, con2, md, P.INIT_OP_ON);
+		preop_on.runE(predata[h - 1], n, timer);
 
 		timer.stop(pid, M.offline_comp);
 	}
@@ -97,10 +103,10 @@ public class PreInitialize extends Protocol {
 		preop.runD(predata[h - 1], n, timer);
 
 		OblivPermute op = new OblivPermute(con1, con2, md, P.INIT_OP_OFF);
-		L = op.runOffD(predata[h - 1], predata[h - 1].init_pi_D, L, timer);
+		predata[h - 1].init_L_prime_a = op.runOffD(predata[h - 1], predata[h - 1].init_pi_D, L, timer);
 		Array64<Long> L_prime = new Array64<Long>(L.size());
 		for (long i = 0; i < L.size(); i++)
-			L_prime.set(i, new BigInteger(1, L.get(i)).longValue());
+			L_prime.set(i, new BigInteger(1, predata[h - 1].init_L_prime_a.get(i)).longValue());
 
 		// step 7
 		PreGenPermConcat pregpc = new PreGenPermConcat(con1, con2, md);
@@ -119,6 +125,12 @@ public class PreInitialize extends Protocol {
 			oram.getLevel(i).setFresh(outipm.fresh_a);
 			pi_D_prime = outipm.pi_prime_D;
 		}
+
+		///////////////////////////////////////////////////////////////
+
+		// step 2
+		PreOblivPermute preop_on = new PreOblivPermute(con1, con2, md, P.INIT_OP_ON);
+		preop_on.runD(predata[h - 1], n, timer);
 
 		timer.stop(pid, M.offline_comp);
 	}
@@ -155,6 +167,12 @@ public class PreInitialize extends Protocol {
 			InitPosMap ipm = new InitPosMap(con1, con2, md);
 			ipm.runC(predata[i], timer);
 		}
+
+		///////////////////////////////////////////////////////////////
+
+		// step 2
+		PreOblivPermute preop_on = new PreOblivPermute(con1, con2, md, P.INIT_OP_ON);
+		preop_on.runC(predata[h - 1], timer);
 
 		timer.stop(pid, M.offline_comp);
 	}

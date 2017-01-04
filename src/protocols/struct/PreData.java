@@ -108,4 +108,6 @@ public class PreData {
 	// INIT
 	public Array64<Long> init_pi_D;
 	public Array64<Long> init_pi_E;
+	public Array64<byte[]> init_L_prime_a;
+	public Array64<byte[]> init_L_prime_b;
 }
