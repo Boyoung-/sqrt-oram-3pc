@@ -50,7 +50,7 @@ public class InitPosMap extends Protocol {
 
 		// step 8-10
 		if (levelIndex > 0) {
-			OblivPermute op = new OblivPermute(con1, con2, md, P.OP_OFF);
+			OblivPermute op = new OblivPermute(con1, con2, md, P.IPM_OP);
 			fresh = op.runE(predata, predata.ipm_pi_prime_E, fresh, timer);
 		}
 
@@ -82,7 +82,7 @@ public class InitPosMap extends Protocol {
 
 		// step 8-10
 		if (levelIndex > 0) {
-			OblivPermute op = new OblivPermute(con1, con2, md, P.OP_OFF);
+			OblivPermute op = new OblivPermute(con1, con2, md, P.IPM_OP);
 			fresh = op.runD(predata, predata.ipm_pi_prime_D, fresh, timer);
 		}
 
@@ -92,16 +92,16 @@ public class InitPosMap extends Protocol {
 		return outipm;
 	}
 
-	public Array64<Long> runC(PreData predata, Array64<Long> pi_E, Timer timer) {
+	public Array64<Long> runC(PreData predata, Timer timer) {
 		timer.start(pid, M.offline_comp);
 
 		// step 1
 		GenPermShare gps = new GenPermShare(con1, con2, md);
-		gps.runC(predata, pi_E, timer);
+		gps.runC(predata, timer);
 
 		// step 8-10
 		if (predata.getIndex() > 0) {
-			OblivPermute op = new OblivPermute(con1, con2, md, P.OP_OFF);
+			OblivPermute op = new OblivPermute(con1, con2, md, P.IPM_OP);
 			op.runC(predata, predata.ipm_pi_prime_E, timer);
 		}
 
@@ -134,7 +134,6 @@ public class InitPosMap extends Protocol {
 
 				n = md.getNumBlocks(levelIndex);
 				pi_E = Util.randomPermutationLong(n * md.getTwoTauPow(), Crypto.sr);
-				con2.writeLongArray64(pi_E);
 				outipm = this.runE(predata, pi_E, timer);
 
 				pi_D = con1.readLongArray64();
@@ -178,8 +177,7 @@ public class InitPosMap extends Protocol {
 				predata = new PreData(levelIndex);
 				preipm.runC(predata, timer);
 
-				pi_E = con1.readLongArray64();
-				this.runC(predata, pi_E, timer);
+				this.runC(predata, timer);
 
 			} else {
 				throw new NoSuchPartyException(party + "");

@@ -25,7 +25,7 @@ public class SSXOT extends Protocol {
 	// for testing
 	public SSXOT(Communication con1, Communication con2, Metadata md) {
 		super(con1, con2, md);
-		this.pid = P.OP_XOT_ON;
+		this.pid = P.INIT_OP_XOT_ON;
 	}
 
 	public SSXOT(Communication con1, Communication con2, Metadata md, int pid) {
@@ -290,7 +290,7 @@ public class SSXOT extends Protocol {
 	public void run(Party party, SqrtOram oram) {
 		Timer timer = new Timer();
 
-		pid = P.OP_XOT_ON;
+		pid = P.IPM_OP_XOT;
 		for (int j = 0; j < 100; j++) {
 			long n = 200;
 			long k = Crypto.sr.nextInt(50) + 50;
@@ -347,30 +347,30 @@ public class SSXOT extends Protocol {
 					BigInteger input = new BigInteger(C_m.get(index.get(i)).toByteArray());
 					BigInteger output = new BigInteger(E_out_m.get(i).xor(C_out_m.get(i)).toByteArray());
 					if (input.compareTo(output) != 0) {
-						System.err.println(j + " " + i + ": OP_XOT_ON test failed");
+						System.err.println(j + " " + i + ": IPM_OP_XOT test failed");
 						pass = false;
 						break;
 					}
 				}
 				if (pass)
-					System.out.println(j + ": OP_XOT_ON test passed");
+					System.out.println(j + ": IPM_OP_XOT test passed");
 
 			} else {
 				throw new NoSuchPartyException(party + "");
 			}
 		}
 
-		pid = P.OP_XOT_OFF;
+		pid = P.INIT_OP_XOT_ON;
 		for (int j = 100; j < 200; j++) {
 			long n = 200;
 			long k = Crypto.sr.nextInt(50) + 50;
 			Array64<byte[]> E_m = new Array64<byte[]>(n);
 			Array64<byte[]> C_m = new Array64<byte[]>(n);
 			int levelNum = Crypto.sr.nextInt(md.getNumLevels());
-			int lBytes = md.getLBytes(levelNum);
+			int bytes = pid == P.INIT_OP_XOT_OFF ? md.getLBytes(levelNum) : md.getDBytes();
 			for (long i = 0; i < n; i++) {
-				C_m.set(i, Util.nextBytes(lBytes, Crypto.sr));
-				E_m.set(i, new byte[lBytes]);
+				C_m.set(i, Util.nextBytes(bytes, Crypto.sr));
+				E_m.set(i, new byte[bytes]);
 			}
 
 			if (party == Party.Eddie) {
@@ -418,13 +418,13 @@ public class SSXOT extends Protocol {
 					BigInteger input = new BigInteger(C_m.get(index.get(i)));
 					BigInteger output = new BigInteger(Util.xor(E_out_m.get(i), C_out_m.get(i)));
 					if (input.compareTo(output) != 0) {
-						System.err.println(j + " " + i + ": OP_XOT_OFF test failed");
+						System.err.println(j + " " + i + ": " + P.names[pid] + " test failed");
 						pass = false;
 						break;
 					}
 				}
 				if (pass)
-					System.out.println(j + ": OP_XOT_OFF test passed");
+					System.out.println(j + ": " + P.names[pid] + " test passed");
 
 			} else {
 				throw new NoSuchPartyException(party + "");

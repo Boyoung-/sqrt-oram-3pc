@@ -27,8 +27,8 @@ public class PreOblivPermute extends Protocol {
 	public void runE(PreData predata, long s, Timer timer) {
 		timer.start(pid, M.offline_comp);
 
-		if (pid == P.OP_ON) {
-			PreSSXOT pressxot = new PreSSXOT(con1, con2, md, P.OP_XOT_ON);
+		if (pid == P.IPM_OP) {
+			PreSSXOT pressxot = new PreSSXOT(con1, con2, md, P.IPM_OP_XOT);
 			pressxot.runE(predata, timer);
 
 			predata.op_e = new Array64<Block>(s);
@@ -40,14 +40,16 @@ public class PreOblivPermute extends Protocol {
 			timer.stop(pid, M.offline_write);
 		}
 
-		else { // pid == P.OP_OFF
-			PreSSXOT pressxot = new PreSSXOT(con1, con2, md, P.OP_XOT_OFF);
+		else { // pid == P.INIT_OP_OFF or P.INIT_OP_ON
+			PreSSXOT pressxot = new PreSSXOT(con1, con2, md,
+					pid == P.INIT_OP_OFF ? P.INIT_OP_XOT_OFF : P.INIT_OP_XOT_ON);
 			pressxot.runE(predata, timer);
 
-			int lBytes = md.getLBytes(predata.getIndex());
+			int bytes = pid == P.INIT_OP_OFF ? md.getLBytes(predata.getIndex()) : md.getDBytes();
+
 			predata.offop_e = new Array64<byte[]>(s);
 			for (long i = 0; i < s; i++)
-				predata.offop_e.set(i, Util.nextBytes(lBytes, Crypto.sr));
+				predata.offop_e.set(i, Util.nextBytes(bytes, Crypto.sr));
 
 			timer.start(pid, M.offline_write);
 			con2.writeByteArray64(predata.offop_e);
@@ -60,7 +62,7 @@ public class PreOblivPermute extends Protocol {
 	public void runD(PreData predata, long s, Timer timer) {
 		timer.start(pid, M.offline_comp);
 
-		PreSSXOT pressxot = new PreSSXOT(con1, con2, md, (pid == P.OP_ON) ? P.OP_XOT_ON : P.OP_XOT_OFF);
+		PreSSXOT pressxot = new PreSSXOT(con1, con2, md, pid + 1);
 		pressxot.runD(predata, s, s, timer);
 
 		timer.stop(pid, M.offline_comp);
@@ -69,8 +71,8 @@ public class PreOblivPermute extends Protocol {
 	public void runC(PreData predata, Timer timer) {
 		timer.start(pid, M.offline_comp);
 
-		if (pid == P.OP_ON) {
-			PreSSXOT pressxot = new PreSSXOT(con1, con2, md, P.OP_XOT_ON);
+		if (pid == P.IPM_OP) {
+			PreSSXOT pressxot = new PreSSXOT(con1, con2, md, P.IPM_OP_XOT);
 			pressxot.runC(predata, timer);
 
 			timer.start(pid, M.offline_read);
@@ -79,7 +81,8 @@ public class PreOblivPermute extends Protocol {
 		}
 
 		else {
-			PreSSXOT pressxot = new PreSSXOT(con1, con2, md, P.OP_XOT_OFF);
+			PreSSXOT pressxot = new PreSSXOT(con1, con2, md,
+					pid == P.INIT_OP_OFF ? P.INIT_OP_XOT_OFF : P.INIT_OP_XOT_ON);
 			pressxot.runC(predata, timer);
 
 			timer.start(pid, M.offline_read);

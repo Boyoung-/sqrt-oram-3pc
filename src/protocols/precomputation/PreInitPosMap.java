@@ -27,7 +27,7 @@ public class PreInitPosMap extends Protocol {
 		pregps.runE(predata, timer);
 
 		long n = md.getNumBlocks(predata.getIndex());
-		PreOblivPermute preop = new PreOblivPermute(con1, con2, md, P.OP_OFF);
+		PreOblivPermute preop = new PreOblivPermute(con1, con2, md, P.IPM_OP);
 		preop.runE(predata, n, timer);
 
 		if (predata.getIndex() > 0) {
@@ -48,7 +48,7 @@ public class PreInitPosMap extends Protocol {
 		pregps.runD(predata, timer);
 
 		long n = md.getNumBlocks(predata.getIndex());
-		PreOblivPermute preop = new PreOblivPermute(con1, con2, md, P.OP_OFF);
+		PreOblivPermute preop = new PreOblivPermute(con1, con2, md, P.IPM_OP);
 		preop.runD(predata, n, timer);
 
 		if (predata.getIndex() > 0) {
@@ -65,7 +65,7 @@ public class PreInitPosMap extends Protocol {
 		PreGenPermShare pregps = new PreGenPermShare(con1, con2, md);
 		pregps.runC(predata, n * md.getTwoTauPow(), timer);
 
-		PreOblivPermute preop = new PreOblivPermute(con1, con2, md, P.OP_OFF);
+		PreOblivPermute preop = new PreOblivPermute(con1, con2, md, P.IPM_OP);
 		preop.runC(predata, timer);
 
 		if (predata.getIndex() > 0) {

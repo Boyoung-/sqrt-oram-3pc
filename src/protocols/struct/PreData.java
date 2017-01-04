@@ -104,4 +104,8 @@ public class PreData {
 	public Block acc_r;
 	public Block acc_A_b;
 	public int[] acc_delta;
+
+	// INIT
+	public Array64<Long> init_pi_D;
+	public Array64<Long> init_pi_E;
 }

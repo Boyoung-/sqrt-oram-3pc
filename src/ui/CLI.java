@@ -85,6 +85,8 @@ public class CLI {
 			operation = GetPointer.class;
 		} else if (protocol.equals("xot")) {
 			operation = SSXOT.class;
+		} else if (protocol.equals("init")) {
+			operation = Initialize.class;
 		} else if (protocol.equals("rtv")) {
 			operation = RunSqrtOram.class;
 		} else {

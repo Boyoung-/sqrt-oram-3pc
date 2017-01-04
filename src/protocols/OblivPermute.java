@@ -24,21 +24,21 @@ public class OblivPermute extends Protocol {
 	// only for testing
 	public OblivPermute(Communication con1, Communication con2, Metadata md) {
 		super(con1, con2, md);
-		pid = P.OP_ON;
+		pid = P.INIT_OP_ON;
 		onoff = 0;
 	}
 
 	public OblivPermute(Communication con1, Communication con2, Metadata md, int pid) {
 		super(con1, con2, md);
 		this.pid = pid;
-		this.onoff = (pid == P.OP_ON) ? 0 : 3;
+		this.onoff = (pid == P.INIT_OP_ON) ? 0 : 3;
 	}
 
 	public Array64<Block> runE(PreData predata, Array64<Long> pi_E, Array64<Block> x_b, Timer timer) {
 		timer.start(pid, M.online_comp + onoff);
 
 		// step 2
-		SSXOT ssxot = new SSXOT(con1, con2, md, P.OP_XOT_ON);
+		SSXOT ssxot = new SSXOT(con1, con2, md, P.IPM_OP_XOT);
 		Array64<Block> b = ssxot.runE(predata, Util.permute(x_b, pi_E), timer);
 
 		// step 4
@@ -52,7 +52,7 @@ public class OblivPermute extends Protocol {
 		timer.start(pid, M.online_comp + onoff);
 
 		// step 2
-		SSXOT ssxot = new SSXOT(con1, con2, md, P.OP_XOT_OFF);
+		SSXOT ssxot = new SSXOT(con1, con2, md, pid == P.INIT_OP_OFF ? P.INIT_OP_XOT_OFF : P.INIT_OP_XOT_ON);
 		Array64<byte[]> b = ssxot.runOffE(predata, Util.permute(x_b, pi_E), timer);
 
 		// step 4
@@ -71,7 +71,7 @@ public class OblivPermute extends Protocol {
 		timer.stop(pid, M.online_write + onoff);
 
 		// step 2
-		SSXOT ssxot = new SSXOT(con1, con2, md, P.OP_XOT_ON);
+		SSXOT ssxot = new SSXOT(con1, con2, md, P.IPM_OP_XOT);
 		ssxot.runD(predata, Util.inversePermutationLong(pi_D), timer);
 
 		// step 3
@@ -92,7 +92,7 @@ public class OblivPermute extends Protocol {
 		timer.stop(pid, M.online_write + onoff);
 
 		// step 2
-		SSXOT ssxot = new SSXOT(con1, con2, md, P.OP_XOT_OFF);
+		SSXOT ssxot = new SSXOT(con1, con2, md, pid == P.INIT_OP_OFF ? P.INIT_OP_XOT_OFF : P.INIT_OP_XOT_ON);
 		ssxot.runOffD(predata, Util.inversePermutationLong(pi_D), timer);
 
 		// step 3
@@ -113,7 +113,7 @@ public class OblivPermute extends Protocol {
 		timer.stop(pid, M.online_read + onoff);
 
 		// step 2
-		SSXOT ssxot = new SSXOT(con1, con2, md, P.OP_XOT_ON);
+		SSXOT ssxot = new SSXOT(con1, con2, md, P.IPM_OP_XOT);
 		Array64<Block> a = ssxot.runC(predata, Util.permute(x_a, pi_E), timer);
 
 		// step 3
@@ -135,7 +135,7 @@ public class OblivPermute extends Protocol {
 		timer.stop(pid, M.online_read + onoff);
 
 		// step 2
-		SSXOT ssxot = new SSXOT(con1, con2, md, P.OP_XOT_OFF);
+		SSXOT ssxot = new SSXOT(con1, con2, md, pid == P.INIT_OP_OFF ? P.INIT_OP_XOT_OFF : P.INIT_OP_XOT_ON);
 		Array64<byte[]> a = ssxot.runOffC(predata, Util.permute(x_a, pi_E), timer);
 
 		// step 3
@@ -159,7 +159,7 @@ public class OblivPermute extends Protocol {
 		PreOblivPermute preop = null;
 		int levelIndex;
 
-		pid = P.OP_ON;
+		pid = P.IPM_OP;
 		for (int j = 0; j < 100; j++) {
 			preop = new PreOblivPermute(con1, con2, md, pid);
 
@@ -190,13 +190,13 @@ public class OblivPermute extends Protocol {
 				boolean pass = true;
 				for (long i = 0; i < s; i++) {
 					if (!perm.get(i).equals(x_prime.get(i))) {
-						System.err.println(j + " " + i + ": OP_ON test failed");
+						System.err.println(j + " " + i + ": IPM_OP test failed");
 						pass = false;
 						break;
 					}
 				}
 				if (pass)
-					System.out.println(j + ": OP_ON test passed");
+					System.out.println(j + ": IPM_OP test passed");
 
 			} else if (party == Party.Debbie) {
 				levelIndex = con1.readInt();
@@ -223,13 +223,13 @@ public class OblivPermute extends Protocol {
 			}
 		}
 
-		pid = P.OP_OFF;
+		pid = P.INIT_OP_ON;
 		for (int j = 100; j < 200; j++) {
 			preop = new PreOblivPermute(con1, con2, md, pid);
 
 			if (party == Party.Eddie) {
 				levelIndex = Crypto.sr.nextInt(md.getNumLevels());
-				int lBytes = md.getLBytes(levelIndex);
+				int bytes = pid == P.INIT_OP_OFF ? md.getLBytes(levelIndex) : md.getDBytes();
 				con1.write(levelIndex);
 				con2.write(levelIndex);
 				predata = new PreData(levelIndex);
@@ -239,8 +239,8 @@ public class OblivPermute extends Protocol {
 				Array64<byte[]> x = new Array64<byte[]>(s);
 				Array64<byte[]> x_a = new Array64<byte[]>(s);
 				for (long i = 0; i < s; i++) {
-					x.set(i, Util.nextBytes(lBytes, Crypto.sr));
-					x_a.set(i, Util.nextBytes(lBytes, Crypto.sr));
+					x.set(i, Util.nextBytes(bytes, Crypto.sr));
+					x_a.set(i, Util.nextBytes(bytes, Crypto.sr));
 				}
 				Array64<byte[]> x_b = Util.xorByteArray64(x, x_a);
 				con2.writeLongArray64(pi_E);
@@ -255,13 +255,13 @@ public class OblivPermute extends Protocol {
 				boolean pass = true;
 				for (long i = 0; i < s; i++) {
 					if (!Util.equal(perm.get(i), x_prime.get(i))) {
-						System.err.println(j + " " + i + ": OP_OFF test failed");
+						System.err.println(j + " " + i + ": " + P.names[pid] + " test failed");
 						pass = false;
 						break;
 					}
 				}
 				if (pass)
-					System.out.println(j + ": OP_OFF test passed");
+					System.out.println(j + ": " + P.names[pid] + " test passed");
 
 			} else if (party == Party.Debbie) {
 				levelIndex = con1.readInt();

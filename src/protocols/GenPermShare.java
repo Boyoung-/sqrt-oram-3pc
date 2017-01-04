@@ -25,12 +25,17 @@ public class GenPermShare extends Protocol {
 	public Array64<Long> runE(PreData predata, Array64<Long> pi_E, Timer timer) {
 		timer.start(pid, M.offline_comp);
 
-		// step 2
+		// step 1
+		timer.start(pid, M.offline_write);
+		con2.writeLongArray64(pi_E);
+		timer.stop(pid, M.offline_write);
+
+		// step 3
 		timer.start(pid, M.offline_read);
 		Array64<Long> z = con1.readLongArray64();
 		timer.stop(pid, M.offline_read);
 
-		// step 3
+		// step 4
 		Array64<Long> pi_ivs = Util.inversePermutationLong(pi_E);
 		Array64<Long> pi_b = Util.permute(Util.xor(z, predata.gps_r), pi_ivs);
 
@@ -41,12 +46,12 @@ public class GenPermShare extends Protocol {
 	public Array64<Long> runD(PreData predata, Array64<Long> pi_D, Timer timer) {
 		timer.start(pid, M.offline_comp);
 
-		// step1
+		// step 2
 		timer.start(pid, M.offline_read);
 		Array64<Long> pi_a = con2.readLongArray64();
 		timer.stop(pid, M.offline_read);
 
-		// step 2
+		// step 3
 		Array64<Long> z = Util.xor(pi_D, predata.gps_p);
 
 		timer.start(pid, M.offline_write);
@@ -57,10 +62,15 @@ public class GenPermShare extends Protocol {
 		return pi_a;
 	}
 
-	public void runC(PreData predata, Array64<Long> pi_E, Timer timer) {
+	public void runC(PreData predata, Timer timer) {
 		timer.start(pid, M.offline_comp);
 
 		// step 1
+		timer.start(pid, M.offline_read);
+		Array64<Long> pi_E = con1.readLongArray64();
+		timer.stop(pid, M.offline_read);
+
+		// step 2
 		Array64<Long> pi_ivs = Util.inversePermutationLong(pi_E);
 		Array64<Long> pi_a = Util.permute(Util.xor(predata.gps_p, predata.gps_r), pi_ivs);
 
@@ -111,7 +121,7 @@ public class GenPermShare extends Protocol {
 				pregps.runC(predata, v, timer);
 
 				pi_E = con1.readLongArray64();
-				runC(predata, pi_E, timer);
+				runC(predata, timer);
 
 				pi_b = con1.readLongArray64();
 				pi_D = con2.readLongArray64();
