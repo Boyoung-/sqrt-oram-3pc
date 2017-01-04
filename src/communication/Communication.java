@@ -449,7 +449,7 @@ public class Communication {
 			long end = i + pack;
 			if (end > arr.size())
 				end = arr.size();
-			write(ComUtil.serializeBlock64(arr, i, end));
+			write(ComUtil.serializeBlockArray64(arr, i, end));
 		}
 	}
 
@@ -461,7 +461,7 @@ public class Communication {
 			long end = i + pack;
 			if (end > arr.size())
 				end = arr.size();
-			write(pid, ComUtil.serializeBlock64(arr, i, end));
+			write(pid, ComUtil.serializeBlockArray64(arr, i, end));
 		}
 	}
 
@@ -473,7 +473,7 @@ public class Communication {
 			long end = i + pack;
 			if (end > arr.size())
 				end = arr.size();
-			write(ComUtil.serializeLong64(arr, i, end));
+			write(ComUtil.serializeLongArray64(arr, i, end));
 		}
 	}
 
@@ -485,7 +485,31 @@ public class Communication {
 			long end = i + pack;
 			if (end > arr.size())
 				end = arr.size();
-			write(pid, ComUtil.serializeLong64(arr, i, end));
+			write(pid, ComUtil.serializeLongArray64(arr, i, end));
+		}
+	}
+
+	public void writeByteArray64(Array64<byte[]> arr) {
+		write(arr.size());
+		int length = arr.get(0).length;
+		int pack = Math.max(packSize / length, 1);
+		for (long i = 0; i < arr.size(); i += pack) {
+			long end = i + pack;
+			if (end > arr.size())
+				end = arr.size();
+			write(ComUtil.serializeByteArray64(arr, i, end));
+		}
+	}
+
+	public void writeByteArray64(int pid, Array64<byte[]> arr) {
+		write(pid, arr.size());
+		int length = arr.get(0).length;
+		int pack = Math.max(packSize / length, 1);
+		for (long i = 0; i < arr.size(); i += pack) {
+			long end = i + pack;
+			if (end > arr.size())
+				end = arr.size();
+			write(pid, ComUtil.serializeByteArray64(arr, i, end));
 		}
 	}
 
@@ -770,6 +794,34 @@ public class Communication {
 		long cnt = 0;
 		while (cnt < size) {
 			long[] array = ComUtil.toLongArray(read(pid));
+			for (int i = 0; i < array.length; i++) {
+				out.set(cnt, array[i]);
+				cnt++;
+			}
+		}
+		return out;
+	}
+
+	public Array64<byte[]> readByteArray64() {
+		long size = readLong();
+		Array64<byte[]> out = new Array64<byte[]>(size);
+		long cnt = 0;
+		while (cnt < size) {
+			byte[][] array = ComUtil.toDoubleByteArray(read());
+			for (int i = 0; i < array.length; i++) {
+				out.set(cnt, array[i]);
+				cnt++;
+			}
+		}
+		return out;
+	}
+
+	public Array64<byte[]> readByteArray64(int pid) {
+		long size = readLong(pid);
+		Array64<byte[]> out = new Array64<byte[]>(size);
+		long cnt = 0;
+		while (cnt < size) {
+			byte[][] array = ComUtil.toDoubleByteArray(read(pid));
 			for (int i = 0; i < array.length; i++) {
 				out.set(cnt, array[i]);
 				cnt++;

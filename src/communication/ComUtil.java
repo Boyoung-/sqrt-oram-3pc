@@ -36,6 +36,30 @@ public class ComUtil {
 		return out;
 	}
 
+	public static byte[] serializeByteArray64(Array64<byte[]> in, long start, long end) {
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		DataOutputStream dos = new DataOutputStream(baos);
+		byte[] out = null;
+		try {
+			long n = end - start;
+			dos.writeInt((int) n);
+			dos.writeInt(in.get(start).length);
+			for (long j = 0; j < n; j++)
+				dos.write(in.get(start + j));
+			out = baos.toByteArray();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				dos.close();
+				baos.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		return out;
+	}
+
 	public static byte[][] toDoubleByteArray(byte[] in) {
 		ByteArrayInputStream bais = new ByteArrayInputStream(in);
 		DataInputStream dis = new DataInputStream(bais);
@@ -201,7 +225,7 @@ public class ComUtil {
 		return out;
 	}
 
-	public static byte[] serializeLong64(Array64<Long> in, long start, long end) {
+	public static byte[] serializeLongArray64(Array64<Long> in, long start, long end) {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		DataOutputStream dos = new DataOutputStream(baos);
 		byte[] out = null;
@@ -315,7 +339,7 @@ public class ComUtil {
 		return out;
 	}
 
-	public static byte[] serializeBlock64(Array64<Block> in, long start, long end) {
+	public static byte[] serializeBlockArray64(Array64<Block> in, long start, long end) {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		DataOutputStream dos = new DataOutputStream(baos);
 		byte[] out = null;

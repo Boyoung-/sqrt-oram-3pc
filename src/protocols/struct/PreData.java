@@ -6,8 +6,6 @@ import crypto.PRF;
 import gc.GCGetPointer;
 import oram.Block;
 import util.Array64;
-import util.P;
-import util.Util;
 
 public class PreData {
 	private int index;
@@ -20,7 +18,7 @@ public class PreData {
 		return index;
 	}
 
-	// SSCOT
+	// COT
 	public byte[] sscot_k;
 	public byte[] sscot_kprime;
 	public byte[][] sscot_r;
@@ -29,23 +27,25 @@ public class PreData {
 
 	public int[] access_sigma;
 
-	// SSXOT
-	@SuppressWarnings("unchecked")
-	public Array64<Block>[] ssxot_delta = Util.genericArray(Array64.class, P.size);
-	@SuppressWarnings("unchecked")
-	public Array64<Long>[] ssxot_E_pi = Util.genericArray(Array64.class, P.size);
-	@SuppressWarnings("unchecked")
-	public Array64<Long>[] ssxot_C_pi = Util.genericArray(Array64.class, P.size);
-	@SuppressWarnings("unchecked")
-	public Array64<Long>[] ssxot_E_pi_ivs = Util.genericArray(Array64.class, P.size);
-	@SuppressWarnings("unchecked")
-	public Array64<Long>[] ssxot_C_pi_ivs = Util.genericArray(Array64.class, P.size);
-	@SuppressWarnings("unchecked")
-	public Array64<Block>[] ssxot_E_r = Util.genericArray(Array64.class, P.size);
-	@SuppressWarnings("unchecked")
-	public Array64<Block>[] ssxot_C_r = Util.genericArray(Array64.class, P.size);
+	// OP_XOT_ON
+	public Array64<Block> ssxot_delta;
+	public Array64<Long> ssxot_E_pi;
+	public Array64<Long> ssxot_C_pi;
+	public Array64<Long> ssxot_E_pi_ivs;
+	public Array64<Long> ssxot_C_pi_ivs;
+	public Array64<Block> ssxot_E_r;
+	public Array64<Block> ssxot_C_r;
 
-	// ACC_SSXOT
+	// OP_XOT_OFF
+	public Array64<byte[]> offssxot_delta;
+	public Array64<Long> offssxot_E_pi;
+	public Array64<Long> offssxot_C_pi;
+	public Array64<Long> offssxot_E_pi_ivs;
+	public Array64<Long> offssxot_C_pi_ivs;
+	public Array64<byte[]> offssxot_E_r;
+	public Array64<byte[]> offssxot_C_r;
+
+	// ACC_XOT
 	public Block[] accxot_delta;
 	public int[] accxot_E_pi;
 	public int[] accxot_C_pi;
@@ -62,7 +62,6 @@ public class PreData {
 	public Array64<Long> gpc_pi_D;
 	public Array64<Long> gpc_sig1;
 	public Array64<Long> gpc_sig2;
-	// public Array64<Long> gpc_s;
 	public Array64<Long> gpc_r1;
 	public Array64<Long> gpc_r2;
 	public Array64<Long> gpc_gam1;

@@ -37,9 +37,9 @@ public class SSXOT extends Protocol {
 		timer.start(pid, M.online_comp);
 
 		// step 1
-		Array64<Block> a = predata.ssxot_E_r[pid];
+		Array64<Block> a = predata.ssxot_E_r;
 		for (long i = 0; i < m.size(); i++)
-			a.get(i).setXor(m.get(predata.ssxot_E_pi[pid].get(i)));
+			a.get(i).setXor(m.get(predata.ssxot_E_pi.get(i)));
 
 		timer.start(pid, M.online_write);
 		con2.writeBlockArray64(pid, a);
@@ -57,6 +57,35 @@ public class SSXOT extends Protocol {
 		Array64<Block> z = p;
 		for (long i = 0; i < j.size(); i++)
 			z.get(i).setXor(a.get(j.get(i)));
+
+		timer.stop(pid, M.online_comp);
+		return z;
+	}
+
+	public Array64<byte[]> runOffE(PreData predata, Array64<byte[]> m, Timer timer) {
+		timer.start(pid, M.online_comp);
+
+		// step 1
+		Array64<byte[]> a = predata.offssxot_E_r;
+		for (long i = 0; i < m.size(); i++)
+			Util.setXor(a.get(i), m.get(predata.offssxot_E_pi.get(i)));
+
+		timer.start(pid, M.online_write);
+		con2.writeByteArray64(pid, a);
+		timer.stop(pid, M.online_write);
+
+		timer.start(pid, M.online_read);
+		a = con2.readByteArray64(pid);
+
+		// step 2
+		Array64<Long> j = con1.readLongArray64(pid);
+		Array64<byte[]> p = con1.readByteArray64(pid);
+		timer.stop(pid, M.online_read);
+
+		// step 3
+		Array64<byte[]> z = p;
+		for (long i = 0; i < j.size(); i++)
+			Util.setXor(z.get(i), a.get(j.get(i)));
 
 		timer.stop(pid, M.online_comp);
 		return z;
@@ -101,10 +130,10 @@ public class SSXOT extends Protocol {
 		Array64<Block> E_p = new Array64<Block>(k);
 		Array64<Block> C_p = new Array64<Block>(k);
 		for (long i = 0; i < k; i++) {
-			E_j.set(i, predata.ssxot_E_pi_ivs[pid].get(index.get(i)));
-			C_j.set(i, predata.ssxot_C_pi_ivs[pid].get(index.get(i)));
-			E_p.set(i, predata.ssxot_E_r[pid].get(E_j.get(i)).xor(predata.ssxot_delta[pid].get(i)));
-			C_p.set(i, predata.ssxot_C_r[pid].get(C_j.get(i)).xor(predata.ssxot_delta[pid].get(i)));
+			E_j.set(i, predata.ssxot_E_pi_ivs.get(index.get(i)));
+			C_j.set(i, predata.ssxot_C_pi_ivs.get(index.get(i)));
+			E_p.set(i, predata.ssxot_E_r.get(E_j.get(i)).xor(predata.ssxot_delta.get(i)));
+			C_p.set(i, predata.ssxot_C_r.get(C_j.get(i)).xor(predata.ssxot_delta.get(i)));
 		}
 
 		timer.start(pid, M.online_write);
@@ -112,6 +141,32 @@ public class SSXOT extends Protocol {
 		con2.writeBlockArray64(pid, E_p);
 		con1.writeLongArray64(pid, C_j);
 		con1.writeBlockArray64(pid, C_p);
+		timer.stop(pid, M.online_write);
+
+		timer.stop(pid, M.online_comp);
+	}
+
+	public void runOffD(PreData predata, Array64<Long> index, Timer timer) {
+		timer.start(pid, M.online_comp);
+
+		// step 2
+		long k = index.size();
+		Array64<Long> E_j = new Array64<Long>(k);
+		Array64<Long> C_j = new Array64<Long>(k);
+		Array64<byte[]> E_p = new Array64<byte[]>(k);
+		Array64<byte[]> C_p = new Array64<byte[]>(k);
+		for (long i = 0; i < k; i++) {
+			E_j.set(i, predata.offssxot_E_pi_ivs.get(index.get(i)));
+			C_j.set(i, predata.offssxot_C_pi_ivs.get(index.get(i)));
+			E_p.set(i, Util.xor(predata.offssxot_E_r.get(E_j.get(i)), predata.offssxot_delta.get(i)));
+			C_p.set(i, Util.xor(predata.offssxot_C_r.get(C_j.get(i)), predata.offssxot_delta.get(i)));
+		}
+
+		timer.start(pid, M.online_write);
+		con2.writeLongArray64(pid, E_j);
+		con2.writeByteArray64(pid, E_p);
+		con1.writeLongArray64(pid, C_j);
+		con1.writeByteArray64(pid, C_p);
 		timer.stop(pid, M.online_write);
 
 		timer.stop(pid, M.online_comp);
@@ -147,9 +202,9 @@ public class SSXOT extends Protocol {
 		timer.start(pid, M.online_comp);
 
 		// step 1
-		Array64<Block> a = predata.ssxot_C_r[pid];
+		Array64<Block> a = predata.ssxot_C_r;
 		for (long i = 0; i < m.size(); i++)
-			a.get(i).setXor(m.get(predata.ssxot_C_pi[pid].get(i)));
+			a.get(i).setXor(m.get(predata.ssxot_C_pi.get(i)));
 
 		timer.start(pid, M.online_write);
 		con1.writeBlockArray64(pid, a);
@@ -167,6 +222,35 @@ public class SSXOT extends Protocol {
 		Array64<Block> z = p;
 		for (long i = 0; i < j.size(); i++)
 			z.get(i).setXor(a.get(j.get(i)));
+
+		timer.stop(pid, M.online_comp);
+		return z;
+	}
+
+	public Array64<byte[]> runOffC(PreData predata, Array64<byte[]> m, Timer timer) {
+		timer.start(pid, M.online_comp);
+
+		// step 1
+		Array64<byte[]> a = predata.offssxot_C_r;
+		for (long i = 0; i < m.size(); i++)
+			Util.setXor(a.get(i), m.get(predata.offssxot_C_pi.get(i)));
+
+		timer.start(pid, M.online_write);
+		con1.writeByteArray64(pid, a);
+		timer.stop(pid, M.online_write);
+
+		timer.start(pid, M.online_read);
+		a = con1.readByteArray64(pid);
+
+		// step 2
+		Array64<Long> j = con2.readLongArray64(pid);
+		Array64<byte[]> p = con2.readByteArray64(pid);
+		timer.stop(pid, M.online_read);
+
+		// step 3
+		Array64<byte[]> z = p;
+		for (long i = 0; i < j.size(); i++)
+			Util.setXor(z.get(i), a.get(j.get(i)));
 
 		timer.stop(pid, M.online_comp);
 		return z;
@@ -206,6 +290,7 @@ public class SSXOT extends Protocol {
 	public void run(Party party, SqrtOram oram) {
 		Timer timer = new Timer();
 
+		pid = P.OP_XOT_ON;
 		for (int j = 0; j < 100; j++) {
 			long n = 200;
 			long k = Crypto.sr.nextInt(50) + 50;
@@ -262,13 +347,84 @@ public class SSXOT extends Protocol {
 					BigInteger input = new BigInteger(C_m.get(index.get(i)).toByteArray());
 					BigInteger output = new BigInteger(E_out_m.get(i).xor(C_out_m.get(i)).toByteArray());
 					if (input.compareTo(output) != 0) {
-						System.err.println(j + " " + i + ": SSXOT test failed");
+						System.err.println(j + " " + i + ": OP_XOT_ON test failed");
 						pass = false;
 						break;
 					}
 				}
 				if (pass)
-					System.out.println(j + ": SSXOT test passed");
+					System.out.println(j + ": OP_XOT_ON test passed");
+
+			} else {
+				throw new NoSuchPartyException(party + "");
+			}
+		}
+
+		pid = P.OP_XOT_OFF;
+		for (int j = 100; j < 200; j++) {
+			long n = 200;
+			long k = Crypto.sr.nextInt(50) + 50;
+			Array64<byte[]> E_m = new Array64<byte[]>(n);
+			Array64<byte[]> C_m = new Array64<byte[]>(n);
+			int levelNum = Crypto.sr.nextInt(md.getNumLevels());
+			int lBytes = md.getLBytes(levelNum);
+			for (long i = 0; i < n; i++) {
+				C_m.set(i, Util.nextBytes(lBytes, Crypto.sr));
+				E_m.set(i, new byte[lBytes]);
+			}
+
+			if (party == Party.Eddie) {
+				con1.write(levelNum);
+				con2.write(levelNum);
+
+				PreData predata = new PreData(levelNum);
+				PreSSXOT pressxot = new PreSSXOT(con1, con2, md, pid);
+				pressxot.runE(predata, timer);
+
+				con2.writeByteArray64(C_m);
+
+				Array64<byte[]> E_out_m = runOffE(predata, E_m, timer);
+
+				con2.writeByteArray64(E_out_m);
+
+			} else if (party == Party.Debbie) {
+				levelNum = con1.readInt();
+
+				PreData predata = new PreData(levelNum);
+				PreSSXOT pressxot = new PreSSXOT(con1, con2, md, pid);
+				pressxot.runD(predata, n, k, timer);
+
+				Array64<Long> index = Util.randomPermutationLong(k, Crypto.sr);
+				runOffD(predata, index, timer);
+
+				con2.writeLongArray64(index);
+
+			} else if (party == Party.Charlie) {
+				levelNum = con1.readInt();
+
+				PreData predata = new PreData(levelNum);
+				PreSSXOT pressxot = new PreSSXOT(con1, con2, md, pid);
+				pressxot.runC(predata, timer);
+
+				C_m = con1.readByteArray64();
+
+				Array64<byte[]> C_out_m = runOffC(predata, C_m, timer);
+
+				Array64<Long> index = con2.readLongArray64();
+				Array64<byte[]> E_out_m = con1.readByteArray64();
+
+				boolean pass = true;
+				for (long i = 0; i < index.size(); i++) {
+					BigInteger input = new BigInteger(C_m.get(index.get(i)));
+					BigInteger output = new BigInteger(Util.xor(E_out_m.get(i), C_out_m.get(i)));
+					if (input.compareTo(output) != 0) {
+						System.err.println(j + " " + i + ": OP_XOT_OFF test failed");
+						pass = false;
+						break;
+					}
+				}
+				if (pass)
+					System.out.println(j + ": OP_XOT_OFF test passed");
 
 			} else {
 				throw new NoSuchPartyException(party + "");
@@ -276,7 +432,7 @@ public class SSXOT extends Protocol {
 		}
 
 		pid = P.ACC_XOT;
-		for (int j = 100; j < 200; j++) {
+		for (int j = 200; j < 300; j++) {
 			int n = 200;
 			int k = Crypto.sr.nextInt(50) + 50;
 			Block[] E_m = new Block[n];
@@ -332,13 +488,13 @@ public class SSXOT extends Protocol {
 					BigInteger input = new BigInteger(C_m[index[i]].toByteArray());
 					BigInteger output = new BigInteger(E_out_m[i].xor(C_out_m[i]).toByteArray());
 					if (input.compareTo(output) != 0) {
-						System.err.println(j + " " + i + ": SSXOT test failed");
+						System.err.println(j + " " + i + ": ACC_XOT test failed");
 						pass = false;
 						break;
 					}
 				}
 				if (pass)
-					System.out.println(j + ": SSXOT test passed");
+					System.out.println(j + ": ACC_XOT test passed");
 
 			} else {
 				throw new NoSuchPartyException(party + "");

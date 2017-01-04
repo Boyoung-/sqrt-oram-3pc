@@ -86,7 +86,7 @@ public class CLI {
 		} else if (protocol.equals("xot")) {
 			operation = SSXOT.class;
 		} else if (protocol.equals("rtv")) {
-			operation = Retrieve.class;
+			operation = RunSqrtOram.class;
 		} else {
 			System.out.println("Protocol " + protocol + " not supported");
 			System.exit(-1);
@@ -137,7 +137,7 @@ public class CLI {
 			try {
 				Protocol p = operationCtor.newInstance(con1[0], con2[0], md);
 				if (protocol.equals("rtv"))
-					((Retrieve) p).setCons(con1, con2);
+					((RunSqrtOram) p).setCons(con1, con2);
 				p.run(Party.Eddie, forestFile);
 			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
 					| InvocationTargetException e) {
@@ -174,7 +174,7 @@ public class CLI {
 			try {
 				Protocol p = operationCtor.newInstance(con1[0], con2[0], md);
 				if (protocol.equals("rtv"))
-					((Retrieve) p).setCons(con1, con2);
+					((RunSqrtOram) p).setCons(con1, con2);
 				p.run(Party.Debbie, forestFile);
 			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
 					| InvocationTargetException e) {
@@ -212,7 +212,7 @@ public class CLI {
 			try {
 				Protocol p = operationCtor.newInstance(con1[0], con2[0], md);
 				if (protocol.equals("rtv"))
-					((Retrieve) p).setCons(con1, con2);
+					((RunSqrtOram) p).setCons(con1, con2);
 				p.run(Party.Charlie, forestFile);
 			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
 					| InvocationTargetException e) {

@@ -1,19 +1,17 @@
 package protocols.precomputation;
 
 import communication.Communication;
-import oramOLD.Forest;
-import oramOLD.Metadata;
+import oram.SqrtOram;
+import oram.Metadata;
 import protocols.Protocol;
 import protocols.struct.Party;
 import protocols.struct.PreData;
 import util.Timer;
 
-public class PreRetrieve extends Protocol {
-	public PreRetrieve(Communication con1, Communication con2) {
-		super(con1, con2);
+public class PreRunSqrtOram extends Protocol {
+	public PreRunSqrtOram(Communication con1, Communication con2, Metadata md) {
+		super(con1, con2, md);
 	}
-
-	// TODO: not all protocols run on all trees (remove unnecessary precomp)
 
 	public void runE(PreData[] predata, Metadata md, int ti, Timer timer) {
 		// 1st eviction
@@ -85,6 +83,6 @@ public class PreRetrieve extends Protocol {
 	}
 
 	@Override
-	public void run(Party party, Metadata md, Forest forest) {
+	public void run(Party party, SqrtOram oram) {
 	}
 }

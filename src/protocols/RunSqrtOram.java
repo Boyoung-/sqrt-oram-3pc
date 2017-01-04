@@ -7,12 +7,10 @@ import communication.Communication;
 import crypto.Crypto;
 import exceptions.AccessException;
 import exceptions.NoSuchPartyException;
-import oramOLD.Forest;
+import oram.SqrtOram;
 import oramOLD.Global;
-import oramOLD.Metadata;
-import oramOLD.Tree;
-import oramOLD.Tuple;
-import protocols.precomputation.PreRetrieve;
+import oram.Metadata;
+import protocols.precomputation.PreRunSqrtOram;
 import protocols.struct.OutAccess;
 import protocols.struct.OutRetrieve;
 import protocols.struct.Party;
@@ -23,13 +21,13 @@ import util.StopWatch;
 import util.Timer;
 import util.Util;
 
-public class Retrieve extends Protocol {
+public class RunSqrtOram extends Protocol {
 
 	Communication[] cons1;
 	Communication[] cons2;
 
-	public Retrieve(Communication con1, Communication con2) {
-		super(con1, con2);
+	public RunSqrtOram(Communication con1, Communication con2, Metadata md) {
+		super(con1, con2, md);
 	}
 
 	public void setCons(Communication[] a, Communication[] b) {
@@ -208,7 +206,7 @@ public class Retrieve extends Protocol {
 				System.out.print("Precomputation... ");
 
 				PreData[][] predata = new PreData[numTrees][2];
-				PreRetrieve preretrieve = new PreRetrieve(con1, con2);
+				PreRunSqrtOram preretrieve = new PreRunSqrtOram(con1, con2);
 				for (int ti = 0; ti < numTrees; ti++) {
 					predata[ti][0] = new PreData();
 					predata[ti][1] = new PreData();
@@ -372,5 +370,11 @@ public class Retrieve extends Protocol {
 		System.out.println();
 
 		sanityCheck();
+	}
+
+	@Override
+	public void run(Party party, SqrtOram oram) {
+		// TODO Auto-generated method stub
+
 	}
 }
