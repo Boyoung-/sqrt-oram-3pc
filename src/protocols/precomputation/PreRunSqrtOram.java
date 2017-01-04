@@ -1,85 +1,57 @@
 package protocols.precomputation;
 
 import communication.Communication;
-import oram.SqrtOram;
+import oram.Level;
 import oram.Metadata;
+import oram.SqrtOram;
 import protocols.Protocol;
 import protocols.struct.Party;
 import protocols.struct.PreData;
+import util.M;
+import util.P;
 import util.Timer;
 
 public class PreRunSqrtOram extends Protocol {
+
+	private int pid = P.RUN;
+
 	public PreRunSqrtOram(Communication con1, Communication con2, Metadata md) {
 		super(con1, con2, md);
 	}
 
-	public void runE(PreData[] predata, Metadata md, int ti, Timer timer) {
-		// 1st eviction
-		PreAccess preaccess = new PreAccess(con1, con2);
-		PreReshuffle prereshuffle = new PreReshuffle(con1, con2);
-		PrePostProcessT prepostprocesst = new PrePostProcessT(con1, con2);
-		PreUpdateRoot preupdateroot = new PreUpdateRoot(con1, con2);
-		PreEviction preeviction = new PreEviction(con1, con2);
+	public void runE(PreData[] predata, SqrtOram oram, Timer timer) {
+		timer.start(pid, M.offline_comp);
 
-		int numTuples = md.getStashSizeOfTree(ti) + md.getLBitsOfTree(ti) * md.getW();
-		int[] tupleParam = new int[] { ti == 0 ? 0 : 1, md.getNBytesOfTree(ti), md.getLBytesOfTree(ti),
-				md.getABytesOfTree(ti) };
+		for (int i = 0; i < predata.length; i++) {
+			Level level = oram.getLevel(i);
+			PreAccess preacc = new PreAccess(con1, con2, md);
+			preacc.runE(predata[i], i == 0 ? (int) level.getFresh().size() : 1, level.getStash().size(), timer);
+		}
 
-		preaccess.runE(predata[0], md.getTwoTauPow(), numTuples, tupleParam, timer);
-		prereshuffle.runE(predata[0], timer);
-		prepostprocesst.runE(predata[0], timer);
-		preupdateroot.runE(predata[0], ti == 0, md.getStashSizeOfTree(ti), md.getLBitsOfTree(ti), timer);
-		preeviction.runE(predata[0], ti == 0, md.getLBitsOfTree(ti) + 1, md.getW(), timer);
-
-		// 2nd eviction
-		preupdateroot.runE(predata[1], ti == 0, md.getStashSizeOfTree(ti), md.getLBitsOfTree(ti), timer);
-		preeviction.runE(predata[1], ti == 0, md.getLBitsOfTree(ti) + 1, md.getW(), timer);
+		timer.stop(pid, M.offline_comp);
 	}
 
-	public long[] runD(PreData[] predata, Metadata md, int ti, PreData prev, Timer timer) {
-		// 1st eviction
-		PreAccess preaccess = new PreAccess(con1, con2);
-		PreReshuffle prereshuffle = new PreReshuffle(con1, con2);
-		PrePostProcessT prepostprocesst = new PrePostProcessT(con1, con2);
-		PreUpdateRoot preupdateroot = new PreUpdateRoot(con1, con2);
-		PreEviction preeviction = new PreEviction(con1, con2);
+	public void runD(PreData[] predata, SqrtOram oram, Timer timer) {
+		timer.start(pid, M.offline_comp);
 
-		int[] tupleParam = new int[] { ti == 0 ? 0 : 1, md.getNBytesOfTree(ti), md.getLBytesOfTree(ti),
-				md.getABytesOfTree(ti) };
-		long[] cnt = new long[2];
+		for (int i = 0; i < predata.length; i++) {
+			Level level = oram.getLevel(i);
+			PreAccess preacc = new PreAccess(con1, con2, md);
+			preacc.runD(predata[i], i == 0 ? (int) level.getFresh().size() : 1, level.getStash().size(), timer);
+		}
 
-		preaccess.runD(predata[0], timer);
-		prereshuffle.runD(predata[0], tupleParam, timer);
-		prepostprocesst.runD(predata[0], prev, md.getLBytesOfTree(ti), md.getAlBytesOfTree(ti), md.getTau(), timer);
-		cnt[0] += preupdateroot.runD(predata[0], ti == 0, md.getStashSizeOfTree(ti), md.getLBitsOfTree(ti), tupleParam,
-				timer);
-		cnt[1] += preeviction.runD(predata[0], ti == 0, md.getLBitsOfTree(ti) + 1, md.getW(), tupleParam, timer);
-
-		// 2nd eviction
-		cnt[0] += preupdateroot.runD(predata[1], ti == 0, md.getStashSizeOfTree(ti), md.getLBitsOfTree(ti), tupleParam,
-				timer);
-		cnt[1] += preeviction.runD(predata[1], ti == 0, md.getLBitsOfTree(ti) + 1, md.getW(), tupleParam, timer);
-
-		return cnt;
+		timer.stop(pid, M.offline_comp);
 	}
 
-	public void runC(PreData[] predata, Metadata md, int ti, PreData prev, Timer timer) {
-		// 1st eviction
-		PreAccess preaccess = new PreAccess(con1, con2);
-		PreReshuffle prereshuffle = new PreReshuffle(con1, con2);
-		PrePostProcessT prepostprocesst = new PrePostProcessT(con1, con2);
-		PreUpdateRoot preupdateroot = new PreUpdateRoot(con1, con2);
-		PreEviction preeviction = new PreEviction(con1, con2);
+	public void runC(PreData[] predata, int counter, Timer timer) {
+		timer.start(pid, M.offline_comp);
 
-		preaccess.runC(timer);
-		prereshuffle.runC(predata[0], timer);
-		prepostprocesst.runC(predata[0], prev, md.getLBytesOfTree(ti), md.getAlBytesOfTree(ti), timer);
-		preupdateroot.runC(predata[0], ti == 0, timer);
-		preeviction.runC(predata[0], ti == 0, timer);
+		for (int i = 0; i < predata.length; i++) {
+			PreAccess preacc = new PreAccess(con1, con2, md);
+			preacc.runC(predata[i], i == 0 ? (int) md.getNumBlocks(0) - counter : 1, counter, timer);
+		}
 
-		// 2nd eviction
-		preupdateroot.runC(predata[1], ti == 0, timer);
-		preeviction.runC(predata[1], ti == 0, timer);
+		timer.stop(pid, M.offline_comp);
 	}
 
 	@Override

@@ -87,6 +87,8 @@ public class CLI {
 			operation = SSXOT.class;
 		} else if (protocol.equals("init")) {
 			operation = Initialize.class;
+		} else if (protocol.equals("run")) {
+			operation = RunSqrtOram.class;
 		} else if (protocol.equals("rtv")) {
 			operation = RunSqrtOram.class;
 		} else {
@@ -138,8 +140,8 @@ public class CLI {
 
 			try {
 				Protocol p = operationCtor.newInstance(con1[0], con2[0], md);
-				if (protocol.equals("rtv"))
-					((RunSqrtOram) p).setCons(con1, con2);
+				// if (protocol.equals("rtv"))
+				// ((RunSqrtOram) p).setCons(con1, con2);
 				p.run(Party.Eddie, forestFile);
 			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
 					| InvocationTargetException e) {
@@ -175,8 +177,8 @@ public class CLI {
 
 			try {
 				Protocol p = operationCtor.newInstance(con1[0], con2[0], md);
-				if (protocol.equals("rtv"))
-					((RunSqrtOram) p).setCons(con1, con2);
+				// if (protocol.equals("rtv"))
+				// ((RunSqrtOram) p).setCons(con1, con2);
 				p.run(Party.Debbie, forestFile);
 			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
 					| InvocationTargetException e) {
@@ -213,8 +215,8 @@ public class CLI {
 
 			try {
 				Protocol p = operationCtor.newInstance(con1[0], con2[0], md);
-				if (protocol.equals("rtv"))
-					((RunSqrtOram) p).setCons(con1, con2);
+				// if (protocol.equals("rtv"))
+				// ((RunSqrtOram) p).setCons(con1, con2);
 				p.run(Party.Charlie, forestFile);
 			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
 					| InvocationTargetException e) {

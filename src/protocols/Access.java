@@ -119,10 +119,8 @@ public class Access extends Protocol {
 		return outacc;
 	}
 
-	public OutAccess runD(PreData predata, byte[] N, Level level, long p, Timer timer) {
+	public long runD(PreData predata, byte[] N, Level level, long p, Timer timer) {
 		timer.start(pid, M.online_comp);
-
-		OutAccess outacc = new OutAccess(0, null);
 
 		int levelIndex = predata.getIndex();
 		boolean lastLevel = (levelIndex == md.getNumLevels() - 1);
@@ -177,7 +175,7 @@ public class Access extends Protocol {
 
 			A_a = outgp.A;
 			B_a.setF(outgp.BF);
-			outacc.p = outgp.p;
+			p = outgp.p;
 
 			timer.start(pid, M.online_write);
 			con1.write(pid, outgp.p);
@@ -211,7 +209,7 @@ public class Access extends Protocol {
 		}
 
 		timer.stop(pid, M.online_comp);
-		return outacc;
+		return p;
 	}
 
 	public byte[] runC(PreData predata, Timer timer) {
@@ -308,8 +306,7 @@ public class Access extends Protocol {
 							timer);
 
 					N_a = con1.read();
-					OutAccess outacc = this.runD(predata, N_a, level, p, timer);
-					p = outacc.p;
+					p = this.runD(predata, N_a, level, p, timer);
 				}
 
 			} else if (party == Party.Charlie) {
@@ -331,7 +328,7 @@ public class Access extends Protocol {
 		// timer.print();
 	}
 
-	public void testAccFirst(Party party, SqrtOram oram) {
+	public void testAccessFirst(Party party, SqrtOram oram) {
 		Timer timer = new Timer();
 		byte[] N = null;
 		byte[] N_a = null;

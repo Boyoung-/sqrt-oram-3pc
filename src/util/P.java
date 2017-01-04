@@ -18,7 +18,9 @@ public class P {
 	public static final int GPC = 12;
 	public static final int GPS = 13;
 
+	public static final int RUN = 14;
+
 	public static final String[] names = { "INIT", "INIT_OP_ON", "INIT_OP_XOT_ON", "ACC", "ACC_XOT", "COT", "GP",
-			"INIT_OP_OFF", "INIT_OP_XOT_OFF", "IPM", "IPM_OP", "IPM_OP_XOT", "GPC", "GPS" };
+			"INIT_OP_OFF", "INIT_OP_XOT_OFF", "IPM", "IPM_OP", "IPM_OP_XOT", "GPC", "GPS", "RUN" };
 	public static final int size = names.length;
 }
