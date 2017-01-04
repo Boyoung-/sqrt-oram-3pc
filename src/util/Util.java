@@ -137,6 +137,15 @@ public class Util {
 		return c;
 	}
 
+	public static Array64<byte[]> xorByteArray64(Array64<byte[]> a, Array64<byte[]> b) {
+		if (a.size() != b.size())
+			throw new LengthNotMatchException(a.size() + " != " + b.size());
+		Array64<byte[]> c = new Array64<byte[]>(a.size());
+		for (long i = 0; i < a.size(); i++)
+			c.set(i, Util.xor(a.get(i), b.get(i)));
+		return c;
+	}
+
 	public static byte[] intToBytes(int i) {
 		ByteBuffer bb = ByteBuffer.allocate(4);
 		bb.putInt(i);

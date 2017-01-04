@@ -69,8 +69,11 @@ public class PreData {
 	public Array64<Long> gpc_t1;
 	public Array64<Long> gpc_t2;
 
-	// OP
+	// OP_ON
 	public Array64<Block> op_e;
+
+	// OP_OFF
+	public Array64<byte[]> offop_e;
 
 	// IPM
 	public Array64<Long> ipm_pi_prime_D;
