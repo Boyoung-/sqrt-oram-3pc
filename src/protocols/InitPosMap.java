@@ -92,7 +92,7 @@ public class InitPosMap extends Protocol {
 		return outipm;
 	}
 
-	public Array64<Long> runC(PreData predata, Timer timer) {
+	public void runC(PreData predata, Timer timer) {
 		timer.start(pid, M.offline_comp);
 
 		// step 1
@@ -106,7 +106,6 @@ public class InitPosMap extends Protocol {
 		}
 
 		timer.stop(pid, M.offline_comp);
-		return predata.ipm_pi_prime_E;
 	}
 
 	// for testing correctness
