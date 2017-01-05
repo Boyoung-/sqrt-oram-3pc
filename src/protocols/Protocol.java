@@ -59,19 +59,19 @@ public abstract class Protocol {
 		SqrtOram oram = null;
 
 		if (party == Party.Eddie) {
-			if (forestFile == null)
-				oram = SqrtOram.readFromFile(md.getDefaultSharesName1());
-			else
-				oram = SqrtOram.readFromFile(forestFile);
-			// oram = new SqrtOram(md, null);
-			// oram.initWithRecords();
+			// if (forestFile == null)
+			// oram = SqrtOram.readFromFile(md.getDefaultSharesName1());
+			// else
+			// oram = SqrtOram.readFromFile(forestFile);
+			oram = new SqrtOram(md, null);
+			oram.initWithRecords();
 
 		} else if (party == Party.Debbie) {
-			if (forestFile == null)
-				oram = SqrtOram.readFromFile(md.getDefaultSharesName2());
-			else
-				oram = SqrtOram.readFromFile(forestFile);
-			// oram = new SqrtOram(md, null);
+			// if (forestFile == null)
+			// oram = SqrtOram.readFromFile(md.getDefaultSharesName2());
+			// else
+			// oram = SqrtOram.readFromFile(forestFile);
+			oram = new SqrtOram(md, null);
 
 		} else if (party == Party.Charlie) {
 
