@@ -95,11 +95,6 @@ public class Initialize extends Protocol {
 
 				this.runE(predata[h - 1], oram.getLevel(h - 1), timer);
 
-				if (true)
-					System.out.println(j + ": Init test passed");
-				else
-					System.err.println(j + ": Init test failed");
-
 			} else if (party == Party.Debbie) {
 				preinit.runD(predata, oram, timer);
 
@@ -113,7 +108,11 @@ public class Initialize extends Protocol {
 			} else {
 				throw new NoSuchPartyException(party + "");
 			}
+
+			System.out.println(j + ": Init compilation passed");
 		}
+
+		System.out.println("Please use RunSqrtOram for correctness test");
 
 		// timer.print();
 	}
