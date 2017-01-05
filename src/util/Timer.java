@@ -51,16 +51,26 @@ public class Timer {
 	public void print() {
 		if (!stack.empty())
 			throw new TimerException("Stack not empty");
-		for (int i = 0; i < watches.length; i++)
+
+		for (int i = 0; i < P.cutoff; i++)
 			for (int j = 0; j < watches[i].length; j++)
+				System.out.println(watches[i][j].toMS());
+
+		for (int i = P.cutoff; i < watches.length; i++)
+			for (int j = 3; j < watches[i].length; j++)
 				System.out.println(watches[i][j].toMS());
 	}
 
 	public void noPrePrint() {
 		if (!stack.empty())
 			throw new TimerException("Stack not empty");
-		for (int i = 0; i < watches.length; i++)
+
+		for (int i = 0; i < P.cutoff; i++)
 			for (int j = 0; j < watches[i].length; j++)
+				System.out.println(watches[i][j].noPreToMS());
+
+		for (int i = P.cutoff; i < watches.length; i++)
+			for (int j = 3; j < watches[i].length; j++)
 				System.out.println(watches[i][j].noPreToMS());
 	}
 
