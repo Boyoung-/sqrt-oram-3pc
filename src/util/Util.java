@@ -68,6 +68,7 @@ public class Util {
 		return trash.xor(input).shiftLeft(start).xor(target);
 	}
 
+	// TODO: just use padArray?
 	public static byte[] rmSignBit(byte[] arr) {
 		if (arr.length < 2)
 			return arr;

@@ -17,64 +17,65 @@ import util.Util;
 public class GenPermConcat extends Protocol {
 
 	private int pid = P.GPC;
+	private int onoff = 3;
 
 	public GenPermConcat(Communication con1, Communication con2, Metadata md) {
 		super(con1, con2, md);
 	}
 
 	public Array64<Long> runE(PreData predata, Array64<Long> pi_b, Timer timer) {
-		timer.start(pid, M.offline_comp);
+		timer.start(pid, M.online_comp + onoff);
 
 		// step 1
 		Array64<Long> a1 = Util.xor(Util.permute(pi_b, predata.gpc_sig2), predata.gpc_r2);
 
-		timer.start(pid, M.offline_write);
+		timer.start(pid, M.online_write + onoff);
 		con2.writeLongArray64(a1);
-		timer.stop(pid, M.offline_write);
+		timer.stop(pid, M.online_write + onoff);
 
 		// step 2 & 3
-		timer.start(pid, M.offline_read);
+		timer.start(pid, M.online_read + onoff);
 		Array64<Long> z1 = con2.readLongArray64();
 		Array64<Long> z2 = con1.readLongArray64();
-		timer.stop(pid, M.offline_read);
+		timer.stop(pid, M.online_read + onoff);
 
 		Array64<Long> pi_E = Util.inversePermutationLong(Util.xor(z1, z2));
 
-		timer.stop(pid, M.offline_comp);
+		timer.stop(pid, M.online_comp + onoff);
 		return pi_E;
 	}
 
 	public Array64<Long> runD(PreData predata, Array64<Long> pi_a, Timer timer) {
-		timer.start(pid, M.offline_comp);
+		timer.start(pid, M.online_comp + onoff);
 
 		// step 3
 		Array64<Long> a2 = Util.xor(Util.permute(pi_a, predata.gpc_sig1), predata.gpc_r1);
 		Array64<Long> z2 = Util.xor(Util.permute(a2, predata.gpc_gam2), predata.gpc_t2);
 
-		timer.start(pid, M.offline_write);
+		timer.start(pid, M.online_write + onoff);
 		con1.writeLongArray64(z2);
-		timer.stop(pid, M.offline_write);
+		timer.stop(pid, M.online_write + onoff);
 
-		timer.stop(pid, M.offline_comp);
+		timer.stop(pid, M.online_comp + onoff);
 		return predata.gpc_pi_D;
 	}
 
 	public void runC(PreData predata, Timer timer) {
-		timer.start(pid, M.offline_comp);
+		timer.start(pid, M.online_comp + onoff);
 
 		// step 1
-		timer.start(pid, M.offline_read);
+		timer.start(pid, M.online_read + onoff);
 		Array64<Long> a1 = con1.readLongArray64();
-		timer.stop(pid, M.offline_read);
+		timer.stop(pid, M.online_read + onoff);
 
 		// step 2
 		Array64<Long> z1 = Util.xor(Util.permute(a1, predata.gpc_gam1), predata.gpc_t1);
 
-		timer.start(pid, M.offline_write);
+		timer.start(pid, M.online_write + onoff);
 		con1.writeLongArray64(z1);
-		timer.stop(pid, M.offline_write);
+		timer.stop(pid, M.online_write + onoff);
 
-		timer.stop(pid, M.offline_comp);
+		timer.stop(pid, M.online_comp + onoff);
 	}
 
 	// for testing correctness

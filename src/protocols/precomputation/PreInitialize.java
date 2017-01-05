@@ -20,26 +20,26 @@ import util.P;
 import util.Timer;
 import util.Util;
 
-// TODO: add op pid
 public class PreInitialize extends Protocol {
 
 	private int pid = P.INIT;
+	private int onoff = 3;
 
 	public PreInitialize(Communication con1, Communication con2, Metadata md) {
 		super(con1, con2, md);
 	}
 
 	public void runE(PreData[] predata, SqrtOram oram, Timer timer) {
-		timer.start(pid, M.offline_comp);
+		timer.start(pid, M.online_comp + onoff);
 
 		// step 1
 		int h = md.getNumLevels();
 		long n = md.getNumBlocks(h - 1);
 		predata[h - 1].init_pi_E = Util.randomPermutationLong(n, Crypto.sr);
 
-		timer.start(pid, M.offline_write);
+		timer.start(pid, M.online_write + onoff);
 		con2.writeLongArray64(predata[h - 1].init_pi_E);
-		timer.stop(pid, M.offline_write);
+		timer.stop(pid, M.online_write + onoff);
 
 		// step 2
 		Array64<Block> fresh = oram.getLevel(h - 1).getFresh();
@@ -52,7 +52,7 @@ public class PreInitialize extends Protocol {
 		preop.runE(predata[h - 1], n, timer);
 
 		OblivPermute op = new OblivPermute(con1, con2, md, P.INIT_OP_OFF);
-		predata[h - 1].init_L_prime_b = op.runOffE(predata[h - 1], predata[h - 1].init_pi_E, L, timer);
+		predata[h - 1].init_L_prime_b = op.runInitE(predata[h - 1], predata[h - 1].init_pi_E, L, timer);
 		Array64<Long> L_prime = new Array64<Long>(L.size());
 		for (long i = 0; i < L.size(); i++)
 			L_prime.set(i, new BigInteger(1, predata[h - 1].init_L_prime_b.get(i)).longValue());
@@ -81,11 +81,11 @@ public class PreInitialize extends Protocol {
 		PreOblivPermute preop_on = new PreOblivPermute(con1, con2, md, P.INIT_OP_ON);
 		preop_on.runE(predata[h - 1], n, timer);
 
-		timer.stop(pid, M.offline_comp);
+		timer.stop(pid, M.online_comp + onoff);
 	}
 
 	public void runD(PreData[] predata, SqrtOram oram, Timer timer) {
-		timer.start(pid, M.offline_comp);
+		timer.start(pid, M.online_comp + onoff);
 
 		// step 1
 		int h = md.getNumLevels();
@@ -103,7 +103,7 @@ public class PreInitialize extends Protocol {
 		preop.runD(predata[h - 1], n, timer);
 
 		OblivPermute op = new OblivPermute(con1, con2, md, P.INIT_OP_OFF);
-		predata[h - 1].init_L_prime_a = op.runOffD(predata[h - 1], predata[h - 1].init_pi_D, L, timer);
+		predata[h - 1].init_L_prime_a = op.runInitD(predata[h - 1], predata[h - 1].init_pi_D, L, timer);
 		Array64<Long> L_prime = new Array64<Long>(L.size());
 		for (long i = 0; i < L.size(); i++)
 			L_prime.set(i, new BigInteger(1, predata[h - 1].init_L_prime_a.get(i)).longValue());
@@ -132,25 +132,25 @@ public class PreInitialize extends Protocol {
 		PreOblivPermute preop_on = new PreOblivPermute(con1, con2, md, P.INIT_OP_ON);
 		preop_on.runD(predata[h - 1], n, timer);
 
-		timer.stop(pid, M.offline_comp);
+		timer.stop(pid, M.online_comp + onoff);
 	}
 
 	public void runC(PreData[] predata, Timer timer) {
-		timer.start(pid, M.offline_comp);
+		timer.start(pid, M.online_comp + onoff);
 
 		// step 1
 		int h = md.getNumLevels();
 
-		timer.start(pid, M.offline_read);
+		timer.start(pid, M.online_read + onoff);
 		predata[h - 1].init_pi_E = con1.readLongArray64();
-		timer.stop(pid, M.offline_read);
+		timer.stop(pid, M.online_read + onoff);
 
 		// step 3
 		PreOblivPermute preop = new PreOblivPermute(con1, con2, md, P.INIT_OP_OFF);
 		preop.runC(predata[h - 1], timer);
 
 		OblivPermute op = new OblivPermute(con1, con2, md, P.INIT_OP_OFF);
-		op.runOffC(predata[h - 1], predata[h - 1].init_pi_E, timer);
+		op.runInitC(predata[h - 1], predata[h - 1].init_pi_E, timer);
 
 		// step 7
 		PreGenPermConcat pregpc = new PreGenPermConcat(con1, con2, md);
@@ -174,7 +174,7 @@ public class PreInitialize extends Protocol {
 		PreOblivPermute preop_on = new PreOblivPermute(con1, con2, md, P.INIT_OP_ON);
 		preop_on.runC(predata[h - 1], timer);
 
-		timer.stop(pid, M.offline_comp);
+		timer.stop(pid, M.online_comp + onoff);
 	}
 
 	@Override

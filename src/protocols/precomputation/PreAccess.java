@@ -16,13 +16,14 @@ import util.Util;
 public class PreAccess extends Protocol {
 
 	private int pid = P.ACC;
+	private int onoff = 3;
 
 	public PreAccess(Communication con1, Communication con2, Metadata md) {
 		super(con1, con2, md);
 	}
 
 	public void runE(PreData predata, int n, int s, Timer timer) {
-		timer.start(pid, M.offline_comp);
+		timer.start(pid, M.online_comp + onoff);
 
 		int levelIndex = predata.getIndex();
 
@@ -41,17 +42,17 @@ public class PreAccess extends Protocol {
 		// ACC
 		predata.acc_A_b = new Block(levelIndex, md, Crypto.sr);
 
-		timer.start(pid, M.offline_read);
+		timer.start(pid, M.online_read + onoff);
 		predata.acc_rho = con1.readIntArray();
 		predata.acc_rho_ivs = con1.readIntArray();
 		predata.acc_r = con1.readBlock();
-		timer.stop(pid, M.offline_read);
+		timer.stop(pid, M.online_read + onoff);
 
-		timer.stop(pid, M.offline_comp);
+		timer.stop(pid, M.online_comp + onoff);
 	}
 
 	public void runD(PreData predata, int n, int s, Timer timer) {
-		timer.start(pid, M.offline_comp);
+		timer.start(pid, M.online_comp + onoff);
 
 		int levelIndex = predata.getIndex();
 
@@ -72,17 +73,17 @@ public class PreAccess extends Protocol {
 		predata.acc_rho_ivs = Util.inversePermutation(predata.acc_rho);
 		predata.acc_r = new Block(levelIndex, md, Crypto.sr);
 
-		timer.start(pid, M.offline_write);
+		timer.start(pid, M.online_write + onoff);
 		con1.write(predata.acc_rho);
 		con1.write(predata.acc_rho_ivs);
 		con1.write(predata.acc_r);
-		timer.stop(pid, M.offline_write);
+		timer.stop(pid, M.online_write + onoff);
 
-		timer.stop(pid, M.offline_comp);
+		timer.stop(pid, M.online_comp + onoff);
 	}
 
 	public void runC(PreData predata, int n, int s, Timer timer) {
-		timer.start(pid, M.offline_comp);
+		timer.start(pid, M.online_comp + onoff);
 
 		// SSCOT
 		PreSSCOT presscot = new PreSSCOT(con1, con2, md);
@@ -99,7 +100,7 @@ public class PreAccess extends Protocol {
 		// ACC
 		predata.acc_delta = Util.identityPermutation(n + s);
 
-		timer.stop(pid, M.offline_comp);
+		timer.stop(pid, M.online_comp + onoff);
 	}
 
 	@Override

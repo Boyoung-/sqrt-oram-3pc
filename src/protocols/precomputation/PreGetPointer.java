@@ -26,6 +26,7 @@ import util.Util;
 public class PreGetPointer extends Protocol {
 
 	private int pid = P.GP;
+	private int onoff = 3;
 
 	public PreGetPointer(Communication con1, Communication con2, Metadata md) {
 		super(con1, con2, md);
@@ -35,7 +36,7 @@ public class PreGetPointer extends Protocol {
 		if (predata.getIndex() >= md.getNumLevels() - 1)
 			return;
 
-		timer.start(pid, M.offline_comp);
+		timer.start(pid, M.online_comp + onoff);
 
 		int tau = md.getTau();
 		int ttp = md.getTwoTauPow();
@@ -85,7 +86,7 @@ public class PreGetPointer extends Protocol {
 		}
 
 		Network channel = new Network(null, con1);
-		CompEnv<GCSignal> gen = new GCGen(channel, timer, pid, M.offline_write);
+		CompEnv<GCSignal> gen = new GCGen(channel, timer, pid, M.online_write + onoff);
 		GCSignal[][] outZeroKeys = new GCGetPointer<GCSignal>(gen, predata.gp_A_prime, predata.gp_BF_prime, md,
 				predata.getIndex()).execute(E_nZeroKeys, C_nZeroKeys, E_alZeroKeys, C_alZeroKeys, E_afZeroKeys,
 						C_afZeroKeys, E_bfZeroKeys, C_bfZeroKeys, E_apZeroKeys, C_apZeroKeys, E_bpZeroKeys,
@@ -97,7 +98,7 @@ public class PreGetPointer extends Protocol {
 			predata.gp_outKeyHashes[i] = GCUtil.genOutKeyHashes(outZeroKeys[i]);
 		}
 
-		timer.start(pid, M.offline_write);
+		timer.start(pid, M.online_write + onoff);
 		for (int i = 0; i < outZeroKeys.length; i++)
 			con1.write(predata.gp_outKeyHashes[i]);
 
@@ -107,16 +108,16 @@ public class PreGetPointer extends Protocol {
 		con2.write(predata.gp_C_bfKeyPairs);
 		con2.write(predata.gp_C_apKeyPairs);
 		con2.write(predata.gp_C_bpKeyPairs);
-		timer.stop(pid, M.offline_write);
+		timer.stop(pid, M.online_write + onoff);
 
-		timer.stop(pid, M.offline_comp);
+		timer.stop(pid, M.online_comp + onoff);
 	}
 
 	public long runD(PreData predata, Timer timer) {
 		if (predata.getIndex() >= md.getNumLevels() - 1)
 			return -1;
 
-		timer.start(pid, M.offline_comp);
+		timer.start(pid, M.online_comp + onoff);
 
 		int ttp = md.getTwoTauPow();
 
@@ -133,7 +134,7 @@ public class PreGetPointer extends Protocol {
 		}
 
 		Network channel = new Network(con1, null);
-		CompEnv<GCSignal> eva = new GCEva(channel, timer, pid, M.offline_read);
+		CompEnv<GCSignal> eva = new GCEva(channel, timer, pid, M.online_read + onoff);
 		predata.gp_circuit = new GCGetPointer<GCSignal>(eva, A_prime, BF_prime, md, predata.getIndex());
 		GCSignal[][] out = predata.gp_circuit.execute(E_nZeroKeys, E_nZeroKeys, E_alZeroKeys, E_alZeroKeys,
 				E_afZeroKeys, E_afZeroKeys, E_afZeroKeys, E_afZeroKeys, E_apZeroKeys, E_apZeroKeys, E_apZeroKeys,
@@ -143,12 +144,12 @@ public class PreGetPointer extends Protocol {
 
 		predata.gp_outKeyHashes = new byte[out.length][][];
 
-		timer.start(pid, M.offline_read);
+		timer.start(pid, M.online_read + onoff);
 		for (int i = 0; i < out.length; i++)
 			predata.gp_outKeyHashes[i] = con1.readDoubleByteArray();
-		timer.stop(pid, M.offline_read);
+		timer.stop(pid, M.online_read + onoff);
 
-		timer.stop(pid, M.offline_comp);
+		timer.stop(pid, M.online_comp + onoff);
 		return eva.numOfAnds;
 	}
 
@@ -156,19 +157,19 @@ public class PreGetPointer extends Protocol {
 		if (predata.getIndex() >= md.getNumLevels() - 1)
 			return;
 
-		timer.start(pid, M.offline_comp);
+		timer.start(pid, M.online_comp + onoff);
 
 		// GC
-		timer.start(pid, M.offline_read);
+		timer.start(pid, M.online_read + onoff);
 		predata.gp_C_nKeyPairs = con1.readDoubleGCSignalArray();
 		predata.gp_C_alKeyPairs = con1.readDoubleGCSignalArray();
 		predata.gp_C_afKeyPairs = con1.readDoubleGCSignalArray();
 		predata.gp_C_bfKeyPairs = con1.readDoubleGCSignalArray();
 		predata.gp_C_apKeyPairs = con1.readTripleGCSignalArray();
 		predata.gp_C_bpKeyPairs = con1.readTripleGCSignalArray();
-		timer.stop(pid, M.offline_read);
+		timer.stop(pid, M.online_read + onoff);
 
-		timer.stop(pid, M.offline_comp);
+		timer.stop(pid, M.online_comp + onoff);
 	}
 
 	@Override

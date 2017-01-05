@@ -21,17 +21,17 @@ import util.P;
 import util.Timer;
 import util.Util;
 
-// TODO: think about Util.rmSignBit
 public class Access extends Protocol {
 
 	private int pid = P.ACC;
+	private int onoff = 0;
 
 	public Access(Communication con1, Communication con2, Metadata md) {
 		super(con1, con2, md);
 	}
 
 	public OutAccess runE(PreData predata, byte[] N, Level level, long p, Timer timer) {
-		timer.start(pid, M.online_comp);
+		timer.start(pid, M.online_comp + onoff);
 
 		OutAccess outacc = new OutAccess(0, null);
 
@@ -87,9 +87,9 @@ public class Access extends Protocol {
 			predata.acc_A_b = predata.gp_A_prime;
 			B_b.setF(predata.gp_BF_prime);
 
-			timer.start(pid, M.online_read);
+			timer.start(pid, M.online_read + onoff);
 			outacc.p = con1.readLong(pid);
-			timer.stop(pid, M.online_read);
+			timer.stop(pid, M.online_read + onoff);
 		}
 
 		// step 6
@@ -115,12 +115,12 @@ public class Access extends Protocol {
 			outacc.rec = predata.acc_A_b.getRec();
 		}
 
-		timer.stop(pid, M.online_comp);
+		timer.stop(pid, M.online_comp + onoff);
 		return outacc;
 	}
 
 	public long runD(PreData predata, byte[] N, Level level, long p, Timer timer) {
-		timer.start(pid, M.online_comp);
+		timer.start(pid, M.online_comp + onoff);
 
 		int levelIndex = predata.getIndex();
 		boolean lastLevel = (levelIndex == md.getNumLevels() - 1);
@@ -155,12 +155,13 @@ public class Access extends Protocol {
 		// step 2
 		B_a = B_a.xor(predata.acc_r);
 
-		timer.start(pid, M.online_write);
-		if (!lastLevel)
+		timer.start(pid, M.online_write + onoff);
+		if (!lastLevel) {
 			con2.write(pid, sufN);
+			con2.write(pid, B_a);
+		}
 		con2.write(pid, all);
-		con2.write(pid, B_a);
-		timer.stop(pid, M.online_write);
+		timer.stop(pid, M.online_write + onoff);
 
 		// step 3
 		SSCOT sscot = new SSCOT(con1, con2, md);
@@ -177,13 +178,13 @@ public class Access extends Protocol {
 			B_a.setF(outgp.BF);
 			p = outgp.p;
 
-			timer.start(pid, M.online_write);
+			timer.start(pid, M.online_write + onoff);
 			con1.write(pid, outgp.p);
-			timer.stop(pid, M.online_write);
+			timer.stop(pid, M.online_write + onoff);
 		} else {
-			timer.start(pid, M.online_read);
+			timer.start(pid, M.online_read + onoff);
 			A_a = con2.readBlock(pid);
-			timer.stop(pid, M.online_read);
+			timer.stop(pid, M.online_read + onoff);
 		}
 
 		// step 6
@@ -208,22 +209,24 @@ public class Access extends Protocol {
 			level.setStash(Level.toList(all));
 		}
 
-		timer.stop(pid, M.online_comp);
+		timer.stop(pid, M.online_comp + onoff);
 		return p;
 	}
 
 	public byte[] runC(PreData predata, Timer timer) {
-		timer.start(pid, M.online_comp);
+		timer.start(pid, M.online_comp + onoff);
 
 		// step 2
 		byte[] sufN = null;
+		Block B_a = null;
 
-		timer.start(pid, M.online_read);
-		if (predata.getIndex() < md.getNumLevels() - 1)
+		timer.start(pid, M.online_read + onoff);
+		if (predata.getIndex() < md.getNumLevels() - 1) {
 			sufN = con2.read(pid);
+			B_a = con2.readBlock(pid);
+		}
 		Block[] all = con2.readBlockArray(pid);
-		Block B_a = con2.readBlock(pid);
-		timer.stop(pid, M.online_read);
+		timer.stop(pid, M.online_read + onoff);
 
 		// step 3
 		SSCOT sscot = new SSCOT(con1, con2, md);
@@ -236,9 +239,9 @@ public class Access extends Protocol {
 			GetPointer gp = new GetPointer(con1, con2, md);
 			gp.runC(predata, sufN, A_a, B_a, timer);
 		} else {
-			timer.start(pid, M.online_write);
-			con2.write(pid, A_a); // TODO: add a mask
-			timer.stop(pid, M.online_write);
+			timer.start(pid, M.online_write + onoff);
+			con2.write(pid, A_a);
+			timer.stop(pid, M.online_write + onoff);
 		}
 
 		// step 6
@@ -247,7 +250,7 @@ public class Access extends Protocol {
 		SSXOT ssxot = new SSXOT(con1, con2, md, P.ACC_XOT);
 		ssxot.runD(predata, predata.acc_delta, timer);
 
-		timer.stop(pid, M.online_comp);
+		timer.stop(pid, M.online_comp + onoff);
 		return A_a.getRec();
 	}
 

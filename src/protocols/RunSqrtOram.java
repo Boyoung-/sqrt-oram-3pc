@@ -21,18 +21,17 @@ import util.P;
 import util.Timer;
 import util.Util;
 
-// TODO: think about Util.rmSignBit
-// TODO: change runOff.. to runInit..
 public class RunSqrtOram extends Protocol {
 
 	private int pid = P.RUN;
+	private int onoff = 0;
 
 	public RunSqrtOram(Communication con1, Communication con2, Metadata md) {
 		super(con1, con2, md);
 	}
 
 	public void runInitE(PreData[] predata, SqrtOram oram, Timer timer) {
-		timer.start(pid, M.online_comp);
+		timer.start(pid, M.online_comp + onoff);
 
 		// step 5
 		int h = md.getNumLevels();
@@ -54,11 +53,11 @@ public class RunSqrtOram extends Protocol {
 			level.emptyUsed();
 		}
 
-		timer.stop(pid, M.online_comp);
+		timer.stop(pid, M.online_comp + onoff);
 	}
 
 	public void runInitD(PreData[] predata, SqrtOram oram, Timer timer) {
-		timer.start(pid, M.online_comp);
+		timer.start(pid, M.online_comp + onoff);
 
 		// step 5
 		int h = md.getNumLevels();
@@ -80,22 +79,22 @@ public class RunSqrtOram extends Protocol {
 			level.emptyUsed();
 		}
 
-		timer.stop(pid, M.online_comp);
+		timer.stop(pid, M.online_comp + onoff);
 	}
 
 	public void runInitC(PreData[] predata, SqrtOram oram, Timer timer) {
-		timer.start(pid, M.online_comp);
+		timer.start(pid, M.online_comp + onoff);
 
 		// step 6
 		int h = md.getNumLevels();
 		Initialize init = new Initialize(con1, con2, md);
 		init.runC(predata[h - 1], timer);
 
-		timer.stop(pid, M.online_comp);
+		timer.stop(pid, M.online_comp + onoff);
 	}
 
 	public byte[] runE(PreData[] predata, SqrtOram oram, BigInteger addr, Timer timer) {
-		timer.start(pid, M.online_comp);
+		timer.start(pid, M.online_comp + onoff);
 
 		int h = md.getNumLevels();
 		int addrBits = md.getAddrBits();
@@ -109,12 +108,12 @@ public class RunSqrtOram extends Protocol {
 			outacc = acc.runE(predata[i], N, oram.getLevel(i), outacc.p, timer);
 		}
 
-		timer.stop(pid, M.online_comp);
+		timer.stop(pid, M.online_comp + onoff);
 		return outacc.rec;
 	}
 
 	public void runD(PreData[] predata, SqrtOram oram, BigInteger addr, Timer timer) {
-		timer.start(pid, M.online_comp);
+		timer.start(pid, M.online_comp + onoff);
 
 		int h = md.getNumLevels();
 		int addrBits = md.getAddrBits();
@@ -128,11 +127,11 @@ public class RunSqrtOram extends Protocol {
 			p = acc.runD(predata[i], N, oram.getLevel(i), p, timer);
 		}
 
-		timer.stop(pid, M.online_comp);
+		timer.stop(pid, M.online_comp + onoff);
 	}
 
 	public byte[] runC(PreData[] predata, Timer timer) {
-		timer.start(pid, M.online_comp);
+		timer.start(pid, M.online_comp + onoff);
 
 		byte[] rec = null;
 		for (int i = 0; i < predata.length; i++) {
@@ -140,7 +139,7 @@ public class RunSqrtOram extends Protocol {
 			rec = acc.runC(predata[i], timer);
 		}
 
-		timer.stop(pid, M.online_comp);
+		timer.stop(pid, M.online_comp + onoff);
 		return rec;
 	}
 

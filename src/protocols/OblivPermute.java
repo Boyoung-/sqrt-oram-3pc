@@ -18,8 +18,7 @@ import util.Util;
 public class OblivPermute extends Protocol {
 
 	private int pid;
-	// TODO: add xotpid
-	private int onoff; // TODO: add to all protocol
+	private int onoff;
 
 	// only for testing
 	public OblivPermute(Communication con1, Communication con2, Metadata md) {
@@ -48,15 +47,15 @@ public class OblivPermute extends Protocol {
 		return x_prime_b;
 	}
 
-	public Array64<byte[]> runOffE(PreData predata, Array64<Long> pi_E, Array64<byte[]> x_b, Timer timer) {
+	public Array64<byte[]> runInitE(PreData predata, Array64<Long> pi_E, Array64<byte[]> x_b, Timer timer) {
 		timer.start(pid, M.online_comp + onoff);
 
 		// step 2
 		SSXOT ssxot = new SSXOT(con1, con2, md, pid == P.INIT_OP_OFF ? P.INIT_OP_XOT_OFF : P.INIT_OP_XOT_ON);
-		Array64<byte[]> b = ssxot.runOffE(predata, Util.permute(x_b, pi_E), timer);
+		Array64<byte[]> b = ssxot.runInitE(predata, Util.permute(x_b, pi_E), timer);
 
 		// step 4
-		Array64<byte[]> x_prime_b = Util.xorByteArray64(b, predata.offop_e);
+		Array64<byte[]> x_prime_b = Util.xorByteArray64(b, predata.initop_e);
 
 		timer.stop(pid, M.online_comp + onoff);
 		return x_prime_b;
@@ -83,7 +82,7 @@ public class OblivPermute extends Protocol {
 		return x_prime_a;
 	}
 
-	public Array64<byte[]> runOffD(PreData predata, Array64<Long> pi_D, Array64<byte[]> x_a, Timer timer) {
+	public Array64<byte[]> runInitD(PreData predata, Array64<Long> pi_D, Array64<byte[]> x_a, Timer timer) {
 		timer.start(pid, M.online_comp + onoff);
 
 		// step 1
@@ -93,7 +92,7 @@ public class OblivPermute extends Protocol {
 
 		// step 2
 		SSXOT ssxot = new SSXOT(con1, con2, md, pid == P.INIT_OP_OFF ? P.INIT_OP_XOT_OFF : P.INIT_OP_XOT_ON);
-		ssxot.runOffD(predata, Util.inversePermutationLong(pi_D), timer);
+		ssxot.runInitD(predata, Util.inversePermutationLong(pi_D), timer);
 
 		// step 3
 		timer.start(pid, M.online_read + onoff);
@@ -126,7 +125,7 @@ public class OblivPermute extends Protocol {
 		timer.stop(pid, M.online_comp + onoff);
 	}
 
-	public void runOffC(PreData predata, Array64<Long> pi_E, Timer timer) {
+	public void runInitC(PreData predata, Array64<Long> pi_E, Timer timer) {
 		timer.start(pid, M.online_comp + onoff);
 
 		// step 1
@@ -136,10 +135,10 @@ public class OblivPermute extends Protocol {
 
 		// step 2
 		SSXOT ssxot = new SSXOT(con1, con2, md, pid == P.INIT_OP_OFF ? P.INIT_OP_XOT_OFF : P.INIT_OP_XOT_ON);
-		Array64<byte[]> a = ssxot.runOffC(predata, Util.permute(x_a, pi_E), timer);
+		Array64<byte[]> a = ssxot.runInitC(predata, Util.permute(x_a, pi_E), timer);
 
 		// step 3
-		Array64<byte[]> x_prime_a = Util.xorByteArray64(a, predata.offop_e);
+		Array64<byte[]> x_prime_a = Util.xorByteArray64(a, predata.initop_e);
 
 		timer.start(pid, M.online_write + onoff);
 		con2.writeByteArray64(pid, x_prime_a);
@@ -245,7 +244,7 @@ public class OblivPermute extends Protocol {
 				Array64<byte[]> x_b = Util.xorByteArray64(x, x_a);
 				con2.writeLongArray64(pi_E);
 				con1.writeByteArray64(x_a);
-				Array64<byte[]> x_prime_b = runOffE(predata, pi_E, x_b, timer);
+				Array64<byte[]> x_prime_b = runInitE(predata, pi_E, x_b, timer);
 
 				pi_D = con1.readLongArray64();
 				Array64<byte[]> x_prime_a = con1.readByteArray64();
@@ -270,7 +269,7 @@ public class OblivPermute extends Protocol {
 
 				pi_D = Util.randomPermutationLong(s, Crypto.sr);
 				Array64<byte[]> x_a = con1.readByteArray64();
-				Array64<byte[]> x_prime_a = runOffD(predata, pi_D, x_a, timer);
+				Array64<byte[]> x_prime_a = runInitD(predata, pi_D, x_a, timer);
 
 				con1.writeLongArray64(pi_D);
 				con1.writeByteArray64(x_prime_a);
@@ -281,7 +280,7 @@ public class OblivPermute extends Protocol {
 				preop.runC(predata, timer);
 
 				pi_E = con1.readLongArray64();
-				runOffC(predata, pi_E, timer);
+				runInitC(predata, pi_E, timer);
 
 			} else {
 				throw new NoSuchPartyException(party + "");

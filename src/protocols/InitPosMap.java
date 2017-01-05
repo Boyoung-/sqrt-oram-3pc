@@ -22,13 +22,14 @@ import util.Util;
 public class InitPosMap extends Protocol {
 
 	private int pid = P.IPM;
+	private int onoff = 3;
 
 	public InitPosMap(Communication con1, Communication con2, Metadata md) {
 		super(con1, con2, md);
 	}
 
 	public OutInitPosMap runE(PreData predata, Array64<Long> pi_E, Timer timer) {
-		timer.start(pid, M.offline_comp);
+		timer.start(pid, M.online_comp + onoff);
 
 		// step 1
 		GenPermShare gps = new GenPermShare(con1, con2, md);
@@ -56,12 +57,12 @@ public class InitPosMap extends Protocol {
 
 		OutInitPosMap outipm = new OutInitPosMap(null, fresh, null, predata.ipm_pi_prime_E);
 
-		timer.stop(pid, M.offline_comp);
+		timer.stop(pid, M.online_comp + onoff);
 		return outipm;
 	}
 
 	public OutInitPosMap runD(PreData predata, Array64<Long> pi_D, Timer timer) {
-		timer.start(pid, M.offline_comp);
+		timer.start(pid, M.online_comp + onoff);
 
 		// step 1
 		GenPermShare gps = new GenPermShare(con1, con2, md);
@@ -88,12 +89,12 @@ public class InitPosMap extends Protocol {
 
 		OutInitPosMap outipm = new OutInitPosMap(fresh, null, predata.ipm_pi_prime_D, null);
 
-		timer.stop(pid, M.offline_comp);
+		timer.stop(pid, M.online_comp + onoff);
 		return outipm;
 	}
 
 	public void runC(PreData predata, Timer timer) {
-		timer.start(pid, M.offline_comp);
+		timer.start(pid, M.online_comp + onoff);
 
 		// step 1
 		GenPermShare gps = new GenPermShare(con1, con2, md);
@@ -105,7 +106,7 @@ public class InitPosMap extends Protocol {
 			op.runC(predata, predata.ipm_pi_prime_E, timer);
 		}
 
-		timer.stop(pid, M.offline_comp);
+		timer.stop(pid, M.online_comp + onoff);
 	}
 
 	// for testing correctness

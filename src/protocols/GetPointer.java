@@ -24,6 +24,7 @@ import util.Util;
 public class GetPointer extends Protocol {
 
 	private int pid = P.GP;
+	private int onoff = 0;
 
 	public GetPointer(Communication con1, Communication con2, Metadata md) {
 		super(con1, con2, md);
@@ -33,7 +34,7 @@ public class GetPointer extends Protocol {
 		if (predata.getIndex() >= md.getNumLevels() - 1)
 			return;
 
-		timer.start(pid, M.online_comp);
+		timer.start(pid, M.online_comp + onoff);
 
 		GCSignal[] nInputKeys = GCUtil.selectKeys(predata.gp_E_nKeyPairs, N);
 		GCSignal[] alInputKeys = GCUtil.selectKeys(predata.gp_E_alKeyPairs, A.getL());
@@ -46,25 +47,25 @@ public class GetPointer extends Protocol {
 			bpInputKeys[i] = GCUtil.selectKeys(predata.gp_E_bpKeyPairs[i], B.getP(i));
 		}
 
-		timer.start(pid, M.online_write);
+		timer.start(pid, M.online_write + onoff);
 		con1.write(pid, nInputKeys);
 		con1.write(pid, alInputKeys);
 		con1.write(pid, afInputKeys);
 		con1.write(pid, bfInputKeys);
 		con1.write(pid, apInputKeys);
 		con1.write(pid, bpInputKeys);
-		timer.stop(pid, M.online_write);
+		timer.stop(pid, M.online_write + onoff);
 
-		timer.stop(pid, M.online_comp);
+		timer.stop(pid, M.online_comp + onoff);
 	}
 
 	public OutGetPointer runD(PreData predata, Timer timer) {
 		if (predata.getIndex() >= md.getNumLevels() - 1)
 			return null;
 
-		timer.start(pid, M.online_comp);
+		timer.start(pid, M.online_comp + onoff);
 
-		timer.start(pid, M.online_read);
+		timer.start(pid, M.online_read + onoff);
 		GCSignal[] E_nInputKeys = con1.readGCSignalArray(pid);
 		GCSignal[] E_alInputKeys = con1.readGCSignalArray(pid);
 		GCSignal[] E_afInputKeys = con1.readGCSignalArray(pid);
@@ -78,7 +79,7 @@ public class GetPointer extends Protocol {
 		GCSignal[] C_bfInputKeys = con2.readGCSignalArray(pid);
 		GCSignal[][] C_apInputKeys = con2.readDoubleGCSignalArray(pid);
 		GCSignal[][] C_bpInputKeys = con2.readDoubleGCSignalArray(pid);
-		timer.stop(pid, M.online_read);
+		timer.stop(pid, M.online_read + onoff);
 
 		GCSignal[][] outKeys = predata.gp_circuit.execute(E_nInputKeys, C_nInputKeys, E_alInputKeys, C_alInputKeys,
 				E_afInputKeys, C_afInputKeys, E_bfInputKeys, C_bfInputKeys, E_apInputKeys, C_apInputKeys, E_bpInputKeys,
@@ -97,7 +98,7 @@ public class GetPointer extends Protocol {
 
 		OutGetPointer outgp = new OutGetPointer(p, A_prime, Block.toLongF(BF, md.getTwoTauPow()));
 
-		timer.stop(pid, M.online_comp);
+		timer.stop(pid, M.online_comp + onoff);
 		return outgp;
 	}
 
@@ -105,7 +106,7 @@ public class GetPointer extends Protocol {
 		if (predata.getIndex() >= md.getNumLevels() - 1)
 			return;
 
-		timer.start(pid, M.online_comp);
+		timer.start(pid, M.online_comp + onoff);
 
 		GCSignal[] nInputKeys = GCUtil.selectKeys(predata.gp_C_nKeyPairs, N);
 		GCSignal[] alInputKeys = GCUtil.selectKeys(predata.gp_C_alKeyPairs, A.getL());
@@ -118,16 +119,16 @@ public class GetPointer extends Protocol {
 			bpInputKeys[i] = GCUtil.selectKeys(predata.gp_C_bpKeyPairs[i], B.getP(i));
 		}
 
-		timer.start(pid, M.online_write);
+		timer.start(pid, M.online_write + onoff);
 		con2.write(pid, nInputKeys);
 		con2.write(pid, alInputKeys);
 		con2.write(pid, afInputKeys);
 		con2.write(pid, bfInputKeys);
 		con2.write(pid, apInputKeys);
 		con2.write(pid, bpInputKeys);
-		timer.stop(pid, M.online_write);
+		timer.stop(pid, M.online_write + onoff);
 
-		timer.stop(pid, M.online_comp);
+		timer.stop(pid, M.online_comp + onoff);
 	}
 
 	// for testing correctness

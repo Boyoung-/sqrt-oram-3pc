@@ -27,7 +27,7 @@ public class PreData {
 
 	public int[] access_sigma;
 
-	// OP_XOT_ON
+	// IPM_XOT
 	public Array64<Block> ssxot_delta;
 	public Array64<Long> ssxot_E_pi;
 	public Array64<Long> ssxot_C_pi;
@@ -36,14 +36,14 @@ public class PreData {
 	public Array64<Block> ssxot_E_r;
 	public Array64<Block> ssxot_C_r;
 
-	// OP_XOT_OFF
-	public Array64<byte[]> offssxot_delta;
-	public Array64<Long> offssxot_E_pi;
-	public Array64<Long> offssxot_C_pi;
-	public Array64<Long> offssxot_E_pi_ivs;
-	public Array64<Long> offssxot_C_pi_ivs;
-	public Array64<byte[]> offssxot_E_r;
-	public Array64<byte[]> offssxot_C_r;
+	// INIT_XOT
+	public Array64<byte[]> initssxot_delta;
+	public Array64<Long> initssxot_E_pi;
+	public Array64<Long> initssxot_C_pi;
+	public Array64<Long> initssxot_E_pi_ivs;
+	public Array64<Long> initssxot_C_pi_ivs;
+	public Array64<byte[]> initssxot_E_r;
+	public Array64<byte[]> initssxot_C_r;
 
 	// ACC_XOT
 	public Block[] accxot_delta;
@@ -69,11 +69,11 @@ public class PreData {
 	public Array64<Long> gpc_t1;
 	public Array64<Long> gpc_t2;
 
-	// OP_ON
+	// IPM_OP
 	public Array64<Block> op_e;
 
-	// OP_OFF
-	public Array64<byte[]> offop_e;
+	// INIT_OP
+	public Array64<byte[]> initop_e;
 
 	// IPM
 	public Array64<Long> ipm_pi_prime_D;

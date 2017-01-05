@@ -13,7 +13,6 @@ import org.apache.commons.cli.ParseException;
 import communication.Communication;
 import exceptions.NoSuchPartyException;
 import oram.Metadata;
-import oramOLD.Global;
 import protocols.*;
 import protocols.struct.Party;
 
@@ -40,7 +39,7 @@ public class CLI {
 			e1.printStackTrace();
 		}
 
-		Global.pipeline = cmd.hasOption("pipeline");
+		// Global.pipeline = cmd.hasOption("pipeline");
 
 		String configFile = cmd.getOptionValue("config", "config.yaml");
 		String forestFile = cmd.getOptionValue("forest", null);
@@ -108,7 +107,7 @@ public class CLI {
 		System.out.println("Starting " + party + "...");
 
 		Metadata md = new Metadata(configFile);
-		int numComs = Global.pipeline ? md.getNumLevels() + 1 : 1;
+		int numComs = 1; // Global.pipeline ? md.getNumLevels() + 1 : 1;
 		Communication[] con1 = new Communication[numComs];
 		Communication[] con2 = new Communication[numComs];
 

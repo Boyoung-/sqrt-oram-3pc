@@ -17,68 +17,69 @@ import util.Util;
 public class GenPermShare extends Protocol {
 
 	private int pid = P.GPS;
+	private int onoff = 3;
 
 	public GenPermShare(Communication con1, Communication con2, Metadata md) {
 		super(con1, con2, md);
 	}
 
 	public Array64<Long> runE(PreData predata, Array64<Long> pi_E, Timer timer) {
-		timer.start(pid, M.offline_comp);
+		timer.start(pid, M.online_comp + onoff);
 
 		// step 1
-		timer.start(pid, M.offline_write);
+		timer.start(pid, M.online_write + onoff);
 		con2.writeLongArray64(pi_E);
-		timer.stop(pid, M.offline_write);
+		timer.stop(pid, M.online_write + onoff);
 
 		// step 3
-		timer.start(pid, M.offline_read);
+		timer.start(pid, M.online_read + onoff);
 		Array64<Long> z = con1.readLongArray64();
-		timer.stop(pid, M.offline_read);
+		timer.stop(pid, M.online_read + onoff);
 
 		// step 4
 		Array64<Long> pi_ivs = Util.inversePermutationLong(pi_E);
 		Array64<Long> pi_b = Util.permute(Util.xor(z, predata.gps_r), pi_ivs);
 
-		timer.stop(pid, M.offline_comp);
+		timer.stop(pid, M.online_comp + onoff);
 		return pi_b;
 	}
 
 	public Array64<Long> runD(PreData predata, Array64<Long> pi_D, Timer timer) {
-		timer.start(pid, M.offline_comp);
+		timer.start(pid, M.online_comp + onoff);
 
 		// step 2
-		timer.start(pid, M.offline_read);
+		timer.start(pid, M.online_read + onoff);
 		Array64<Long> pi_a = con2.readLongArray64();
-		timer.stop(pid, M.offline_read);
+		timer.stop(pid, M.online_read + onoff);
 
 		// step 3
 		Array64<Long> z = Util.xor(pi_D, predata.gps_p);
 
-		timer.start(pid, M.offline_write);
+		timer.start(pid, M.online_write + onoff);
 		con1.writeLongArray64(z);
-		timer.stop(pid, M.offline_write);
+		timer.stop(pid, M.online_write + onoff);
 
-		timer.stop(pid, M.offline_comp);
+		timer.stop(pid, M.online_comp + onoff);
 		return pi_a;
 	}
 
 	public void runC(PreData predata, Timer timer) {
-		timer.start(pid, M.offline_comp);
+		timer.start(pid, M.online_comp + onoff);
 
 		// step 1
-		timer.start(pid, M.offline_read);
+		timer.start(pid, M.online_read + onoff);
 		Array64<Long> pi_E = con1.readLongArray64();
-		timer.stop(pid, M.offline_read);
+		timer.stop(pid, M.online_read + onoff);
 
 		// step 2
 		Array64<Long> pi_ivs = Util.inversePermutationLong(pi_E);
 		Array64<Long> pi_a = Util.permute(Util.xor(predata.gps_p, predata.gps_r), pi_ivs);
 
-		timer.start(pid, M.offline_write);
+		timer.start(pid, M.online_write + onoff);
 		con2.writeLongArray64(pi_a);
-		timer.stop(pid, M.offline_write);
+		timer.stop(pid, M.online_write + onoff);
 
-		timer.stop(pid, M.offline_comp);
+		timer.stop(pid, M.online_comp + onoff);
 	}
 
 	// for testing correctness

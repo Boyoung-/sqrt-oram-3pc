@@ -15,13 +15,14 @@ import util.Timer;
 public class PreSSCOT extends Protocol {
 
 	private int pid = P.COT;
+	private int onoff = 3;
 
 	public PreSSCOT(Communication con1, Communication con2, Metadata md) {
 		super(con1, con2, md);
 	}
 
 	public void runE(PreData predata, int n, Timer timer) {
-		timer.start(pid, M.offline_comp);
+		timer.start(pid, M.online_comp + onoff);
 
 		predata.sscot_k = PRF.generateKey(Crypto.sr);
 		predata.sscot_kprime = PRF.generateKey(Crypto.sr);
@@ -31,35 +32,35 @@ public class PreSSCOT extends Protocol {
 			Crypto.sr.nextBytes(predata.sscot_r[i]);
 		}
 
-		timer.start(pid, M.offline_write);
+		timer.start(pid, M.online_write + onoff);
 		con1.write(predata.sscot_k);
 		con1.write(predata.sscot_kprime);
 		con1.write(predata.sscot_r);
-		timer.stop(pid, M.offline_write);
+		timer.stop(pid, M.online_write + onoff);
 
 		predata.sscot_F_k = new PRF(Crypto.secParam);
 		predata.sscot_F_k.init(predata.sscot_k);
 		predata.sscot_F_kprime = new PRF(Crypto.secParam);
 		predata.sscot_F_kprime.init(predata.sscot_kprime);
 
-		timer.stop(pid, M.offline_comp);
+		timer.stop(pid, M.online_comp + onoff);
 	}
 
 	public void runD(PreData predata, Timer timer) {
-		timer.start(pid, M.offline_comp);
+		timer.start(pid, M.online_comp + onoff);
 
-		timer.start(pid, M.offline_read);
+		timer.start(pid, M.online_read + onoff);
 		predata.sscot_k = con1.read();
 		predata.sscot_kprime = con1.read();
 		predata.sscot_r = con1.readDoubleByteArray();
-		timer.stop(pid, M.offline_read);
+		timer.stop(pid, M.online_read + onoff);
 
 		predata.sscot_F_k = new PRF(Crypto.secParam);
 		predata.sscot_F_k.init(predata.sscot_k);
 		predata.sscot_F_kprime = new PRF(Crypto.secParam);
 		predata.sscot_F_kprime.init(predata.sscot_kprime);
 
-		timer.stop(pid, M.offline_comp);
+		timer.stop(pid, M.online_comp + onoff);
 	}
 
 	public void runC() {

@@ -14,18 +14,17 @@ import util.M;
 import util.P;
 import util.Timer;
 
-// TODO: think about Util.rmSignBit
-// TODO: change runOff.. to runInit..
 public class Initialize extends Protocol {
 
 	private int pid = P.INIT;
+	private int onoff = 0;
 
 	public Initialize(Communication con1, Communication con2, Metadata md) {
 		super(con1, con2, md);
 	}
 
 	public void runE(PreData predata, Level level, Timer timer) {
-		timer.start(pid, M.online_comp);
+		timer.start(pid, M.online_comp + onoff);
 
 		// step 1
 		Array64<byte[]> Y = new Array64<byte[]>(level.getFresh().size());
@@ -34,7 +33,7 @@ public class Initialize extends Protocol {
 
 		// step 2
 		OblivPermute op = new OblivPermute(con1, con2, md, P.INIT_OP_ON);
-		Array64<byte[]> Y_prime = op.runOffE(predata, predata.init_pi_E, Y, timer);
+		Array64<byte[]> Y_prime = op.runInitE(predata, predata.init_pi_E, Y, timer);
 
 		// step 3
 		for (long i = 0; i < Y.size(); i++) {
@@ -43,11 +42,11 @@ public class Initialize extends Protocol {
 			block.setRec(Y_prime.get(i));
 		}
 
-		timer.stop(pid, M.online_comp);
+		timer.stop(pid, M.online_comp + onoff);
 	}
 
 	public void runD(PreData predata, Level level, Timer timer) {
-		timer.start(pid, M.online_comp);
+		timer.start(pid, M.online_comp + onoff);
 
 		// step 1
 		Array64<byte[]> Y = new Array64<byte[]>(level.getFresh().size());
@@ -56,7 +55,7 @@ public class Initialize extends Protocol {
 
 		// step 2
 		OblivPermute op = new OblivPermute(con1, con2, md, P.INIT_OP_ON);
-		Array64<byte[]> Y_prime = op.runOffD(predata, predata.init_pi_D, Y, timer);
+		Array64<byte[]> Y_prime = op.runInitD(predata, predata.init_pi_D, Y, timer);
 
 		// step 3
 		for (long i = 0; i < Y.size(); i++) {
@@ -65,17 +64,17 @@ public class Initialize extends Protocol {
 			block.setRec(Y_prime.get(i));
 		}
 
-		timer.stop(pid, M.online_comp);
+		timer.stop(pid, M.online_comp + onoff);
 	}
 
 	public void runC(PreData predata, Timer timer) {
-		timer.start(pid, M.online_comp);
+		timer.start(pid, M.online_comp + onoff);
 
 		// step 2
 		OblivPermute op = new OblivPermute(con1, con2, md, P.INIT_OP_ON);
-		op.runOffC(predata, predata.init_pi_E, timer);
+		op.runInitC(predata, predata.init_pi_E, timer);
 
-		timer.stop(pid, M.online_comp);
+		timer.stop(pid, M.online_comp + onoff);
 	}
 
 	@Override

@@ -15,13 +15,14 @@ import util.Util;
 public class PreInitPosMap extends Protocol {
 
 	private int pid = P.IPM;
+	private int onoff = 3;
 
 	public PreInitPosMap(Communication con1, Communication con2, Metadata md) {
 		super(con1, con2, md);
 	}
 
 	public void runE(PreData predata, Timer timer) {
-		timer.start(pid, M.offline_comp);
+		timer.start(pid, M.online_comp + onoff);
 
 		PreGenPermShare pregps = new PreGenPermShare(con1, con2, md);
 		pregps.runE(predata, timer);
@@ -33,16 +34,16 @@ public class PreInitPosMap extends Protocol {
 		if (predata.getIndex() > 0) {
 			predata.ipm_pi_prime_E = Util.randomPermutationLong(n, Crypto.sr);
 
-			timer.start(pid, M.offline_write);
+			timer.start(pid, M.online_write + onoff);
 			con2.writeLongArray64(predata.ipm_pi_prime_E);
-			timer.stop(pid, M.offline_write);
+			timer.stop(pid, M.online_write + onoff);
 		}
 
-		timer.stop(pid, M.offline_comp);
+		timer.stop(pid, M.online_comp + onoff);
 	}
 
 	public void runD(PreData predata, Timer timer) {
-		timer.start(pid, M.offline_comp);
+		timer.start(pid, M.online_comp + onoff);
 
 		PreGenPermShare pregps = new PreGenPermShare(con1, con2, md);
 		pregps.runD(predata, timer);
@@ -55,11 +56,11 @@ public class PreInitPosMap extends Protocol {
 			predata.ipm_pi_prime_D = Util.randomPermutationLong(n, Crypto.sr);
 		}
 
-		timer.stop(pid, M.offline_comp);
+		timer.stop(pid, M.online_comp + onoff);
 	}
 
 	public void runC(PreData predata, Timer timer) {
-		timer.start(pid, M.offline_comp);
+		timer.start(pid, M.online_comp + onoff);
 
 		long n = md.getNumBlocks(predata.getIndex());
 		PreGenPermShare pregps = new PreGenPermShare(con1, con2, md);
@@ -69,12 +70,12 @@ public class PreInitPosMap extends Protocol {
 		preop.runC(predata, timer);
 
 		if (predata.getIndex() > 0) {
-			timer.start(pid, M.offline_read);
+			timer.start(pid, M.online_read + onoff);
 			predata.ipm_pi_prime_E = con1.readLongArray64();
-			timer.stop(pid, M.offline_read);
+			timer.stop(pid, M.online_read + onoff);
 		}
 
-		timer.stop(pid, M.offline_comp);
+		timer.stop(pid, M.online_comp + onoff);
 	}
 
 	@Override

@@ -16,24 +16,25 @@ import util.Util;
 public class PreGenPermConcat extends Protocol {
 
 	private int pid = P.GPC;
+	private int onoff = 3;
 
 	public PreGenPermConcat(Communication con1, Communication con2, Metadata md) {
 		super(con1, con2, md);
 	}
 
 	public void runE(PreData predata, Timer timer) {
-		timer.start(pid, M.offline_comp);
+		timer.start(pid, M.online_comp + onoff);
 
-		timer.start(pid, M.offline_read);
+		timer.start(pid, M.online_read + onoff);
 		predata.gpc_sig2 = con1.readLongArray64();
 		predata.gpc_r2 = con1.readLongArray64();
-		timer.stop(pid, M.offline_read);
+		timer.stop(pid, M.online_read + onoff);
 
-		timer.stop(pid, M.offline_comp);
+		timer.stop(pid, M.online_comp + onoff);
 	}
 
 	public void runD(PreData predata, long v, Timer timer) {
-		timer.start(pid, M.offline_comp);
+		timer.start(pid, M.online_comp + onoff);
 
 		predata.gpc_pi_D = Util.randomPermutationLong(v, Crypto.sr);
 		predata.gpc_sig1 = Util.randomPermutationLong(v, Crypto.sr);
@@ -52,25 +53,25 @@ public class PreGenPermConcat extends Protocol {
 		predata.gpc_t1 = Util.xor(Util.permute(predata.gpc_r2, predata.gpc_gam1), s);
 		predata.gpc_t2 = Util.xor(Util.permute(predata.gpc_r1, predata.gpc_gam2), s);
 
-		timer.start(pid, M.offline_write);
+		timer.start(pid, M.online_write + onoff);
 		con2.writeLongArray64(predata.gpc_gam1);
 		con2.writeLongArray64(predata.gpc_t1);
 		con1.writeLongArray64(predata.gpc_sig2);
 		con1.writeLongArray64(predata.gpc_r2);
-		timer.stop(pid, M.offline_write);
+		timer.stop(pid, M.online_write + onoff);
 
-		timer.stop(pid, M.offline_comp);
+		timer.stop(pid, M.online_comp + onoff);
 	}
 
 	public void runC(PreData predata, Timer timer) {
-		timer.start(pid, M.offline_comp);
+		timer.start(pid, M.online_comp + onoff);
 
-		timer.start(pid, M.offline_read);
+		timer.start(pid, M.online_read + onoff);
 		predata.gpc_gam1 = con2.readLongArray64();
 		predata.gpc_t1 = con2.readLongArray64();
-		timer.stop(pid, M.offline_read);
+		timer.stop(pid, M.online_read + onoff);
 
-		timer.stop(pid, M.offline_comp);
+		timer.stop(pid, M.online_comp + onoff);
 	}
 
 	@Override

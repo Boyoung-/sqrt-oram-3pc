@@ -20,13 +20,14 @@ import util.Util;
 public class SSCOT extends Protocol {
 
 	private int pid = P.COT;
+	private int onoff = 0;
 
 	public SSCOT(Communication con1, Communication con2, Metadata md) {
 		super(con1, con2, md);
 	}
 
 	public void runE(PreData predata, byte[][] m, byte[][] a, Timer timer) {
-		timer.start(pid, M.online_comp);
+		timer.start(pid, M.online_comp + onoff);
 
 		// step 1
 		int n = m.length;
@@ -44,16 +45,16 @@ public class SSCOT extends Protocol {
 			v[i] = predata.sscot_F_kprime.compute(x[i]);
 		}
 
-		timer.start(pid, M.online_write);
+		timer.start(pid, M.online_write + onoff);
 		con2.write(pid, e);
 		con2.write(pid, v);
-		timer.stop(pid, M.online_write);
+		timer.stop(pid, M.online_write + onoff);
 
-		timer.stop(pid, M.online_comp);
+		timer.stop(pid, M.online_comp + onoff);
 	}
 
 	public void runD(PreData predata, byte[][] b, Timer timer) {
-		timer.start(pid, M.online_comp);
+		timer.start(pid, M.online_comp + onoff);
 
 		// step 2
 		int n = b.length;
@@ -69,26 +70,26 @@ public class SSCOT extends Protocol {
 			w[i] = predata.sscot_F_kprime.compute(y[i]);
 		}
 
-		timer.start(pid, M.online_write);
+		timer.start(pid, M.online_write + onoff);
 		con2.write(pid, p);
 		con2.write(pid, w);
-		timer.stop(pid, M.online_write);
+		timer.stop(pid, M.online_write + onoff);
 
-		timer.stop(pid, M.online_comp);
+		timer.stop(pid, M.online_comp + onoff);
 	}
 
 	public OutSSCOT runC(Timer timer) {
-		timer.start(pid, M.online_comp);
+		timer.start(pid, M.online_comp + onoff);
 
 		// step 1
-		timer.start(pid, M.online_read);
+		timer.start(pid, M.online_read + onoff);
 		byte[][] e = con1.readDoubleByteArray(pid);
 		byte[][] v = con1.readDoubleByteArray(pid);
 
 		// step 2
 		byte[][] p = con2.readDoubleByteArray(pid);
 		byte[][] w = con2.readDoubleByteArray(pid);
-		timer.stop(pid, M.online_read);
+		timer.stop(pid, M.online_read + onoff);
 
 		// step 3
 		int n = e.length;
@@ -108,7 +109,7 @@ public class SSCOT extends Protocol {
 		if (invariant != 1)
 			throw new SSCOTException("Invariant error: " + invariant);
 
-		timer.stop(pid, M.online_comp);
+		timer.stop(pid, M.online_comp + onoff);
 		return output;
 	}
 

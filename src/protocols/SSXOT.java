@@ -21,107 +21,110 @@ import util.Util;
 public class SSXOT extends Protocol {
 
 	private int pid;
+	private int onoff;
 
 	// for testing
 	public SSXOT(Communication con1, Communication con2, Metadata md) {
 		super(con1, con2, md);
 		this.pid = P.INIT_OP_XOT_ON;
+		this.onoff = 0;
 	}
 
 	public SSXOT(Communication con1, Communication con2, Metadata md, int pid) {
 		super(con1, con2, md);
 		this.pid = pid;
+		this.onoff = (pid == P.ACC_XOT || pid == P.INIT_OP_XOT_ON) ? 0 : 3;
 	}
 
 	public Array64<Block> runE(PreData predata, Array64<Block> m, Timer timer) {
-		timer.start(pid, M.online_comp);
+		timer.start(pid, M.online_comp + onoff);
 
 		// step 1
 		Array64<Block> a = predata.ssxot_E_r;
 		for (long i = 0; i < m.size(); i++)
 			a.get(i).setXor(m.get(predata.ssxot_E_pi.get(i)));
 
-		timer.start(pid, M.online_write);
+		timer.start(pid, M.online_write + onoff);
 		con2.writeBlockArray64(pid, a);
-		timer.stop(pid, M.online_write);
+		timer.stop(pid, M.online_write + onoff);
 
-		timer.start(pid, M.online_read);
+		timer.start(pid, M.online_read + onoff);
 		a = con2.readBlockArray64(pid);
 
 		// step 2
 		Array64<Long> j = con1.readLongArray64(pid);
 		Array64<Block> p = con1.readBlockArray64(pid);
-		timer.stop(pid, M.online_read);
+		timer.stop(pid, M.online_read + onoff);
 
 		// step 3
 		Array64<Block> z = p;
 		for (long i = 0; i < j.size(); i++)
 			z.get(i).setXor(a.get(j.get(i)));
 
-		timer.stop(pid, M.online_comp);
+		timer.stop(pid, M.online_comp + onoff);
 		return z;
 	}
 
-	public Array64<byte[]> runOffE(PreData predata, Array64<byte[]> m, Timer timer) {
-		timer.start(pid, M.online_comp);
+	public Array64<byte[]> runInitE(PreData predata, Array64<byte[]> m, Timer timer) {
+		timer.start(pid, M.online_comp + onoff);
 
 		// step 1
-		Array64<byte[]> a = predata.offssxot_E_r;
+		Array64<byte[]> a = predata.initssxot_E_r;
 		for (long i = 0; i < m.size(); i++)
-			Util.setXor(a.get(i), m.get(predata.offssxot_E_pi.get(i)));
+			Util.setXor(a.get(i), m.get(predata.initssxot_E_pi.get(i)));
 
-		timer.start(pid, M.online_write);
+		timer.start(pid, M.online_write + onoff);
 		con2.writeByteArray64(pid, a);
-		timer.stop(pid, M.online_write);
+		timer.stop(pid, M.online_write + onoff);
 
-		timer.start(pid, M.online_read);
+		timer.start(pid, M.online_read + onoff);
 		a = con2.readByteArray64(pid);
 
 		// step 2
 		Array64<Long> j = con1.readLongArray64(pid);
 		Array64<byte[]> p = con1.readByteArray64(pid);
-		timer.stop(pid, M.online_read);
+		timer.stop(pid, M.online_read + onoff);
 
 		// step 3
 		Array64<byte[]> z = p;
 		for (long i = 0; i < j.size(); i++)
 			Util.setXor(z.get(i), a.get(j.get(i)));
 
-		timer.stop(pid, M.online_comp);
+		timer.stop(pid, M.online_comp + onoff);
 		return z;
 	}
 
 	public Block[] runE(PreData predata, Block[] m, Timer timer) {
-		timer.start(pid, M.online_comp);
+		timer.start(pid, M.online_comp + onoff);
 
 		// step 1
 		Block[] a = predata.accxot_E_r;
 		for (int i = 0; i < m.length; i++)
 			a[i].setXor(m[predata.accxot_E_pi[i]]);
 
-		timer.start(pid, M.online_write);
+		timer.start(pid, M.online_write + onoff);
 		con2.write(pid, a);
-		timer.stop(pid, M.online_write);
+		timer.stop(pid, M.online_write + onoff);
 
-		timer.start(pid, M.online_read);
+		timer.start(pid, M.online_read + onoff);
 		a = con2.readBlockArray(pid);
 
 		// step 2
 		int[] j = con1.readIntArray(pid);
 		Block[] p = con1.readBlockArray(pid);
-		timer.stop(pid, M.online_read);
+		timer.stop(pid, M.online_read + onoff);
 
 		// step 3
 		Block[] z = p;
 		for (int i = 0; i < j.length; i++)
 			z[i].setXor(a[j[i]]);
 
-		timer.stop(pid, M.online_comp);
+		timer.stop(pid, M.online_comp + onoff);
 		return z;
 	}
 
 	public void runD(PreData predata, Array64<Long> index, Timer timer) {
-		timer.start(pid, M.online_comp);
+		timer.start(pid, M.online_comp + onoff);
 
 		// step 2
 		long k = index.size();
@@ -136,18 +139,18 @@ public class SSXOT extends Protocol {
 			C_p.set(i, predata.ssxot_C_r.get(C_j.get(i)).xor(predata.ssxot_delta.get(i)));
 		}
 
-		timer.start(pid, M.online_write);
+		timer.start(pid, M.online_write + onoff);
 		con2.writeLongArray64(pid, E_j);
 		con2.writeBlockArray64(pid, E_p);
 		con1.writeLongArray64(pid, C_j);
 		con1.writeBlockArray64(pid, C_p);
-		timer.stop(pid, M.online_write);
+		timer.stop(pid, M.online_write + onoff);
 
-		timer.stop(pid, M.online_comp);
+		timer.stop(pid, M.online_comp + onoff);
 	}
 
-	public void runOffD(PreData predata, Array64<Long> index, Timer timer) {
-		timer.start(pid, M.online_comp);
+	public void runInitD(PreData predata, Array64<Long> index, Timer timer) {
+		timer.start(pid, M.online_comp + onoff);
 
 		// step 2
 		long k = index.size();
@@ -156,24 +159,24 @@ public class SSXOT extends Protocol {
 		Array64<byte[]> E_p = new Array64<byte[]>(k);
 		Array64<byte[]> C_p = new Array64<byte[]>(k);
 		for (long i = 0; i < k; i++) {
-			E_j.set(i, predata.offssxot_E_pi_ivs.get(index.get(i)));
-			C_j.set(i, predata.offssxot_C_pi_ivs.get(index.get(i)));
-			E_p.set(i, Util.xor(predata.offssxot_E_r.get(E_j.get(i)), predata.offssxot_delta.get(i)));
-			C_p.set(i, Util.xor(predata.offssxot_C_r.get(C_j.get(i)), predata.offssxot_delta.get(i)));
+			E_j.set(i, predata.initssxot_E_pi_ivs.get(index.get(i)));
+			C_j.set(i, predata.initssxot_C_pi_ivs.get(index.get(i)));
+			E_p.set(i, Util.xor(predata.initssxot_E_r.get(E_j.get(i)), predata.initssxot_delta.get(i)));
+			C_p.set(i, Util.xor(predata.initssxot_C_r.get(C_j.get(i)), predata.initssxot_delta.get(i)));
 		}
 
-		timer.start(pid, M.online_write);
+		timer.start(pid, M.online_write + onoff);
 		con2.writeLongArray64(pid, E_j);
 		con2.writeByteArray64(pid, E_p);
 		con1.writeLongArray64(pid, C_j);
 		con1.writeByteArray64(pid, C_p);
-		timer.stop(pid, M.online_write);
+		timer.stop(pid, M.online_write + onoff);
 
-		timer.stop(pid, M.online_comp);
+		timer.stop(pid, M.online_comp + onoff);
 	}
 
 	public void runD(PreData predata, int[] index, Timer timer) {
-		timer.start(pid, M.online_comp);
+		timer.start(pid, M.online_comp + onoff);
 
 		// step 2
 		int k = index.length;
@@ -188,100 +191,100 @@ public class SSXOT extends Protocol {
 			C_p[i] = predata.accxot_C_r[C_j[i]].xor(predata.accxot_delta[i]);
 		}
 
-		timer.start(pid, M.online_write);
+		timer.start(pid, M.online_write + onoff);
 		con2.write(pid, E_j);
 		con2.write(pid, E_p);
 		con1.write(pid, C_j);
 		con1.write(pid, C_p);
-		timer.stop(pid, M.online_write);
+		timer.stop(pid, M.online_write + onoff);
 
-		timer.stop(pid, M.online_comp);
+		timer.stop(pid, M.online_comp + onoff);
 	}
 
 	public Array64<Block> runC(PreData predata, Array64<Block> m, Timer timer) {
-		timer.start(pid, M.online_comp);
+		timer.start(pid, M.online_comp + onoff);
 
 		// step 1
 		Array64<Block> a = predata.ssxot_C_r;
 		for (long i = 0; i < m.size(); i++)
 			a.get(i).setXor(m.get(predata.ssxot_C_pi.get(i)));
 
-		timer.start(pid, M.online_write);
+		timer.start(pid, M.online_write + onoff);
 		con1.writeBlockArray64(pid, a);
-		timer.stop(pid, M.online_write);
+		timer.stop(pid, M.online_write + onoff);
 
-		timer.start(pid, M.online_read);
+		timer.start(pid, M.online_read + onoff);
 		a = con1.readBlockArray64(pid);
 
 		// step 2
 		Array64<Long> j = con2.readLongArray64(pid);
 		Array64<Block> p = con2.readBlockArray64(pid);
-		timer.stop(pid, M.online_read);
+		timer.stop(pid, M.online_read + onoff);
 
 		// step 3
 		Array64<Block> z = p;
 		for (long i = 0; i < j.size(); i++)
 			z.get(i).setXor(a.get(j.get(i)));
 
-		timer.stop(pid, M.online_comp);
+		timer.stop(pid, M.online_comp + onoff);
 		return z;
 	}
 
-	public Array64<byte[]> runOffC(PreData predata, Array64<byte[]> m, Timer timer) {
-		timer.start(pid, M.online_comp);
+	public Array64<byte[]> runInitC(PreData predata, Array64<byte[]> m, Timer timer) {
+		timer.start(pid, M.online_comp + onoff);
 
 		// step 1
-		Array64<byte[]> a = predata.offssxot_C_r;
+		Array64<byte[]> a = predata.initssxot_C_r;
 		for (long i = 0; i < m.size(); i++)
-			Util.setXor(a.get(i), m.get(predata.offssxot_C_pi.get(i)));
+			Util.setXor(a.get(i), m.get(predata.initssxot_C_pi.get(i)));
 
-		timer.start(pid, M.online_write);
+		timer.start(pid, M.online_write + onoff);
 		con1.writeByteArray64(pid, a);
-		timer.stop(pid, M.online_write);
+		timer.stop(pid, M.online_write + onoff);
 
-		timer.start(pid, M.online_read);
+		timer.start(pid, M.online_read + onoff);
 		a = con1.readByteArray64(pid);
 
 		// step 2
 		Array64<Long> j = con2.readLongArray64(pid);
 		Array64<byte[]> p = con2.readByteArray64(pid);
-		timer.stop(pid, M.online_read);
+		timer.stop(pid, M.online_read + onoff);
 
 		// step 3
 		Array64<byte[]> z = p;
 		for (long i = 0; i < j.size(); i++)
 			Util.setXor(z.get(i), a.get(j.get(i)));
 
-		timer.stop(pid, M.online_comp);
+		timer.stop(pid, M.online_comp + onoff);
 		return z;
 	}
 
 	public Block[] runC(PreData predata, Block[] m, Timer timer) {
-		timer.start(pid, M.online_comp);
+		timer.start(pid, M.online_comp + onoff);
 
 		// step 1
 		Block[] a = predata.accxot_C_r;
 		for (int i = 0; i < m.length; i++)
 			a[i].setXor(m[predata.accxot_C_pi[i]]);
 
-		timer.start(pid, M.online_write);
+		timer.start(pid, M.online_write + onoff);
 		con1.write(pid, a);
-		timer.stop(pid, M.online_write);
+		timer.stop(pid, M.online_write + onoff);
 
-		timer.start(pid, M.online_read);
+		timer.start(pid, M.online_read + onoff);
 		a = con1.readBlockArray(pid);
 
 		// step 2
 		int[] j = con2.readIntArray(pid);
 		Block[] p = con2.readBlockArray(pid);
-		timer.stop(pid, M.online_read);
+		timer.stop(pid, M.online_read + onoff);
 
 		// step 3
 		Block[] z = p;
 		for (int i = 0; i < j.length; i++)
 			z[i].setXor(a[j[i]]);
 
-		timer.stop(pid, M.online_comp);
+		timer.stop(pid, M.online_comp + onoff);
 		return z;
 	}
 
@@ -383,7 +386,7 @@ public class SSXOT extends Protocol {
 
 				con2.writeByteArray64(C_m);
 
-				Array64<byte[]> E_out_m = runOffE(predata, E_m, timer);
+				Array64<byte[]> E_out_m = runInitE(predata, E_m, timer);
 
 				con2.writeByteArray64(E_out_m);
 
@@ -395,7 +398,7 @@ public class SSXOT extends Protocol {
 				pressxot.runD(predata, n, k, timer);
 
 				Array64<Long> index = Util.randomPermutationLong(k, Crypto.sr);
-				runOffD(predata, index, timer);
+				runInitD(predata, index, timer);
 
 				con2.writeLongArray64(index);
 
@@ -408,7 +411,7 @@ public class SSXOT extends Protocol {
 
 				C_m = con1.readByteArray64();
 
-				Array64<byte[]> C_out_m = runOffC(predata, C_m, timer);
+				Array64<byte[]> C_out_m = runInitC(predata, C_m, timer);
 
 				Array64<Long> index = con2.readLongArray64();
 				Array64<byte[]> E_out_m = con1.readByteArray64();
