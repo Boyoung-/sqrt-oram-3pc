@@ -16,8 +16,10 @@ import protocols.struct.OutAccess;
 import protocols.struct.Party;
 import protocols.struct.PreData;
 import util.Array64;
+import util.Bandwidth;
 import util.M;
 import util.P;
+import util.StopWatch;
 import util.Timer;
 import util.Util;
 
@@ -145,10 +147,14 @@ public class RunSqrtOram extends Protocol {
 
 	@Override
 	public void run(Party party, SqrtOram oram) {
-		int repeat = 5;
-		int numTest = 50;
+		int repeat = 4;
+		int numTest = 1024 / repeat;
 
 		Timer timer = new Timer();
+		long gates = 0;
+		StopWatch ete_on = new StopWatch("ETE_online");
+		StopWatch ete_off = new StopWatch("ETE_offline");
+
 		int h = md.getNumLevels();
 		PreData[] predata = new PreData[h];
 		PreInitialize preinit = null;
@@ -169,19 +175,31 @@ public class RunSqrtOram extends Protocol {
 					counter = 0;
 					preinit = new PreInitialize(con1, con2, md);
 					if (party == Party.Eddie) {
+						ete_off.start();
 						preinit.runE(predata, oram, timer);
+						ete_off.stop();
 
+						ete_on.start();
 						this.runInitE(predata, oram, timer);
+						ete_on.stop();
 
 					} else if (party == Party.Debbie) {
+						ete_off.start();
 						preinit.runD(predata, oram, timer);
+						ete_off.stop();
 
+						ete_on.start();
 						this.runInitD(predata, oram, timer);
+						ete_on.stop();
 
 					} else if (party == Party.Charlie) {
+						ete_off.start();
 						preinit.runC(predata, timer);
+						ete_off.stop();
 
+						ete_on.start();
 						this.runInitC(predata, oram, timer);
+						ete_on.stop();
 
 					} else {
 						throw new NoSuchPartyException(party + "");
@@ -193,10 +211,14 @@ public class RunSqrtOram extends Protocol {
 
 				prerun = new PreRunSqrtOram(con1, con2, md);
 				if (party == Party.Eddie) {
+					ete_off.start();
 					prerun.runE(predata, oram, timer);
+					ete_off.stop();
 
 					con1.write(addr_a);
+					ete_on.start();
 					byte[] rec = this.runE(predata, oram, addr_b, timer);
+					ete_on.stop();
 
 					Util.setXor(rec, con2.read());
 					if (new BigInteger(1, rec).compareTo(addr) == 0)
@@ -207,15 +229,23 @@ public class RunSqrtOram extends Protocol {
 								+ addr.longValue());
 
 				} else if (party == Party.Debbie) {
-					prerun.runD(predata, oram, timer);
+					ete_off.start();
+					gates = prerun.runD(predata, oram, timer);
+					ete_off.stop();
 
 					addr_a = con1.readBigInteger();
+					ete_on.start();
 					this.runD(predata, oram, addr_a, timer);
+					ete_on.stop();
 
 				} else if (party == Party.Charlie) {
+					ete_off.start();
 					prerun.runC(predata, counter, timer);
+					ete_off.stop();
 
+					ete_on.start();
 					byte[] rec = this.runC(predata, timer);
+					ete_on.stop();
 					con1.write(rec);
 
 				} else {
@@ -226,6 +256,35 @@ public class RunSqrtOram extends Protocol {
 			}
 		}
 
-		// timer.print();
+		/////////////////////////////////////////////////////////
+
+		System.out.println();
+		timer = timer.divideBy(numTest * repeat);
+		timer.noPrePrint();
+		System.out.println();
+
+		StopWatch comEnc = new StopWatch("CE_online_comp");
+		comEnc = comEnc.add(con1.comEnc.add(con2.comEnc));
+		comEnc = comEnc.divideBy(numTest * repeat);
+		System.out.println(comEnc.noPreToMS());
+		System.out.println("\n");
+
+		Bandwidth[] bandwidth = new Bandwidth[P.size];
+		for (int i = 0; i < P.size; i++) {
+			bandwidth[i] = new Bandwidth(P.names[i]);
+			bandwidth[i] = bandwidth[i].add(con1.bandwidth[i].add(con2.bandwidth[i]));
+			bandwidth[i] = bandwidth[i].divideBy(numTest * repeat);
+			System.out.println(bandwidth[i].noPreToString());
+		}
+		System.out.println();
+
+		System.out.println(gates);
+		System.out.println();
+
+		ete_on = ete_on.divideBy(numTest * repeat);
+		ete_off = ete_off.divideBy(numTest * repeat);
+		System.out.println(ete_on.noPreToMS());
+		System.out.println(ete_off.noPreToMS());
+		System.out.println();
 	}
 }

@@ -32,16 +32,19 @@ public class PreRunSqrtOram extends Protocol {
 		timer.stop(pid, M.online_comp + onoff);
 	}
 
-	public void runD(PreData[] predata, SqrtOram oram, Timer timer) {
+	public long runD(PreData[] predata, SqrtOram oram, Timer timer) {
 		timer.start(pid, M.online_comp + onoff);
 
+		long gates = 0;
 		for (int i = 0; i < predata.length; i++) {
 			Level level = oram.getLevel(i);
 			PreAccess preacc = new PreAccess(con1, con2, md);
-			preacc.runD(predata[i], i == 0 ? (int) level.getFresh().size() : 1, level.getStash().size(), timer);
+			gates += preacc.runD(predata[i], i == 0 ? (int) level.getFresh().size() : 1, level.getStash().size(),
+					timer);
 		}
 
 		timer.stop(pid, M.online_comp + onoff);
+		return gates;
 	}
 
 	public void runC(PreData[] predata, int counter, Timer timer) {

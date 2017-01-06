@@ -51,7 +51,7 @@ public class PreAccess extends Protocol {
 		timer.stop(pid, M.online_comp + onoff);
 	}
 
-	public void runD(PreData predata, int n, int s, Timer timer) {
+	public long runD(PreData predata, int n, int s, Timer timer) {
 		timer.start(pid, M.online_comp + onoff);
 
 		int levelIndex = predata.getIndex();
@@ -62,7 +62,7 @@ public class PreAccess extends Protocol {
 
 		// GP
 		PreGetPointer pregp = new PreGetPointer(con1, con2, md);
-		pregp.runD(predata, timer);
+		long gates = pregp.runD(predata, timer);
 
 		// SSXOT
 		PreSSXOT pressxot = new PreSSXOT(con1, con2, md, P.ACC_XOT);
@@ -80,6 +80,7 @@ public class PreAccess extends Protocol {
 		timer.stop(pid, M.online_write + onoff);
 
 		timer.stop(pid, M.online_comp + onoff);
+		return gates;
 	}
 
 	public void runC(PreData predata, int n, int s, Timer timer) {

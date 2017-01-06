@@ -33,6 +33,12 @@ public class Bandwidth {
 		return total;
 	}
 
+	public Bandwidth divideBy(int n) {
+		Bandwidth b = new Bandwidth(this);
+		b.bandwidth /= n;
+		return b;
+	}
+
 	public String noPreToString() {
 		return "" + bandwidth;
 	}

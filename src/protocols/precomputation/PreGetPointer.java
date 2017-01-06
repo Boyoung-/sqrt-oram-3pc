@@ -115,7 +115,7 @@ public class PreGetPointer extends Protocol {
 
 	public long runD(PreData predata, Timer timer) {
 		if (predata.getIndex() >= md.getNumLevels() - 1)
-			return -1;
+			return 0;
 
 		timer.start(pid, M.online_comp + onoff);
 
