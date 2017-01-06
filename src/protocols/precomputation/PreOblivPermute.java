@@ -36,7 +36,7 @@ public class PreOblivPermute extends Protocol {
 				predata.op_e.set(i, new Block(predata.getIndex(), md, Crypto.sr));
 
 			timer.start(pid, M.online_write + onoff);
-			con2.writeBlockArray64(predata.op_e);
+			con2.writeBlockArray64(pid, predata.op_e);
 			timer.stop(pid, M.online_write + onoff);
 		}
 
@@ -52,7 +52,7 @@ public class PreOblivPermute extends Protocol {
 				predata.initop_e.set(i, Util.nextBytes(bytes, Crypto.sr));
 
 			timer.start(pid, M.online_write + onoff);
-			con2.writeByteArray64(predata.initop_e);
+			con2.writeByteArray64(pid, predata.initop_e);
 			timer.stop(pid, M.online_write + onoff);
 		}
 
@@ -76,7 +76,7 @@ public class PreOblivPermute extends Protocol {
 			pressxot.runC(predata, timer);
 
 			timer.start(pid, M.online_read + onoff);
-			predata.op_e = con1.readBlockArray64();
+			predata.op_e = con1.readBlockArray64(pid);
 			timer.stop(pid, M.online_read + onoff);
 		}
 
@@ -86,7 +86,7 @@ public class PreOblivPermute extends Protocol {
 			pressxot.runC(predata, timer);
 
 			timer.start(pid, M.online_read + onoff);
-			predata.initop_e = con1.readByteArray64();
+			predata.initop_e = con1.readByteArray64(pid);
 			timer.stop(pid, M.online_read + onoff);
 		}
 

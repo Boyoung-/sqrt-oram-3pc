@@ -634,6 +634,7 @@ public class Communication {
 		return readMessage;
 	}
 
+	// pid here serves the purpose of decrypting
 	public byte[] read(int pid) {
 		byte[] msg = read();
 		comEnc.start();

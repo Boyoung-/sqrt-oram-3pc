@@ -26,8 +26,8 @@ public class PreGenPermConcat extends Protocol {
 		timer.start(pid, M.online_comp + onoff);
 
 		timer.start(pid, M.online_read + onoff);
-		predata.gpc_sig2 = con1.readLongArray64();
-		predata.gpc_r2 = con1.readLongArray64();
+		predata.gpc_sig2 = con1.readLongArray64(pid);
+		predata.gpc_r2 = con1.readLongArray64(pid);
 		timer.stop(pid, M.online_read + onoff);
 
 		timer.stop(pid, M.online_comp + onoff);
@@ -54,10 +54,10 @@ public class PreGenPermConcat extends Protocol {
 		predata.gpc_t2 = Util.xor(Util.permute(predata.gpc_r1, predata.gpc_gam2), s);
 
 		timer.start(pid, M.online_write + onoff);
-		con2.writeLongArray64(predata.gpc_gam1);
-		con2.writeLongArray64(predata.gpc_t1);
-		con1.writeLongArray64(predata.gpc_sig2);
-		con1.writeLongArray64(predata.gpc_r2);
+		con2.writeLongArray64(pid, predata.gpc_gam1);
+		con2.writeLongArray64(pid, predata.gpc_t1);
+		con1.writeLongArray64(pid, predata.gpc_sig2);
+		con1.writeLongArray64(pid, predata.gpc_r2);
 		timer.stop(pid, M.online_write + onoff);
 
 		timer.stop(pid, M.online_comp + onoff);
@@ -67,8 +67,8 @@ public class PreGenPermConcat extends Protocol {
 		timer.start(pid, M.online_comp + onoff);
 
 		timer.start(pid, M.online_read + onoff);
-		predata.gpc_gam1 = con2.readLongArray64();
-		predata.gpc_t1 = con2.readLongArray64();
+		predata.gpc_gam1 = con2.readLongArray64(pid);
+		predata.gpc_t1 = con2.readLongArray64(pid);
 		timer.stop(pid, M.online_read + onoff);
 
 		timer.stop(pid, M.online_comp + onoff);

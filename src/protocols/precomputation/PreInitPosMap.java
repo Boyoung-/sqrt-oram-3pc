@@ -35,7 +35,7 @@ public class PreInitPosMap extends Protocol {
 			predata.ipm_pi_prime_E = Util.randomPermutationLong(n, Crypto.sr);
 
 			timer.start(pid, M.online_write + onoff);
-			con2.writeLongArray64(predata.ipm_pi_prime_E);
+			con2.writeLongArray64(pid, predata.ipm_pi_prime_E);
 			timer.stop(pid, M.online_write + onoff);
 		}
 
@@ -71,7 +71,7 @@ public class PreInitPosMap extends Protocol {
 
 		if (predata.getIndex() > 0) {
 			timer.start(pid, M.online_read + onoff);
-			predata.ipm_pi_prime_E = con1.readLongArray64();
+			predata.ipm_pi_prime_E = con1.readLongArray64(pid);
 			timer.stop(pid, M.online_read + onoff);
 		}
 

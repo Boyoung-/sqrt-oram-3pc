@@ -43,9 +43,9 @@ public class PreAccess extends Protocol {
 		predata.acc_A_b = new Block(levelIndex, md, Crypto.sr);
 
 		timer.start(pid, M.online_read + onoff);
-		predata.acc_rho = con1.readIntArray();
-		predata.acc_rho_ivs = con1.readIntArray();
-		predata.acc_r = con1.readBlock();
+		predata.acc_rho = con1.readIntArray(pid);
+		predata.acc_rho_ivs = con1.readIntArray(pid);
+		predata.acc_r = con1.readBlock(pid);
 		timer.stop(pid, M.online_read + onoff);
 
 		timer.stop(pid, M.online_comp + onoff);
@@ -74,9 +74,9 @@ public class PreAccess extends Protocol {
 		predata.acc_r = new Block(levelIndex, md, Crypto.sr);
 
 		timer.start(pid, M.online_write + onoff);
-		con1.write(predata.acc_rho);
-		con1.write(predata.acc_rho_ivs);
-		con1.write(predata.acc_r);
+		con1.write(pid, predata.acc_rho);
+		con1.write(pid, predata.acc_rho_ivs);
+		con1.write(pid, predata.acc_r);
 		timer.stop(pid, M.online_write + onoff);
 
 		timer.stop(pid, M.online_comp + onoff);

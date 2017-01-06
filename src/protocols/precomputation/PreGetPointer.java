@@ -100,14 +100,14 @@ public class PreGetPointer extends Protocol {
 
 		timer.start(pid, M.online_write + onoff);
 		for (int i = 0; i < outZeroKeys.length; i++)
-			con1.write(predata.gp_outKeyHashes[i]);
+			con1.write(pid, predata.gp_outKeyHashes[i]);
 
-		con2.write(predata.gp_C_nKeyPairs);
-		con2.write(predata.gp_C_alKeyPairs);
-		con2.write(predata.gp_C_afKeyPairs);
-		con2.write(predata.gp_C_bfKeyPairs);
-		con2.write(predata.gp_C_apKeyPairs);
-		con2.write(predata.gp_C_bpKeyPairs);
+		con2.write(pid, predata.gp_C_nKeyPairs);
+		con2.write(pid, predata.gp_C_alKeyPairs);
+		con2.write(pid, predata.gp_C_afKeyPairs);
+		con2.write(pid, predata.gp_C_bfKeyPairs);
+		con2.write(pid, predata.gp_C_apKeyPairs);
+		con2.write(pid, predata.gp_C_bpKeyPairs);
 		timer.stop(pid, M.online_write + onoff);
 
 		timer.stop(pid, M.online_comp + onoff);
@@ -146,7 +146,7 @@ public class PreGetPointer extends Protocol {
 
 		timer.start(pid, M.online_read + onoff);
 		for (int i = 0; i < out.length; i++)
-			predata.gp_outKeyHashes[i] = con1.readDoubleByteArray();
+			predata.gp_outKeyHashes[i] = con1.readDoubleByteArray(pid);
 		timer.stop(pid, M.online_read + onoff);
 
 		timer.stop(pid, M.online_comp + onoff);
@@ -161,12 +161,12 @@ public class PreGetPointer extends Protocol {
 
 		// GC
 		timer.start(pid, M.online_read + onoff);
-		predata.gp_C_nKeyPairs = con1.readDoubleGCSignalArray();
-		predata.gp_C_alKeyPairs = con1.readDoubleGCSignalArray();
-		predata.gp_C_afKeyPairs = con1.readDoubleGCSignalArray();
-		predata.gp_C_bfKeyPairs = con1.readDoubleGCSignalArray();
-		predata.gp_C_apKeyPairs = con1.readTripleGCSignalArray();
-		predata.gp_C_bpKeyPairs = con1.readTripleGCSignalArray();
+		predata.gp_C_nKeyPairs = con1.readDoubleGCSignalArray(pid);
+		predata.gp_C_alKeyPairs = con1.readDoubleGCSignalArray(pid);
+		predata.gp_C_afKeyPairs = con1.readDoubleGCSignalArray(pid);
+		predata.gp_C_bfKeyPairs = con1.readDoubleGCSignalArray(pid);
+		predata.gp_C_apKeyPairs = con1.readTripleGCSignalArray(pid);
+		predata.gp_C_bpKeyPairs = con1.readTripleGCSignalArray(pid);
 		timer.stop(pid, M.online_read + onoff);
 
 		timer.stop(pid, M.online_comp + onoff);

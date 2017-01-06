@@ -28,12 +28,12 @@ public class GenPermShare extends Protocol {
 
 		// step 1
 		timer.start(pid, M.online_write + onoff);
-		con2.writeLongArray64(pi_E);
+		con2.writeLongArray64(pid, pi_E);
 		timer.stop(pid, M.online_write + onoff);
 
 		// step 3
 		timer.start(pid, M.online_read + onoff);
-		Array64<Long> z = con1.readLongArray64();
+		Array64<Long> z = con1.readLongArray64(pid);
 		timer.stop(pid, M.online_read + onoff);
 
 		// step 4
@@ -49,14 +49,14 @@ public class GenPermShare extends Protocol {
 
 		// step 2
 		timer.start(pid, M.online_read + onoff);
-		Array64<Long> pi_a = con2.readLongArray64();
+		Array64<Long> pi_a = con2.readLongArray64(pid);
 		timer.stop(pid, M.online_read + onoff);
 
 		// step 3
 		Array64<Long> z = Util.xor(pi_D, predata.gps_p);
 
 		timer.start(pid, M.online_write + onoff);
-		con1.writeLongArray64(z);
+		con1.writeLongArray64(pid, z);
 		timer.stop(pid, M.online_write + onoff);
 
 		timer.stop(pid, M.online_comp + onoff);
@@ -68,7 +68,7 @@ public class GenPermShare extends Protocol {
 
 		// step 1
 		timer.start(pid, M.online_read + onoff);
-		Array64<Long> pi_E = con1.readLongArray64();
+		Array64<Long> pi_E = con1.readLongArray64(pid);
 		timer.stop(pid, M.online_read + onoff);
 
 		// step 2
@@ -76,7 +76,7 @@ public class GenPermShare extends Protocol {
 		Array64<Long> pi_a = Util.permute(Util.xor(predata.gps_p, predata.gps_r), pi_ivs);
 
 		timer.start(pid, M.online_write + onoff);
-		con2.writeLongArray64(pi_a);
+		con2.writeLongArray64(pid, pi_a);
 		timer.stop(pid, M.online_write + onoff);
 
 		timer.stop(pid, M.online_comp + onoff);

@@ -29,14 +29,14 @@ public class PreSSXOT extends Protocol {
 
 		timer.start(pid, M.online_read + onoff);
 		if (pid == P.ACC_XOT) {
-			predata.accxot_E_pi = con1.readIntArray();
-			predata.accxot_E_r = con1.readBlockArray();
+			predata.accxot_E_pi = con1.readIntArray(pid);
+			predata.accxot_E_r = con1.readBlockArray(pid);
 		} else if (pid == P.IPM_OP_XOT) {
-			predata.ssxot_E_pi = con1.readLongArray64();
-			predata.ssxot_E_r = con1.readBlockArray64();
+			predata.ssxot_E_pi = con1.readLongArray64(pid);
+			predata.ssxot_E_r = con1.readBlockArray64(pid);
 		} else {
-			predata.initssxot_E_pi = con1.readLongArray64();
-			predata.initssxot_E_r = con1.readByteArray64();
+			predata.initssxot_E_pi = con1.readLongArray64(pid);
+			predata.initssxot_E_r = con1.readByteArray64(pid);
 		}
 		timer.stop(pid, M.online_read + onoff);
 
@@ -64,10 +64,10 @@ public class PreSSXOT extends Protocol {
 		}
 
 		timer.start(pid, M.online_write + onoff);
-		con1.write(predata.accxot_E_pi);
-		con1.write(predata.accxot_E_r);
-		con2.write(predata.accxot_C_pi);
-		con2.write(predata.accxot_C_r);
+		con1.write(pid, predata.accxot_E_pi);
+		con1.write(pid, predata.accxot_E_r);
+		con2.write(pid, predata.accxot_C_pi);
+		con2.write(pid, predata.accxot_C_r);
 		timer.stop(pid, M.online_write + onoff);
 
 		timer.stop(pid, M.online_comp + onoff);
@@ -94,10 +94,10 @@ public class PreSSXOT extends Protocol {
 			}
 
 			timer.start(pid, M.online_write + onoff);
-			con1.writeLongArray64(predata.ssxot_E_pi);
-			con1.writeBlockArray64(predata.ssxot_E_r);
-			con2.writeLongArray64(predata.ssxot_C_pi);
-			con2.writeBlockArray64(predata.ssxot_C_r);
+			con1.writeLongArray64(pid, predata.ssxot_E_pi);
+			con1.writeBlockArray64(pid, predata.ssxot_E_r);
+			con2.writeLongArray64(pid, predata.ssxot_C_pi);
+			con2.writeBlockArray64(pid, predata.ssxot_C_r);
 			timer.stop(pid, M.online_write + onoff);
 		}
 
@@ -121,10 +121,10 @@ public class PreSSXOT extends Protocol {
 			}
 
 			timer.start(pid, M.online_write + onoff);
-			con1.writeLongArray64(predata.initssxot_E_pi);
-			con1.writeByteArray64(predata.initssxot_E_r);
-			con2.writeLongArray64(predata.initssxot_C_pi);
-			con2.writeByteArray64(predata.initssxot_C_r);
+			con1.writeLongArray64(pid, predata.initssxot_E_pi);
+			con1.writeByteArray64(pid, predata.initssxot_E_r);
+			con2.writeLongArray64(pid, predata.initssxot_C_pi);
+			con2.writeByteArray64(pid, predata.initssxot_C_r);
 			timer.stop(pid, M.online_write + onoff);
 		}
 
@@ -136,14 +136,14 @@ public class PreSSXOT extends Protocol {
 
 		timer.start(pid, M.online_read + onoff);
 		if (pid == P.ACC_XOT) {
-			predata.accxot_C_pi = con2.readIntArray();
-			predata.accxot_C_r = con2.readBlockArray();
+			predata.accxot_C_pi = con2.readIntArray(pid);
+			predata.accxot_C_r = con2.readBlockArray(pid);
 		} else if (pid == P.IPM_OP_XOT) {
-			predata.ssxot_C_pi = con2.readLongArray64();
-			predata.ssxot_C_r = con2.readBlockArray64();
+			predata.ssxot_C_pi = con2.readLongArray64(pid);
+			predata.ssxot_C_r = con2.readBlockArray64(pid);
 		} else {
-			predata.initssxot_C_pi = con2.readLongArray64();
-			predata.initssxot_C_r = con2.readByteArray64();
+			predata.initssxot_C_pi = con2.readLongArray64(pid);
+			predata.initssxot_C_r = con2.readByteArray64(pid);
 		}
 		timer.stop(pid, M.online_read + onoff);
 

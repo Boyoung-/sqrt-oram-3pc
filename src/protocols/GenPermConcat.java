@@ -30,13 +30,13 @@ public class GenPermConcat extends Protocol {
 		Array64<Long> a1 = Util.xor(Util.permute(pi_b, predata.gpc_sig2), predata.gpc_r2);
 
 		timer.start(pid, M.online_write + onoff);
-		con2.writeLongArray64(a1);
+		con2.writeLongArray64(pid, a1);
 		timer.stop(pid, M.online_write + onoff);
 
 		// step 2 & 3
 		timer.start(pid, M.online_read + onoff);
-		Array64<Long> z1 = con2.readLongArray64();
-		Array64<Long> z2 = con1.readLongArray64();
+		Array64<Long> z1 = con2.readLongArray64(pid);
+		Array64<Long> z2 = con1.readLongArray64(pid);
 		timer.stop(pid, M.online_read + onoff);
 
 		Array64<Long> pi_E = Util.inversePermutationLong(Util.xor(z1, z2));
@@ -53,7 +53,7 @@ public class GenPermConcat extends Protocol {
 		Array64<Long> z2 = Util.xor(Util.permute(a2, predata.gpc_gam2), predata.gpc_t2);
 
 		timer.start(pid, M.online_write + onoff);
-		con1.writeLongArray64(z2);
+		con1.writeLongArray64(pid, z2);
 		timer.stop(pid, M.online_write + onoff);
 
 		timer.stop(pid, M.online_comp + onoff);
@@ -65,14 +65,14 @@ public class GenPermConcat extends Protocol {
 
 		// step 1
 		timer.start(pid, M.online_read + onoff);
-		Array64<Long> a1 = con1.readLongArray64();
+		Array64<Long> a1 = con1.readLongArray64(pid);
 		timer.stop(pid, M.online_read + onoff);
 
 		// step 2
 		Array64<Long> z1 = Util.xor(Util.permute(a1, predata.gpc_gam1), predata.gpc_t1);
 
 		timer.start(pid, M.online_write + onoff);
-		con1.writeLongArray64(z1);
+		con1.writeLongArray64(pid, z1);
 		timer.stop(pid, M.online_write + onoff);
 
 		timer.stop(pid, M.online_comp + onoff);

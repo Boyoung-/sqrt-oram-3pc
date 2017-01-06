@@ -25,7 +25,7 @@ public class PreGenPermShare extends Protocol {
 		timer.start(pid, M.online_comp + onoff);
 
 		timer.start(pid, M.online_read + onoff);
-		predata.gps_r = con2.readLongArray64();
+		predata.gps_r = con2.readLongArray64(pid);
 		timer.stop(pid, M.online_read + onoff);
 
 		timer.stop(pid, M.online_comp + onoff);
@@ -35,7 +35,7 @@ public class PreGenPermShare extends Protocol {
 		timer.start(pid, M.online_comp + onoff);
 
 		timer.start(pid, M.online_read + onoff);
-		predata.gps_p = con2.readLongArray64();
+		predata.gps_p = con2.readLongArray64(pid);
 		timer.stop(pid, M.online_read + onoff);
 
 		timer.stop(pid, M.online_comp + onoff);
@@ -52,8 +52,8 @@ public class PreGenPermShare extends Protocol {
 		}
 
 		timer.start(pid, M.online_write + onoff);
-		con2.writeLongArray64(predata.gps_p);
-		con1.writeLongArray64(predata.gps_r);
+		con2.writeLongArray64(pid, predata.gps_p);
+		con1.writeLongArray64(pid, predata.gps_r);
 		timer.stop(pid, M.online_write + onoff);
 
 		timer.stop(pid, M.online_comp + onoff);
