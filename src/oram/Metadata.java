@@ -80,7 +80,7 @@ public class Metadata implements Serializable {
 
 	private void init() {
 		twoTauPow = (int) Math.pow(2, tau);
-		int logT = (addrBits + 1) / 2 - tau;
+		int logT = Math.max((addrBits + 1) / 2 - tau, 0);
 		period = (int) Math.pow(2, logT);
 		numLevels = (addrBits - logT) / tau + 1;
 

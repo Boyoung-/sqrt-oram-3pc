@@ -19,9 +19,11 @@ public class ComUtil {
 		byte[] out = null;
 		try {
 			dos.writeInt(in.length);
-			dos.writeInt(in[0].length);
-			for (int i = 0; i < in.length; i++)
-				dos.write(in[i]);
+			if (in.length != 0) {
+				dos.writeInt(in[0].length);
+				for (int i = 0; i < in.length; i++)
+					dos.write(in[i]);
+			}
 			out = baos.toByteArray();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -66,7 +68,7 @@ public class ComUtil {
 		byte[][] out = null;
 		try {
 			int len1 = dis.readInt();
-			int len2 = dis.readInt();
+			int len2 = len1 == 0 ? 0 : dis.readInt();
 			out = new byte[len1][len2];
 			for (int i = 0; i < len1; i++)
 				dis.read(out[i]);
@@ -546,10 +548,12 @@ public class ComUtil {
 		byte[] out = null;
 		try {
 			dos.writeInt(in.length);
-			dos.writeInt(in[0].length);
-			for (int i = 0; i < in.length; i++)
-				for (int j = 0; j < in[i].length; j++)
-					dos.write(in[i][j].bytes);
+			if (in.length != 0) {
+				dos.writeInt(in[0].length);
+				for (int i = 0; i < in.length; i++)
+					for (int j = 0; j < in[i].length; j++)
+						dos.write(in[i][j].bytes);
+			}
 			out = baos.toByteArray();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -570,7 +574,7 @@ public class ComUtil {
 		GCSignal[][] out = null;
 		try {
 			int len1 = dis.readInt();
-			int len2 = dis.readInt();
+			int len2 = len1 == 0 ? 0 : dis.readInt();
 			out = new GCSignal[len1][len2];
 			for (int i = 0; i < len1; i++)
 				for (int j = 0; j < len2; j++) {

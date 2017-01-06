@@ -22,7 +22,7 @@ public class GCGetPointer<T> extends IntegerLib<T> {
 		int pBits = md.getPBits(levelIndex);
 
 		AL_p = env.newTArray(lBits);
-		BigInteger L = new BigInteger(A_prime.getL());
+		BigInteger L = A_prime.getL().length == 0 ? BigInteger.ZERO : new BigInteger(A_prime.getL());
 		for (int i = 0; i < lBits; i++)
 			AL_p[i] = L.testBit(lBits - 1 - i) ? SIGNAL_ONE : SIGNAL_ZERO;
 

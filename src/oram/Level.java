@@ -56,7 +56,7 @@ public class Level implements Serializable {
 				// System.out.println(((float) i * 100 / md.getNumBlocks(index))
 				// + "%");
 
-				byte[] l = Util.rmSignBit(BigInteger.valueOf(i).toByteArray());
+				byte[] l = Util.padArray(BigInteger.valueOf(i).toByteArray(), md.getLBytes(index));
 				Block target = fresh.get(i);
 				target.setL(l);
 				for (int j = 0; j < md.getTwoTauPow(); j++) {

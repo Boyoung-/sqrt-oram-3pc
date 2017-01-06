@@ -61,10 +61,12 @@ public class Access extends Protocol {
 		byte[][] e = new byte[all.length][];
 		Block[] y = new Block[all.length];
 		for (int i = 0; i < all.length; i++) {
-			e[i] = Util.xor(
-					Util.padArray(Util.getSubBits(new BigInteger(all[i].getL()), lBits, 0).toByteArray(), preN.length),
-					preN); // TODO: this is ugly: make GP embedded input with
-							// leading zeros
+			e[i] = Util.xor(Util.padArray(Util
+					.getSubBits(all[i].getL().length == 0 ? BigInteger.ZERO : new BigInteger(all[i].getL()), lBits, 0)
+					.toByteArray(), preN.length), preN); // TODO: this is ugly:
+															// make GP embedded
+															// input with
+															// leading zeros
 			y[i] = all[i].xor(predata.acc_A_b);
 		}
 
@@ -147,9 +149,9 @@ public class Access extends Protocol {
 			all = Util.permute(Util.concat(Level.toArray(level.getStash()), new Block[] { B_a }), predata.acc_rho);
 		byte[][] e = new byte[all.length][];
 		for (int i = 0; i < all.length; i++) {
-			e[i] = Util.xor(
-					Util.padArray(Util.getSubBits(new BigInteger(all[i].getL()), lBits, 0).toByteArray(), preN.length),
-					preN);
+			e[i] = Util.xor(Util.padArray(Util
+					.getSubBits(all[i].getL().length == 0 ? BigInteger.ZERO : new BigInteger(all[i].getL()), lBits, 0)
+					.toByteArray(), preN.length), preN);
 		}
 
 		// step 2

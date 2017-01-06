@@ -87,7 +87,8 @@ public class GetPointer extends Protocol {
 
 		long p = GCUtil.evaOutKeys(outKeys[0], predata.gp_outKeyHashes[0]).longValue();
 		Block A_prime = new Block(predata.getIndex(), md, (Random) null);
-		byte[] AL = Util.rmSignBit(GCUtil.evaOutKeys(outKeys[1], predata.gp_outKeyHashes[1]).toByteArray());
+		byte[] AL = Util.padArray(GCUtil.evaOutKeys(outKeys[1], predata.gp_outKeyHashes[1]).toByteArray(),
+				md.getLBytes(predata.getIndex()));
 		A_prime.setL(AL);
 		BigInteger AF = GCUtil.evaOutKeys(outKeys[2], predata.gp_outKeyHashes[2]);
 		A_prime.setF(Block.toLongF(AF, md.getTwoTauPow()));

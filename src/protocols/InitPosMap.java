@@ -41,7 +41,7 @@ public class InitPosMap extends Protocol {
 		Array64<Block> fresh = new Array64<Block>(n);
 		for (long j = 0; j < n; j++) {
 			fresh.set(j, new Block(levelIndex, md, (Random) null));
-			fresh.get(j).setL(Util.rmSignBit(BigInteger.valueOf(j).toByteArray()));
+			fresh.get(j).setL(Util.padArray(BigInteger.valueOf(j).toByteArray(), md.getLBytes(levelIndex)));
 			for (int k = 0; k < md.getTwoTauPow(); k++) {
 				fresh.get(j).setP(k, Util.rmSignBit(Util
 						.getSubBits(BigInteger.valueOf(pi_b.get(j * md.getTwoTauPow() + k)), md.getPBits(levelIndex), 0)
