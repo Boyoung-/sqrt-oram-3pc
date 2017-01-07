@@ -170,9 +170,8 @@ public class RunSqrtOram extends Protocol {
 				for (int i = 0; i < h; i++)
 					predata[i] = new PreData(i);
 
-				if (counter == md.getPeriod()) {
+				if (counter == 0) {
 					System.out.print("Reinitializing...");
-					counter = 0;
 					preinit = new PreInitialize(con1, con2, md);
 					if (party == Party.Eddie) {
 						ete_off.start();
@@ -252,7 +251,7 @@ public class RunSqrtOram extends Protocol {
 					throw new NoSuchPartyException(party + "");
 				}
 
-				counter++;
+				counter = (counter + 1) % md.getPeriod();
 			}
 		}
 
