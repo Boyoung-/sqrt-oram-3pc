@@ -259,13 +259,13 @@ public class RunSqrtOram extends Protocol {
 		/////////////////////////////////////////////////////////
 
 		System.out.println();
-		timer = timer.divideBy(numTest * repeat);
+		// timer = timer.divideBy(numTest * repeat);
 		timer.noPrePrint();
 		System.out.println();
 
 		StopWatch comEnc = new StopWatch("CE_online_comp");
 		comEnc = comEnc.add(con1.comEnc.add(con2.comEnc));
-		comEnc = comEnc.divideBy(numTest * repeat);
+		// comEnc = comEnc.divideBy(numTest * repeat);
 		System.out.println(comEnc.noPreToMS());
 		System.out.println("\n");
 
@@ -281,8 +281,8 @@ public class RunSqrtOram extends Protocol {
 		System.out.println(gates);
 		System.out.println();
 
-		ete_on = ete_on.divideBy(numTest * repeat);
-		ete_off = ete_off.divideBy(numTest * repeat);
+		// ete_on = ete_on.divideBy(numTest * repeat);
+		// ete_off = ete_off.divideBy(numTest * repeat);
 		System.out.println(ete_on.noPreToMS());
 		System.out.println(ete_off.noPreToMS());
 		System.out.println();
