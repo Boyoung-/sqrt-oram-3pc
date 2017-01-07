@@ -38,7 +38,7 @@ public class PreInitialize extends Protocol {
 		predata[h - 1].init_pi_E = Util.randomPermutationLong(n, Crypto.sr);
 
 		timer.start(pid, M.online_write + onoff);
-		con2.writeLongArray64(pid, predata[h - 1].init_pi_E);
+		con2.writeLongArray64(predata[h - 1].init_pi_E);
 		timer.stop(pid, M.online_write + onoff);
 
 		// step 2
@@ -142,7 +142,7 @@ public class PreInitialize extends Protocol {
 		int h = md.getNumLevels();
 
 		timer.start(pid, M.online_read + onoff);
-		predata[h - 1].init_pi_E = con1.readLongArray64(pid);
+		predata[h - 1].init_pi_E = con1.readLongArray64();
 		timer.stop(pid, M.online_read + onoff);
 
 		// step 3

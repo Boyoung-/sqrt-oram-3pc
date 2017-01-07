@@ -148,7 +148,7 @@ public class RunSqrtOram extends Protocol {
 	@Override
 	public void run(Party party, SqrtOram oram) {
 		int repeat = 4;
-		int numTest = 1024 / repeat;
+		int numTest = 16 / repeat;
 
 		Timer timer = new Timer();
 		long gates = 0;
@@ -269,7 +269,7 @@ public class RunSqrtOram extends Protocol {
 		System.out.println("\n");
 
 		Bandwidth[] bandwidth = new Bandwidth[P.size];
-		for (int i = 0; i < P.size; i++) {
+		for (int i = 0; i < P.cutoff; i++) {
 			bandwidth[i] = new Bandwidth(P.names[i]);
 			bandwidth[i] = bandwidth[i].add(con1.bandwidth[i].add(con2.bandwidth[i]));
 			bandwidth[i] = bandwidth[i].divideBy(numTest * repeat);
