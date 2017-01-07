@@ -148,7 +148,7 @@ public class RunSqrtOram extends Protocol {
 	@Override
 	public void run(Party party, SqrtOram oram) {
 		int repeat = 4;
-		int numTest = 16 / repeat;
+		int numTest = 1024 / repeat;
 
 		Timer timer = new Timer();
 		long gates = 0;
